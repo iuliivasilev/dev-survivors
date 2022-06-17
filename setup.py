@@ -6,12 +6,20 @@ SELF_DATASETS = []#["datasets/data/ONK/*", "datasets/data/COVID/*"]
 
 PACKAGE_DATA = {"survivors": ["datasets/data/*"] + SELF_DATASETS}
 
+
 def parse_requirements(filename):
     with open(filename) as fin:
         parsed_requirements = _parse_requirements(
             fin)
         requirements = [str(ir) for ir in parsed_requirements]
     return requirements
+
+# Installing
+# python uninstall survivors
+
+# Final library will be downloaded by path:
+# C:\ProgramData\Anaconda3\envs\survive\Lib\site-packages
+
 
 setup(
     name='survivors',
