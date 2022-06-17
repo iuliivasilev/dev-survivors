@@ -1,0 +1,16 @@
+digraph {
+	node [shape=none]
+	1 [label="" fontsize=30 image="./CRAID_123\1.png"]
+	2 [label="bili >= 2.25" fontsize=30 image="./CRAID_123\2.png"]
+	4 [label="protime >= 11.55" fontsize=30 image="./CRAID_123\4.png"]
+	2 -> 4
+	5 [label="protime < 11.55" fontsize=30 image="./CRAID_123\5.png"]
+	2 -> 5
+	1 -> 2
+	3 [label="bili < 2.25" fontsize=30 image="./CRAID_123\3.png"]
+	6 [label="age >= 62.905" fontsize=30 image="./CRAID_123\6.png"]
+	3 -> 6
+	7 [label="age < 62.905" fontsize=30 image="./CRAID_123\7.png"]
+	3 -> 7
+	1 -> 3
+}
