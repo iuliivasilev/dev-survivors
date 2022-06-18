@@ -15,7 +15,7 @@ def parse_requirements(filename):
     return requirements
 
 # Installing
-# python uninstall survivors
+# python setup.py install
 
 # Final library will be downloaded by path:
 # C:\ProgramData\Anaconda3\envs\survive\Lib\site-packages
