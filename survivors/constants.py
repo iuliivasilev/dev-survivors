@@ -9,10 +9,12 @@ CENS_NAME = 'cens'
 TIME_NAME = 'time'
 """ str: Fixed names for internal representation """
 
+
 def set_seed(seed_value):
     os.environ['PYTHONHASHSEED']=str(seed_value)
     random.seed(seed_value)
     np.random.seed(seed_value)
+
 
 def get_y(cens, time):
     """
