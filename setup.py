@@ -23,12 +23,12 @@ def parse_requirements(filename):
 
 setup(
     name='survivors',
-    version='0.1.1',
+    version='1.2.0',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',
     packages=find_packages(),
     long_description=open(join(dirname(__file__), 'README.rst')).read(),
-    include_package_data = False,
+    include_package_data=False,
     package_data=PACKAGE_DATA,
     python_requires='>=3.7',
     install_requires=parse_requirements('requirements/prod.txt'),
