@@ -29,7 +29,8 @@ def get_before(estim, wei):
 def get_after(estim, prob_cens):
     return np.square(1 - estim) / prob_cens
 
-def ibs(survival_train, survival_test, estimate, times, axis = -1):
+
+def ibs(survival_train, survival_test, estimate, times, axis=-1):
     """
     Modified integrated brier score from scikit-survival (add axis)
     Modification: with axis = 0 count ibs for each observation
