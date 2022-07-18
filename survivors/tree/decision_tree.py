@@ -200,7 +200,7 @@ class CRAID(object):
         # print('*'*6, 'End fit.', '*'*6)
         return
     
-    def predict(self, X, mode = "target", target = cnt.TIME_NAME, name_out = "res"):
+    def predict(self, X, mode="target", target=cnt.TIME_NAME, name_out="res"):
         """
         Return values of features, rules or schemes
 
@@ -230,14 +230,14 @@ class CRAID(object):
         if mode == "target":
             X.loc[:, name_out] = self.tree.predict(X, target)
         elif mode == "scheme":
-            X.loc[:,'store_str'] = ""
+            X.loc[:, "store_str"] = ""
             X.loc[:, name_out] = X[name_out].apply(lambda x: dict())
             X.loc[:, name_out] = self.tree.predict_scheme(X, target)
         elif mode == "rules":
             X.loc[:, name_out] = self.tree.predict_rules(X)
         return X[name_out]
     
-    def predict_at_times(self, X, bins, mode = "surv"):
+    def predict_at_times(self, X, bins, mode="surv"):
         """
         Return survival or hazard function.
 
@@ -250,7 +250,8 @@ class CRAID(object):
         mode : str, optional
             Type of function. The default is "surv".
             "surv" : send building function in nodes
-            "hazard" : fit CoxPH model on node numbers (input) 
+            "hazard" : send building function in nodes
+            "cox-hazard" : fit CoxPH model on node numbers (input)
                                           and time/cens (output)
                        predict cumulative HF from model 
 
@@ -261,29 +262,30 @@ class CRAID(object):
 
         """
         X = format_to_pandas(X, self.features)
-        if mode == "hazard":
-            return self.predict_hazard(X, bins)
-        def build_at_times(X_node):
-            if mode == "surv":
-                return metr.get_survival_func(X_node[cnt.TIME_NAME],
-                                          X_node[cnt.CENS_NAME], 
-                                          bins = bins)
-            return metr.get_hazard_func(X_node[cnt.TIME_NAME],
-                                          X_node[cnt.CENS_NAME], 
-                                          bins = bins)
-        X.loc[:,'f_at_times'] = np.nan
-        X.loc[:,'f_at_times'] = self.tree.predict(X, build_at_times, name_tg = "f_at_times")
+        if mode == "cox-hazard":
+            return self.predict_cox_hazard(X, bins)
+        # def build_at_times(X_node):
+        #     if mode == "surv":
+        #         return metr.get_survival_func(X_node[cnt.TIME_NAME],
+        #                                   X_node[cnt.CENS_NAME],
+        #                                   bins = bins)
+        #     return metr.get_hazard_func(X_node[cnt.TIME_NAME],
+        #                                   X_node[cnt.CENS_NAME],
+        #                                   bins = bins)
+        X.loc[:, 'f_at_times'] = np.nan
+        X.loc[:, 'f_at_times'] = self.tree.predict(X, target=mode, name_tg="f_at_times", bins=bins)
+        # X.loc[:, 'f_at_times'] = self.tree.predict(X, build_at_times, name_tg="f_at_times")
         return np.array(X['f_at_times'].to_list())
         
-    def predict_hazard(self, X, bins):
+    def predict_cox_hazard(self, X, bins):
         bins = np.clip(bins, self.bins.min(), self.bins.max())
-        pred_node = self.tree.predict(X, target = "num_node").to_numpy().reshape(-1,1)
+        pred_node = self.tree.predict(X, target="num_node").to_numpy().reshape(-1,1)
         ohenc_node = self.ohenc.transform(pred_node).toarray()
         hazards = self.coxph.predict_cumulative_hazard_function(ohenc_node)
         pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
         return pred_haz
     
-    def cut_tree(self, X, target, mode_f = roc_auc_score, choose_f = max):
+    def cut_tree(self, X, target, mode_f=roc_auc_score, choose_f=max):
         """
         Method of prunning tree.
         Find best subtree, which reaches best value of metric "mode_f""
@@ -302,15 +304,15 @@ class CRAID(object):
         """
         self.tree = cutted_tree(self.tree, X, target, mode_f, choose_f)
     
-    def visualize(self, path_dir = "", **kwargs):
+    def visualize(self, path_dir="", **kwargs):
         tmp_dir = path_dir + self.name + "\\"
         if not os.path.exists(path_dir):
             os.mkdir(path_dir)
         if not os.path.exists(tmp_dir):
             os.mkdir(tmp_dir)
         dot = Digraph(node_attr={'shape': 'none'})
-        dot = self.tree.build_viz(dot, path_dir = tmp_dir, **kwargs)
-        dot.render(path_dir + self.name + "_", view = False, format = "png")
+        dot = self.tree.build_viz(dot, path_dir=tmp_dir, **kwargs)
+        dot.render(path_dir + self.name + "_", view=False, format="png")
         for root, dirs, files in os.walk(tmp_dir):
             for file in files:
                 os.remove(os.path.join(root, file))

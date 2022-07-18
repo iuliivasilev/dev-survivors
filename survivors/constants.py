@@ -61,7 +61,7 @@ def pd_to_xy(df):
         and time of event or time of censoring as second field.
 
     """
-    X = df.loc[:, set(df.columns) - {CENS_NAME, TIME_NAME}]
+    X = df.loc[:, list(set(df.columns) - {CENS_NAME, TIME_NAME})]
     y = get_y(df[CENS_NAME], df[TIME_NAME])
     return X, y
 

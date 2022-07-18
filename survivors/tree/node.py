@@ -12,9 +12,30 @@ from .. import metrics as metr
 from .. import constants as cnt
 
 """ Auxiliary functions """
-
-def join_dict(a,b):
+def join_dict(a, b):
     return dict(list(a.items()) + list(b.items()))
+
+
+class LeafModel(object):
+    def __init__(self):
+        self.survival = None
+        self.hazard = None
+        self.features_mean = dict()
+
+    def fit(self, X_node):
+        self.survival = metr.get_survival_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
+        self.hazard = metr.get_hazard_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
+        self.features_mean = X_node.mean(axis=0).to_dict()
+
+    def predict_mean_feature(self, X, feature_name):
+        return self.features_mean[feature_name]
+
+    def predict_survival_at_times(self, X, bins):
+        return self.survival.survival_function_at_times(bins).to_numpy()
+
+    def predict_hazard_at_times(self, X, bins):
+        return self.survival.cumulative_hazard_at_times(bins).to_numpy()
+
 
 """ Класс вершины дерева решений """
 class Node(object):
@@ -73,12 +94,13 @@ class Node(object):
     
     """
     __slots__ = ("df", "numb",
-                 "depth", "edges", "features", 
+                 "depth", "edges", "features", "leaf_model",
                  "categ", "woe", "rule", "is_leaf", "verbose", "info")
-    def __init__(self, df,  numb = 1, depth = 0,
-                 features = [], categ = [], woe = False,
-                 rule = {"name":"","attr":"","pos_nan":0},
-                 verbose = 0, **info):
+
+    def __init__(self, df,  numb=1, depth=0,
+                 features=[], categ=[], woe=False,
+                 rule={"name": "", "attr": "", "pos_nan": 0},
+                 verbose=0, **info):
         self.df = df
         self.numb = numb
         self.depth = depth
@@ -90,6 +112,7 @@ class Node(object):
         self.is_leaf = True
         self.verbose = verbose
         self.info = info
+        self.leaf_model = LeafModel()
         self.check_params()
     
     def check_params(self):
@@ -102,8 +125,8 @@ class Node(object):
             self.info["max_features"] = int(np.trunc(np.sqrt(len(self.features))+0.5))
         elif isinstance(self.info["max_features"],float):
             self.info["max_features"] = int(self.info["max_features"]*len(self.features))
-        return
-        
+        self.leaf_model.fit(self.df)
+
     """ GROUP FUNCTIONS: CREATE LEAFS """
     
     def find_best_split(self):
@@ -139,7 +162,7 @@ class Node(object):
         if self.verbose > 0:
             print('='*6, best_split["p_value"], attr)
         leaf_ind = 0
-        for v,p_n in zip(best_split["values"], best_split["pos_nan"]):
+        for v, p_n in zip(best_split["values"], best_split["pos_nan"]):
             query = attr + v
             if p_n == 1:
                 query = "(" + attr + v + ") or (" + attr + " != " + attr + ")"
@@ -147,10 +170,10 @@ class Node(object):
             N = Node(df = d_node,
                  features = self.features, categ = self.categ,
                  depth = self.depth+1, numb = self.numb*2+leaf_ind,
-                 rule = {"name":attr + v, "attr":attr, "pos_nan":p_n},
+                 rule = {"name": attr + v, "attr": attr, "pos_nan": p_n},
                  verbose = self.verbose, **self.info)
             self.edges = np.append(self.edges, N)
-            leaf_ind+=1
+            leaf_ind += 1
         self.is_leaf = False
         self.df = None
         
@@ -170,7 +193,7 @@ class Node(object):
         
     """ GROUP FUNCTIONS: PREDICT """
         
-    def predict(self, X, target, name_tg = "res", end_list = []):
+    def predict(self, X, target, name_tg="res", bins=None, end_list=[]):
         """
         Return statistic values of data
 
@@ -183,10 +206,12 @@ class Node(object):
             Column name : must be in dataset.columns
                 Return mean of feature
             Mode :
+                "surv" return survival function
+                "hazard" return cumulative hazard function
                 "depth" return leafs depth
                 "num_node" return leafs numb (names)
-            Function : 
-                Function of leaf sample (format like target(X_node = dataset))
+        bins : array-like
+            Points of timeline
         name_tg : str, optional
             Name of return column. The default is "res".
         end_list : list, optional
@@ -199,20 +224,24 @@ class Node(object):
 
         """
         if (self.numb in end_list) or self.is_leaf:
-            dataset = self.get_df_node()
-            if type(target) != str:
-                pred = target(X_node = dataset)
-                X.loc[:,name_tg] = X[name_tg].apply(lambda x: pred)
+            if target == "surv" or target == "hazard":
+                if target == "surv":
+                    func_at_times = self.leaf_model.predict_survival_at_times(X, bins)#target(X_node=dataset)
+                else:
+                    func_at_times = self.leaf_model.predict_hazard_at_times(X, bins)
+                X.loc[:, name_tg] = X[name_tg].apply(lambda x: func_at_times)
             elif target == "depth":
-                X.loc[:,name_tg] = self.depth
+                X.loc[:, name_tg] = self.depth
             elif target == "num_node":
-                X.loc[:,name_tg] = self.numb
-            elif target in dataset.columns:
-                X.loc[:,name_tg] = np.mean(dataset[target])
+                X.loc[:, name_tg] = self.numb
+            else:
+                dataset = self.get_df_node()
+                if target in dataset.columns:
+                    X.loc[:, name_tg] = self.leaf_model.predict_mean_feature(X, target)#np.mean(dataset[target])
         else:
             attr = self.edges[0].rule['attr']
             if attr not in X.columns:
-                X.loc[:,attr] = np.nan
+                X.loc[:, attr] = np.nan
             ind_nan = X.index
             for edge in self.edges:
                 ind_nan = ind_nan.difference(X.query(edge.rule["name"]).index)
@@ -222,12 +251,13 @@ class Node(object):
                 if edge.rule["pos_nan"] == 1:
                     ind = ind.append(ind_nan)
                 if len(ind) > 0:
-                    X.loc[ind, name_tg] = edge.predict(X.loc[ind, :], target, name_tg, end_list)
+                    X.loc[ind, name_tg] = edge.predict(X=X.loc[ind, :], target=target, bins=bins,
+                                                       name_tg=name_tg, end_list=end_list)
         return X[name_tg]
     
-    def predict_rules(self, X, name_tg = "res"):
+    def predict_rules(self, X, name_tg="res"):
         if self.is_leaf:
-            X.loc[:,name_tg] = self.get_rule()
+            X.loc[:, name_tg] = self.get_rule()
         else:
             attr = self.edges[0].rule['attr']
             if attr not in X.columns:
@@ -244,7 +274,7 @@ class Node(object):
         return X[name_tg]
     
     def get_values_column(self, columns):
-        return [0,1]
+        return [0, 1]
     
     def predict_scheme(self, X, scheme_feat):
         """
