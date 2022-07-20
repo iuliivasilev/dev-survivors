@@ -93,8 +93,8 @@ def cutted_tree(tree_, X, target, mode_f, choose_f, verbose = 0):
         plt.clf()
         plt.plot(list(best_metr.keys()), list(best_metr.values()),'o')
         # plt.plot(list(best_metr.keys()), list(best_metr.values()),'b')
-        plt.xlabel("Количество листов")#("Leafs")
-        plt.ylabel(f"Лучшее значение метрики {mode_f.__name__}")# {target}")
+        plt.xlabel("Количество листов")  # ("Leafs")
+        plt.ylabel(f"Лучшее значение метрики {mode_f.__name__}")  # {target}")
         plt.title(f"Обрезка дерева по переменной {target}")
         plt.show()
         print(best_metr)
@@ -264,17 +264,8 @@ class CRAID(object):
         X = format_to_pandas(X, self.features)
         if mode == "cox-hazard":
             return self.predict_cox_hazard(X, bins)
-        # def build_at_times(X_node):
-        #     if mode == "surv":
-        #         return metr.get_survival_func(X_node[cnt.TIME_NAME],
-        #                                   X_node[cnt.CENS_NAME],
-        #                                   bins = bins)
-        #     return metr.get_hazard_func(X_node[cnt.TIME_NAME],
-        #                                   X_node[cnt.CENS_NAME],
-        #                                   bins = bins)
         X.loc[:, 'f_at_times'] = np.nan
         X.loc[:, 'f_at_times'] = self.tree.predict(X, target=mode, name_tg="f_at_times", bins=bins)
-        # X.loc[:, 'f_at_times'] = self.tree.predict(X, build_at_times, name_tg="f_at_times")
         return np.array(X['f_at_times'].to_list())
         
     def predict_cox_hazard(self, X, bins):

@@ -108,7 +108,7 @@ def optimal_criter_split(arr_nan, left, right, criterion):
         b = criterion(left[1], right_and_nan[1], left[0], right_and_nan[0])
         # Nans move to a leaf with less p-value
         none_to = int(a > b)
-        min_p_val = min(a,b)
+        min_p_val = min(a, b)
     else:
         min_p_val = criterion(left[1], right[1], left[0], right[0])
     return (min_p_val, none_to)
@@ -147,11 +147,11 @@ def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
     attrs["p_value"] = min_p_value
     attrs["values"] = values
     if none_to:
-        attrs["pos_nan"] = [0,1]
-        attrs["min_split"] = min(l_sh,r_sh+nan_sh)
+        attrs["pos_nan"] = [0, 1]
+        attrs["min_split"] = min(l_sh, r_sh+nan_sh)
     else:
-        attrs["pos_nan"] = [1,0]
-        attrs["min_split"] = min(l_sh+nan_sh,r_sh)
+        attrs["pos_nan"] = [1, 0]
+        attrs["min_split"] = min(l_sh+nan_sh, r_sh)
     return attrs
 
 
@@ -187,18 +187,17 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
 
     """
     if uniq_set.shape[0] > thres_cont_bin_max:
-            uniq_set = np.quantile(arr_notnan[0], 
-                    [i/float(thres_cont_bin_max) for i in range(1,thres_cont_bin_max)])
-    else: # Set intermediate points
+            uniq_set = np.quantile(arr_notnan[0], [i/float(thres_cont_bin_max) for i in range(1, thres_cont_bin_max)])
+    else:  # Set intermediate points
         uniq_set = (uniq_set[:-1] + uniq_set[1:])*0.5
     uniq_set = np.round(uniq_set, 3)
     attr_dicts = []
     for value in uniq_set:
         # Filter by attr value
-        ind = arr_notnan[0]>=value
+        ind = arr_notnan[0] >= value
         left = arr_notnan[1:, np.where(ind)[0]].astype(np.int32)
         right = arr_notnan[1:, np.where(~ind)[0]].astype(np.int32)
-        if min(left.shape[1],right.shape[1]) <= min_samples_leaf:
+        if min(left.shape[1], right.shape[1]) <= min_samples_leaf:
             continue
         min_p_value, none_to = optimal_criter_split(arr_nan, left, right, criterion)
         if min_p_value <= signif:
@@ -317,18 +316,18 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     
     if len(attr_dicts) == 0:
         return best_attr
-    best_attr = min(attr_dicts,key=lambda x:x["p_value"])
+    best_attr = min(attr_dicts, key=lambda x: x["p_value"])
     best_attr["sign_split"] = len(attr_dicts)
     if best_attr["sign_split"] > 0:
         if type_attr == "cont":
-            best_attr["values"] = [' >= %s' % (best_attr["values"]), 
+            best_attr["values"] = [' >= %s' % (best_attr["values"]),
                                    ' < %s' % (best_attr["values"])]
         elif type_attr == "categ":
             best_attr["values"] = [' in %s' % (e) for e in best_attr["values"]]
         elif type_attr == "woe":
             ind = descr_np[1] >= best_attr["values"]
-            l,r = list(descr_np[0, np.where(ind)[0]]), list(descr_np[0, np.where(~ind)[0]])
-            best_attr["values"] = [' in %s' % (e) for e in [l,r]]
+            l, r = list(descr_np[0, np.where(ind)[0]]), list(descr_np[0, np.where(~ind)[0]])
+            best_attr["values"] = [' in %s' % (e) for e in [l, r]]
         # Bonferroni adjustment
         if bonf:
             best_attr["p_value"] *= best_attr["sign_split"]

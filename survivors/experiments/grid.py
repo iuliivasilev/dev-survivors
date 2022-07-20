@@ -17,7 +17,6 @@ from sklearn.model_selection import ParameterGrid
 from .. import constants as cnt
 from .. import metrics as metr
 
-###### 02/10/22
 
 def generate_sample(X, y, folds):
     """
@@ -50,14 +49,14 @@ def generate_sample(X, y, folds):
     for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
         X_train, X_test = X.loc[train_index, :], X.loc[test_index, :]
         y_train, y_test = y[train_index], y[test_index]
-        bins = cnt.get_bins(time = y_train[cnt.TIME_NAME], cens = y_train[cnt.CENS_NAME])
+        bins = cnt.get_bins(time=y_train[cnt.TIME_NAME], cens=y_train[cnt.CENS_NAME])
         y_train[cnt.TIME_NAME] = np.clip(y_train[cnt.TIME_NAME], bins.min()-1, bins.max()+1)
         y_test[cnt.TIME_NAME] = np.clip(y_test[cnt.TIME_NAME], bins.min(), bins.max())
         yield (X_train, y_train, X_test, y_test, bins)
     pass
     
 
-def crossval_param(method, X, y, folds, metrics_names = ['CI']):
+def crossval_param(method, X, y, folds, metrics_names=['CI']):
     """
     Return function, which on sample X, y apply cross-validation and calculate 
     metrics on each folds. 
@@ -86,12 +85,12 @@ def crossval_param(method, X, y, folds, metrics_names = ['CI']):
     def f(**kwargs):
         metr_lst = []
         for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds):
-            if method.__name__.find('CRAID') != -1: #TODO replace to isinstance 
+            if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 est = method(**kwargs)
                 est.fit(X_train, y_train)
-                pred_surv = est.predict_at_times(X_test, bins = bins, mode = "surv")
-                pred_time = est.predict(X_test, target = cnt.TIME_NAME)
-                pred_haz = est.predict_at_times(X_test, bins = bins, mode = "hazard")
+                pred_surv = est.predict_at_times(X_test, bins=bins, mode="surv")
+                pred_time = est.predict(X_test, target=cnt.TIME_NAME)
+                pred_haz = est.predict_at_times(X_test, bins=bins, mode="hazard")
             else:
                 X_train = X_train.fillna(0).replace(np.nan, 0)
                 X_test = X_test.fillna(0).replace(np.nan, 0)
@@ -104,8 +103,8 @@ def crossval_param(method, X, y, folds, metrics_names = ['CI']):
                 pred_time = -1*est.predict(X_test)
             
             metr_lst.append(np.array([metr.METRIC_DICT[metr_name](y_train, y_test, 
-                                                        pred_time, pred_surv, pred_haz, bins) 
-                                  for metr_name in metrics_names]))
+                                                        pred_time, pred_surv, pred_haz, bins)
+                                      for metr_name in metrics_names]))
         return np.vstack(metr_lst)
     return f
 
@@ -149,7 +148,7 @@ class Experiments(object):
     save : export table as xlsx
     
     """
-    def __init__(self, folds = 5, except_stop = "all", dataset_name = "NONE_NAME"):
+    def __init__(self, folds=5, except_stop="all", dataset_name="NONE_NAME"):
         self.methods = []
         self.methods_grid = []
         self.metrics = ["CI"]
@@ -157,6 +156,7 @@ class Experiments(object):
         self.folds = folds
         self.except_stop = except_stop
         self.dataset_name = dataset_name
+        self.result_table = None
         
     def add_method(self, method, grid):
         self.methods.append(method)
@@ -170,8 +170,8 @@ class Experiments(object):
             else:
                 print("METRIC %s IS NOT DEFINED" % (metr_name))
     
-    def run(self, X, y, dir_path = None, verbose = 0):
-        self.result_table = pd.DataFrame([], columns = ["METHOD", "PARAMS", "TIME"] + self.metrics)
+    def run(self, X, y, dir_path=None, verbose=0):
+        self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
         
         for method, grid in zip(self.methods, self.methods_grid):
             cv_method = crossval_param(method, X, y, self.folds, self.metrics)
@@ -180,14 +180,14 @@ class Experiments(object):
                     start_time = time.time()
                     cv_metr = cv_method(**p)
                     full_time = time.time() - start_time
-                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion",""),
+                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
                                  "PARAMS": str(p), "TIME": full_time}
-                    cv_metr = {m: cv_metr[:,i] for i, m in enumerate(self.metrics)}
-                    curr_dict.update(cv_metr) #dict(zip(self.metrics, cv_metr))
-                    self.result_table = self.result_table.append(curr_dict, ignore_index = True)
+                    cv_metr = {m: cv_metr[:, i] for i, m in enumerate(self.metrics)}
+                    curr_dict.update(cv_metr)  # dict(zip(self.metrics, cv_metr))
+                    self.result_table = self.result_table.append(curr_dict, ignore_index=True)
                     if verbose > 0:
                         print("EXECUTION TIME OF %s: %s" % (method.__name__, full_time), 
-                              {k:np.mean(v) for k,v in cv_metr.items()})
+                              {k: np.mean(v) for k, v in cv_metr.items()})
             except KeyboardInterrupt:
                 print("HANDELED KeyboardInterrupt")
                 break
@@ -218,7 +218,7 @@ class Experiments(object):
                 best_row = sub_table.loc[sub_table[by_metric].apply(np.mean).idxmax()]
             else:
                 best_row = sub_table.loc[sub_table[by_metric].apply(np.mean).idxmin()]
-            best_table = best_table.append(dict(best_row), ignore_index = True)
+            best_table = best_table.append(dict(best_row), ignore_index=True)
         return best_table
     
     def save(self, dir_path):
@@ -226,7 +226,7 @@ class Experiments(object):
         # if dir_path.find(".csv") != -1:
         #     save_table.to_csv(dir_path + dataset)
         # else: #to_excel
-        self.result_table.to_excel("%s_FULL_TABLE.xlsx" % (dir_path + self.dataset_name), index = False)
+        self.result_table.to_excel("%s_FULL_TABLE.xlsx" % (dir_path + self.dataset_name), index=False)
             
     # def plot_results(self, dir_path):
     #     df = self.result_table.copy()

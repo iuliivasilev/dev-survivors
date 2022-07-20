@@ -11,7 +11,7 @@ TIME_NAME = 'time'
 
 
 def set_seed(seed_value):
-    os.environ['PYTHONHASHSEED']=str(seed_value)
+    os.environ['PYTHONHASHSEED'] = str(seed_value)
     random.seed(seed_value)
     np.random.seed(seed_value)
 
@@ -66,7 +66,7 @@ def pd_to_xy(df):
     return X, y
 
 
-def get_bins(time, cens = None, mode = 'a', num_bins = 100):
+def get_bins(time, cens=None, mode='a', num_bins=100):
     """
     Generate array of time points in timeline (from sample)
 

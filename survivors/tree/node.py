@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set()
 from graphviz import Digraph
-
 from joblib import Parallel, delayed
 
 from .find_split import best_attr_split
 from .. import metrics as metr
 from .. import constants as cnt
+
+sns.set()
 
 """ Auxiliary functions """
 def join_dict(a, b):
@@ -123,7 +123,7 @@ class Node(object):
         self.info.setdefault("thres_cont_bin_max", 100)
         if self.info["max_features"] == "sqrt":
             self.info["max_features"] = int(np.trunc(np.sqrt(len(self.features))+0.5))
-        elif isinstance(self.info["max_features"],float):
+        elif isinstance(self.info["max_features"], float):
             self.info["max_features"] = int(self.info["max_features"]*len(self.features))
         self.leaf_model.fit(self.df)
 
@@ -132,20 +132,20 @@ class Node(object):
     def find_best_split(self):
         numb_feats = self.info["max_features"]
         numb_feats = np.clip(numb_feats, 1, len(self.features))
-        n_jobs = min(numb_feats,self.info["n_jobs"])
+        n_jobs = min(numb_feats, self.info["n_jobs"])
         selected_feats = np.random.choice(self.features, size=numb_feats, replace=False)
         
         args = np.array([])
         for feat in selected_feats:
             t = self.info.copy()
             t["type_attr"] = "woe" if self.woe else "categ" if feat in self.categ else "cont"
-            t["arr"] = self.df.loc[:,[feat, cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
+            t["arr"] = self.df.loc[:, [feat, cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
             args = np.append(args, t)
         with Parallel(n_jobs=n_jobs, verbose=0, batch_size=10) as parallel:
             ml = parallel(delayed(best_attr_split)(**a) for a in args)
 
-        attrs = {f: ml[ind] for ind,f in enumerate(selected_feats)}
-        attr = min(attrs,key=lambda x:attrs[x]["p_value"])
+        attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
+        attr = min(attrs, key=lambda x: attrs[x]["p_value"])
         
         if attrs[attr]["sign_split"] > 0 and self.info["bonf"]:
             attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
@@ -167,11 +167,11 @@ class Node(object):
             if p_n == 1:
                 query = "(" + attr + v + ") or (" + attr + " != " + attr + ")"
             d_node = self.df.query(query).copy()
-            N = Node(df = d_node,
-                 features = self.features, categ = self.categ,
-                 depth = self.depth+1, numb = self.numb*2+leaf_ind,
-                 rule = {"name": attr + v, "attr": attr, "pos_nan": p_n},
-                 verbose = self.verbose, **self.info)
+            N = Node(df=d_node,
+                     features=self.features, categ=self.categ,
+                     depth=self.depth+1, numb=self.numb*2+leaf_ind,
+                     rule={"name": attr + v, "attr": attr, "pos_nan": p_n},
+                     verbose=self.verbose, **self.info)
             self.edges = np.append(self.edges, N)
             leaf_ind += 1
         self.is_leaf = False
@@ -226,7 +226,7 @@ class Node(object):
         if (self.numb in end_list) or self.is_leaf:
             if target == "surv" or target == "hazard":
                 if target == "surv":
-                    func_at_times = self.leaf_model.predict_survival_at_times(X, bins)#target(X_node=dataset)
+                    func_at_times = self.leaf_model.predict_survival_at_times(X, bins)  # target(X_node=dataset)
                 else:
                     func_at_times = self.leaf_model.predict_hazard_at_times(X, bins)
                 X.loc[:, name_tg] = X[name_tg].apply(lambda x: func_at_times)
@@ -237,7 +237,7 @@ class Node(object):
             else:
                 dataset = self.get_df_node()
                 if target in dataset.columns:
-                    X.loc[:, name_tg] = self.leaf_model.predict_mean_feature(X, target)#np.mean(dataset[target])
+                    X.loc[:, name_tg] = self.leaf_model.predict_mean_feature(X, target)  # np.mean(dataset[target])
         else:
             attr = self.edges[0].rule['attr']
             if attr not in X.columns:
@@ -261,7 +261,7 @@ class Node(object):
         else:
             attr = self.edges[0].rule['attr']
             if attr not in X.columns:
-                X.loc[:,attr] = np.nan
+                X.loc[:, attr] = np.nan
             ind_nan = X.query(attr + "!=" + attr).index
             for edge in self.edges:
                 ind = X.query(edge.rule["name"]).index
@@ -304,7 +304,7 @@ class Node(object):
             return {r['store_str']:
                     [to_array(cnt.CENS_NAME), 
                      to_array(cnt.TIME_NAME), 
-                     #to_array(self.info["sum"]), ## TODO FOR SCHEME'S SUM
+                     # to_array(self.info["sum"]), # TODO FOR SCHEME'S SUM
                      {sch: to_array(sch) for sch in scheme_feat}]}
             
         def join_scheme_leafs(X_sub, ind_nan = []):
@@ -322,7 +322,7 @@ class Node(object):
             return X.apply(scheme_output_format, axis = 1)
         attr = self.edges[0].rule['attr']
         if attr not in X.columns:
-            X.loc[:,attr] = np.nan
+            X.loc[:, attr] = np.nan
         ind_nan = X.query(attr + "!=" + attr).index
         ind_has = X.index.difference(ind_nan)
         if attr not in scheme_feat:
@@ -335,29 +335,29 @@ class Node(object):
                 for val in self.get_values_column(attr):
                     X.loc[ind_nan, attr] = val
                     X.loc[ind_nan, 'store_str'] = pred_store + attr + '==' + str(val) + ';'
-                    X.loc[ind_nan, 'res'] = join_scheme_leafs(X.loc[ind_nan,:])
+                    X.loc[ind_nan, 'res'] = join_scheme_leafs(X.loc[ind_nan, :])
         return X['res']
     
     """ GROUP FUNCTIONS: VISUALIZATION """
     
-    def get_figure(self, mode = "hist", target = None, save_path = ""):
+    def get_figure(self, mode="hist", target=None, save_path=""):
         if len(save_path) > 0:
             plt.ioff()
         fig, ax = plt.subplots(figsize=(8, 6))
         local_df = self.get_df_node()
         if mode == "hist":
-            local_df[target].hist(bins = 25)
+            local_df[target].hist(bins=25)
             ax.set_xlim([0, np.max(local_df[target])])
         elif mode == "surv":
             kmf = metr.get_survival_func(local_df[cnt.TIME_NAME], local_df[cnt.CENS_NAME])
             ax.set_xlim([0, np.max(local_df[cnt.TIME_NAME])])
             ax.set_ylim([0, 1])
             plt.xticks(range(0, np.max(local_df[cnt.TIME_NAME])+1, 1000))
-            kmf.plot_survival_function(legend = False, fontsize=25)
+            kmf.plot_survival_function(legend=False, fontsize=25)
             # ax.set_xlabel('Время', fontsize=25)
             # ax.set_ylabel('Вероятность выживания', fontsize=25)
             ax.set_xlabel('Time', fontsize=25)
-            ax.set_ylabel('Survival probability', fontsize=25)#plt.xlabel('Timeline', fontsize=0)
+            ax.set_ylabel('Survival probability', fontsize=25)  # plt.xlabel('Timeline', fontsize=0)
         if len(save_path) > 0:
             plt.savefig(save_path)
         else:
@@ -366,14 +366,14 @@ class Node(object):
     def get_rule(self):
         if not(self.rule["pos_nan"]):
             return f'({self.rule["name"]})'
-        #return f'(({self.rule["name"]})|({self.rule["attr"]} != {self.rule["attr"]}))'
+        # return f'(({self.rule["name"]})|({self.rule["attr"]} != {self.rule["attr"]}))'
         return f'(({self.rule["name"]})| не указано)'
     
-    def get_description(self, full = False):
-        s = "" #if not(self.rule["pos_nan"]) else " or " + self.rule["attr"] + " == NaN"
+    def get_description(self, full=False):
+        s = ""  # if not(self.rule["pos_nan"]) else " or " + self.rule["attr"] + " == NaN"
         d = self.get_df_node()
-        m_cens = round(d[cnt.CENS_NAME].mean(),2)
-        m_time = round(d[cnt.TIME_NAME].mean(),2)
+        m_cens = round(d[cnt.CENS_NAME].mean(), 2)
+        m_time = round(d[cnt.TIME_NAME].mean(), 2)
         if full:
             label = "\n".join([self.rule["name"] + s,
                                "size = %s" % (d.shape[0]),
@@ -384,14 +384,13 @@ class Node(object):
             label = self.rule["name"] + s 
         return label
         
-    def build_viz(self, dot = None, path_dir = "", depth = None, **args):
+    def build_viz(self, dot=None, path_dir="", depth=None, **args):
         if dot is None:
             dot = Digraph()
         img_path = path_dir + str(self.numb) + '.png'
-        self.get_figure(save_path = img_path, **args)
-        dot.node(str(self.numb), 
-                      label = self.get_description(), 
-                      image = img_path, fontsize='30') # fontsize='16'
+        self.get_figure(save_path=img_path, **args)
+        dot.node(str(self.numb), label=self.get_description(),
+                 image=img_path, fontsize='30')  # fontsize='16'
         if not(depth is None):
             if depth < self.depth:
                 return dot
@@ -402,9 +401,9 @@ class Node(object):
          
     def translate(self, describe):
         if self.is_leaf:
-            self.df = self.df.rename(describe, axis = 1)
-        self.features = [describe.get(f,f) for f in self.features]
-        self.categ = [describe.get(c,c) for c in self.categ]
-        self.rule["name"] = describe.get(self.rule["name"],self.rule["name"])
+            self.df = self.df.rename(describe, axis=1)
+        self.features = [describe.get(f, f) for f in self.features]
+        self.categ = [describe.get(c, c) for c in self.categ]
+        self.rule["name"] = describe.get(self.rule["name"], self.rule["name"])
         for edge in self.edges:
             edge.translate(describe)
