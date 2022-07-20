@@ -55,19 +55,23 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
     times : array-like, shape = (n_times,)
         The time points for which to estimate the Brier score.
     axis : int, optional
+        With axis = 1 count bs for each time from times
         With axis = 0 count ibs for each observation.
         With axis = -1 count mean ibs.
         The default is -1.
 
     Returns
     -------
-    ibs_value : float or array-like
-        if axis = 0 return array of ibs
+    ibs_value : float or array-like or None
+        if axis = 0 return array of ibs for each observation
+           axis = 1 return array of bs for each time from times
            axis = -1 return float
+        else
+            None
 
     """
     test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored = True)
-    #estimate, times = _check_estimate_2d(estimate, test_time, times)
+    # estimate, times = _check_estimate_2d(estimate, test_time, times)
     estimate = np.array(estimate)
     if estimate.ndim == 1 and times.shape[0] == 1:
         estimate = estimate.reshape(-1, 1)
@@ -89,17 +93,16 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
                                       estim_before[:, i], 
                                       estim_after[:, i])
                              for i, t in enumerate(times)])
-    if axis == -1:
-        brier_scores = np.mean(brier_scores, axis = 1)
-        ibs_value = np.trapz(brier_scores, times) / (times[-1] - times[0])
-    else:
-        ibs_value = np.trapz(brier_scores, times, axis = 0) / (times[-1] - times[0])
-    # else: # Return bs in time (for graphics)
-    #     brier_scores = np.mean(brier_scores, axis = 1)
-        
-    return ibs_value
+    if axis == -1:  # mean ibs for each time and observation
+        brier_scores = np.mean(brier_scores, axis=1)
+        return np.trapz(brier_scores, times) / (times[-1] - times[0])
+    elif axis == 0:  # ibs for each observation
+        return np.trapz(brier_scores, times, axis=0) / (times[-1] - times[0])
+    elif axis == 1:  # bs in time (for graphics)
+        return np.mean(brier_scores, axis=1)
+    return None
 
-""" EXPORT IAUC """
+
 def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8):
     """
     Modified integrated AUC (cumulative_dynamic_auc) 
@@ -142,7 +145,7 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8):
     if survival_test[CENS_NAME].sum() == 0:
         survival_test[CENS_NAME] = 1
     test_event, test_time = sksurv.metrics.check_y_survival(survival_test)
-    #estimate, times = _check_estimate_2d(estimate, test_time, times)
+    # estimate, times = _check_estimate_2d(estimate, test_time, times)
     estimate = np.array(estimate)
     n_samples = estimate.shape[0]
     n_times = times.shape[0]
@@ -215,7 +218,57 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8):
 
     return mean_auc
 
+
+def ipa(survival_train, survival_test, estimate, times, axis=-1):
+    """
+    Index of Prediction Accuracy: General R^2 for binary outcome and right
+    censored time to event (survival) outcome also with competing risks.
+
+    Parameters
+    ----------
+    survival_train : structured array, shape = (n_train_samples,)
+        Survival times for training data to estimate the censoring
+        distribution from.
+        A structured array containing the binary event indicator
+        as first field, and time of event or time of censoring as
+        second field.
+    survival_test : structured array, shape = (n_samples,)
+        Survival times of test data.
+        A structured array containing the binary event indicator
+        as first field, and time of event or time of censoring as
+        second field.
+    estimate : array-like, shape = (n_samples, n_times)
+        Estimated risk of experiencing an event for test data at `times`.
+        The i-th column must contain the estimated probability of
+        remaining event-free up to the i-th time point.
+    times : array-like, shape = (n_times,)
+        The time points for which to estimate the Brier score.
+    axis : int, optional
+        With axis = 1 count ipa for each time from times
+        With axis = 0 count ipa for each observation.
+        With axis = -1 count mean ipa.
+        The default is -1.
+
+    Returns
+    -------
+    ibs_value : float or array-like or None
+        if axis = 0 return array
+           axis = 1 return array
+           axis = -1 return float
+        else
+            None
+
+    """
+    one_sf = get_survival_func(survival_train['time'], survival_train['cens'], times)[np.newaxis, :]
+    kmf_estimate = np.repeat(one_sf, survival_test.shape[0], axis=0)
+
+    ibs_model = ibs(survival_train, survival_test, estimate, times, axis)
+    ibs_kmf_model = ibs(survival_train, survival_test, kmf_estimate, times, axis)
+    return 1 - (ibs_model + 1e-8) / (ibs_kmf_model + 1e-8)
+
+
 """ESTIMATE FUNCTION"""
+
 
 def get_survival_func(ddeath, cdeath, bins = None):
     """
@@ -242,6 +295,7 @@ def get_survival_func(ddeath, cdeath, bins = None):
     if not(bins is None):
         return kmf.survival_function_at_times(bins).to_numpy()
     return kmf
+
 
 def get_hazard_func(ddeath, cdeath, bins = None):
     """

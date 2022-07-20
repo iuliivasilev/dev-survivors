@@ -45,30 +45,32 @@ def transform_woe(x_feat, y):
         Array with 2 dims: source categories, mapping woe's.
 
     """
-    a = np.vstack([x_feat,y]).T
-    a = a[a[:,0] == a[:,0]]
+    a = np.vstack([x_feat, y]).T
+    a = a[a[:, 0] == a[:, 0]]
 
-    categs = np.unique(a[:,0]).shape[0]
+    categs = np.unique(a[:, 0]).shape[0]
     N_T = y.shape[0]
     N_D = y.sum()
     N_D_ = N_T - y.sum()
 
-    df_woe_iv = pd.crosstab(a[:,0],a[:,1])
+    df_woe_iv = pd.crosstab(a[:, 0],a[:, 1])
     all_0 = df_woe_iv[0].sum()
     all_1 = df_woe_iv[1].sum()
 
-    df_woe_iv["p_bd"] =  (df_woe_iv[1] + 1e-5) / (N_D + 1e-5)
-    df_woe_iv["p_bd_"] =  (df_woe_iv[0] + 1e-5) / (N_D_ + 1e-5)
-    df_woe_iv["p_b_d"] =  (all_1 - df_woe_iv[1] + 1e-5) / (N_D + 1e-5)
-    df_woe_iv["p_b_d_"] =  (all_0 - df_woe_iv[0] + 1e-5) / (N_D_ + 1e-5)
+    df_woe_iv["p_bd"] = (df_woe_iv[1] + 1e-5) / (N_D + 1e-5)
+    df_woe_iv["p_bd_"] = (df_woe_iv[0] + 1e-5) / (N_D_ + 1e-5)
+    df_woe_iv["p_b_d"] = (all_1 - df_woe_iv[1] + 1e-5) / (N_D + 1e-5)
+    df_woe_iv["p_b_d_"] = (all_0 - df_woe_iv[0] + 1e-5) / (N_D_ + 1e-5)
 
     df_woe_iv["woe_pl"]= np.log(df_woe_iv["p_bd"] / df_woe_iv["p_bd_"])
     df_woe_iv["woe_mn"]= np.log(df_woe_iv["p_b_d"] / df_woe_iv["p_b_d_"])
     features_woe = (df_woe_iv["woe_pl"] - df_woe_iv["woe_mn"]).to_dict()
     descr_np = np.vstack([df_woe_iv.index, (df_woe_iv["woe_pl"] - df_woe_iv["woe_mn"])])
     woe_x_feat = np.vectorize(features_woe.get)(x_feat)
-    # iv = ((df_woe_iv["p_bd"].to_numpy() - df_woe_iv["p_bd_"].to_numpy())*df_woe_iv["woe_pl"].to_numpy()).sum() # calculate information value
+    # calculate information value
+    # iv = ((df_woe_iv["p_bd"].to_numpy() - df_woe_iv["p_bd_"].to_numpy())*df_woe_iv["woe_pl"].to_numpy()).sum()
     return (woe_x_feat, descr_np)
+
 
 def optimal_criter_split(arr_nan, left, right, criterion):
     """
@@ -111,6 +113,7 @@ def optimal_criter_split(arr_nan, left, right, criterion):
         min_p_val = criterion(left[1], right[1], left[0], right[0])
     return (min_p_val, none_to)
 
+
 def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
     """
     Create dictionary of best split.
@@ -140,7 +143,7 @@ def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
         min_split : minimal size of branch
 
     """
-    attrs = {}
+    attrs = dict()
     attrs["p_value"] = min_p_value
     attrs["values"] = values
     if none_to:
@@ -150,6 +153,7 @@ def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
         attrs["pos_nan"] = [1,0]
         attrs["min_split"] = min(l_sh+nan_sh,r_sh)
     return attrs
+
 
 def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, 
                    signif, thres_cont_bin_max):
@@ -203,6 +207,7 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
             attr_dicts.append(attr_loc)
     return attr_dicts
 
+
 def get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif):
     """
     Find best split for categorical feature.
@@ -233,21 +238,21 @@ def get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, 
     """
     attr_dicts = []
     pairs_uniq = power_set_nonover(uniq_set)
-    for l,r in pairs_uniq:
+    for l, r in pairs_uniq:
         left = arr_notnan[1:, np.isin(arr_notnan[0], l)].astype(np.int32)
         right = arr_notnan[1:, np.isin(arr_notnan[0], r)].astype(np.int32)
-        if min(left.shape[1],right.shape[1]) <= min_samples_leaf:
+        if min(left.shape[1], right.shape[1]) <= min_samples_leaf:
             continue
         min_p_value, none_to = optimal_criter_split(arr_nan, left, right, criterion)
         if min_p_value <= signif:
-            attr_loc = get_attrs(min_p_value, [list(l),list(r)], none_to, 
+            attr_loc = get_attrs(min_p_value, [list(l), list(r)], none_to,
                                  left.shape[1], right.shape[1], arr_nan.shape[1])
             attr_dicts.append(attr_loc)
     return attr_dicts
 
-def best_attr_split(arr, criterion = "logrank", type_attr = "cont", thres_cont_bin_max = 100,
-              signif = 1.0, min_samples_leaf = 10, bonf = True, verbose = 0, 
-              **kwargs):
+
+def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_max=100,
+                    signif=1.0, min_samples_leaf=10, bonf=True, verbose=0, **kwargs):
     """
     Choose best split for fixed feature.
     Find best splits and choose partition with minimal p-value.
@@ -291,8 +296,8 @@ def best_attr_split(arr, criterion = "logrank", type_attr = "cont", thres_cont_b
     if criterion in scrit.CRITERIA_DICT:
         criterion = scrit.CRITERIA_DICT[criterion]
         
-    best_attr = {"p_value":signif, "sign_split" : 0,
-                  "values":[], "pos_nan":[1,0]}
+    best_attr = {"p_value": signif, "sign_split": 0,
+                  "values": [], "pos_nan": [1, 0]}
     attr_dicts = [best_attr]
     # The leaf is too small for split
     if arr.shape[1] < 2*min_samples_leaf:
