@@ -119,13 +119,13 @@ def coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings):
 
 @njit
 def lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings):
-    res = np.zeros((times.shape[0],3), dtype=np.float32)
+    res = np.zeros((times.shape[0], 3), dtype=np.float32)
     for j, t_j in enumerate(times):
         res[j] = coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings)
     
     if weightings == "peto":
         res[:, 0] = np.cumprod(res[:, 0])
-    logrank = np.power((res[:, 0]*res[:, 1]).sum(),2) / ((res[:, 0]*res[:, 0]*res[:, 2]).sum())
+    logrank = np.power((res[:, 0]*res[:, 1]).sum(), 2) / ((res[:, 0]*res[:, 0]*res[:, 2]).sum())
     return logrank
 
 def weight_lr_fast(dur_A, dur_B, cens_A = None, cens_B = None, weightings = ""):
@@ -166,9 +166,9 @@ def weight_lr_fast(dur_A, dur_B, cens_A = None, cens_B = None, weightings = ""):
         #     a1 = np.unique(dur_A)
         #     a2 = np.unique(dur_B)
         #     times = np.unique(np.clip(np.union1d(a1,a2), 0, np.min([a1.max(), a2.max()])))
-        times = np.union1d(np.unique(dur_A),np.unique(dur_B))
+        times = np.union1d(np.unique(dur_A), np.unique(dur_B))
         logrank = lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings)
-        pvalue = stats.chi2.sf(logrank, df = 1)
+        pvalue = stats.chi2.sf(logrank, df=1)
         return pvalue
     except:
         return 1.0

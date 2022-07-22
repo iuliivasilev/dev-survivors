@@ -18,7 +18,7 @@ def loss_func(var, mode = 'linear'):
 
 def count_weight(losses, mode = 'linear'):
     li = loss_func(losses, mode = mode)
-    l_mean = li.mean() #(li * pred_wei).sum()/pred_wei.sum()
+    l_mean = li.mean() # (li * pred_wei).sum()/pred_wei.sum()
     betta = l_mean/(1.0 - l_mean)
     new_wei = betta ** (1 - li)
     return new_wei, betta
@@ -107,7 +107,7 @@ class BoostingCRAID(BaseEnsemble):
         
         if self.tolerance:
             self.tolerance_find_best()
-        print('fitted:',len(self.models),'models.')
+        print('fitted:', len(self.models), 'models.')
     
     # def count_model_weights(self, model):
     #     pred_surv = model.predict_at_times(self.X_train, bins = self.bins, mode = "surv")

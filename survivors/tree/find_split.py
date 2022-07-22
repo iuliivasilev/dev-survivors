@@ -62,8 +62,8 @@ def transform_woe(x_feat, y):
     df_woe_iv["p_b_d"] = (all_1 - df_woe_iv[1] + 1e-5) / (N_D + 1e-5)
     df_woe_iv["p_b_d_"] = (all_0 - df_woe_iv[0] + 1e-5) / (N_D_ + 1e-5)
 
-    df_woe_iv["woe_pl"]= np.log(df_woe_iv["p_bd"] / df_woe_iv["p_bd_"])
-    df_woe_iv["woe_mn"]= np.log(df_woe_iv["p_b_d"] / df_woe_iv["p_b_d_"])
+    df_woe_iv["woe_pl"] = np.log(df_woe_iv["p_bd"] / df_woe_iv["p_bd_"])
+    df_woe_iv["woe_mn"] = np.log(df_woe_iv["p_b_d"] / df_woe_iv["p_b_d_"])
     features_woe = (df_woe_iv["woe_pl"] - df_woe_iv["woe_mn"]).to_dict()
     descr_np = np.vstack([df_woe_iv.index, (df_woe_iv["woe_pl"] - df_woe_iv["woe_mn"])])
     woe_x_feat = np.vectorize(features_woe.get)(x_feat)
@@ -94,7 +94,7 @@ def optimal_criter_split(arr_nan, left, right, criterion):
     min_p_val : float
         P-value of best split.
     none_to : int
-        Number of branch for allocation (default 0)
+        Number of branch for nan allocation (default 0)
         0 : to left branch
         1 : to right branch
 

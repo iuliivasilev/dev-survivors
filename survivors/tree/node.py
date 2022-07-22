@@ -307,29 +307,29 @@ class Node(object):
                      # to_array(self.info["sum"]), # TODO FOR SCHEME'S SUM
                      {sch: to_array(sch) for sch in scheme_feat}]}
             
-        def join_scheme_leafs(X_sub, ind_nan = []):
+        def join_scheme_leafs(X_sub, ind_nan=[]):
             for edge in self.edges:
                 ind = X_sub.query(edge.rule['name']).index
                 if len(ind_nan) > 0:
                     if edge.rule["pos_nan"] == 1:
                         ind = ind.append(ind_nan)
                 if len(ind) > 0:
-                    X_sub.loc[ind, 'tmp'] = edge.predict_scheme(X_sub.loc[ind,:], scheme_feat)
-                    X_sub.loc[ind, 'res'] = X_sub.loc[ind,:].apply(lambda r: join_dict(r['res'],r['tmp']), axis = 1)
+                    X_sub.loc[ind, 'tmp'] = edge.predict_scheme(X_sub.loc[ind, :], scheme_feat)
+                    X_sub.loc[ind, 'res'] = X_sub.loc[ind, :].apply(lambda r: join_dict(r['res'], r['tmp']), axis=1)
             return X_sub['res']
             
         if self.is_leaf:
-            return X.apply(scheme_output_format, axis = 1)
+            return X.apply(scheme_output_format, axis=1)
         attr = self.edges[0].rule['attr']
         if attr not in X.columns:
             X.loc[:, attr] = np.nan
         ind_nan = X.query(attr + "!=" + attr).index
         ind_has = X.index.difference(ind_nan)
         if attr not in scheme_feat:
-            X.loc[:,'res'] = join_scheme_leafs(X, ind_nan)
+            X.loc[:, 'res'] = join_scheme_leafs(X, ind_nan)
         else:
             if len(ind_has) > 0:
-                X.loc[ind_has, 'res'] = join_scheme_leafs(X.loc[ind_has,:])
+                X.loc[ind_has, 'res'] = join_scheme_leafs(X.loc[ind_has, :])
             if len(ind_nan) > 0:
                 pred_store = X.loc[ind_nan, 'store_str'].copy()
                 for val in self.get_values_column(attr):
