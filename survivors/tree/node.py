@@ -138,7 +138,7 @@ class Node(object):
         args = np.array([])
         for feat in selected_feats:
             t = self.info.copy()
-            t["type_attr"] = "woe" if self.woe else "categ" if feat in self.categ else "cont"
+            t["type_attr"] = ("woe" if self.woe else "categ") if feat in self.categ else "cont"
             t["arr"] = self.df.loc[:, [feat, cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
             args = np.append(args, t)
         with Parallel(n_jobs=n_jobs, verbose=0, batch_size=10) as parallel:
@@ -190,6 +190,18 @@ class Node(object):
         del self.edges
         self.edges = np.array([])
         self.is_leaf = True
+
+    def prepare_df_for_attr(self, X):
+        attr = self.edges[0].rule['attr']
+        if attr not in X.columns:
+            X.loc[:, attr] = np.nan
+        return X
+
+    def get_split_nan_index(self, X):
+        ind_nan = X.index
+        for edge in self.edges:
+            ind_nan = ind_nan.difference(X.query(edge.rule["name"]).index)
+        return ind_nan
         
     """ GROUP FUNCTIONS: PREDICT """
         
@@ -239,12 +251,8 @@ class Node(object):
                 if target in dataset.columns:
                     X.loc[:, name_tg] = self.leaf_model.predict_mean_feature(X, target)  # np.mean(dataset[target])
         else:
-            attr = self.edges[0].rule['attr']
-            if attr not in X.columns:
-                X.loc[:, attr] = np.nan
-            ind_nan = X.index
-            for edge in self.edges:
-                ind_nan = ind_nan.difference(X.query(edge.rule["name"]).index)
+            X = self.prepare_df_for_attr(X)
+            ind_nan = self.get_split_nan_index(X)
                 
             for edge in self.edges:
                 ind = X.query(edge.rule["name"]).index
@@ -259,10 +267,9 @@ class Node(object):
         if self.is_leaf:
             X.loc[:, name_tg] = self.get_rule()
         else:
-            attr = self.edges[0].rule['attr']
-            if attr not in X.columns:
-                X.loc[:, attr] = np.nan
-            ind_nan = X.query(attr + "!=" + attr).index
+            X = self.prepare_df_for_attr(X)
+            ind_nan = self.get_split_nan_index(X)
+
             for edge in self.edges:
                 ind = X.query(edge.rule["name"]).index
                 if edge.rule["pos_nan"] == 1:
@@ -321,9 +328,8 @@ class Node(object):
         if self.is_leaf:
             return X.apply(scheme_output_format, axis=1)
         attr = self.edges[0].rule['attr']
-        if attr not in X.columns:
-            X.loc[:, attr] = np.nan
-        ind_nan = X.query(attr + "!=" + attr).index
+        X = self.prepare_df_for_attr(X)
+        ind_nan = self.get_split_nan_index(X)
         ind_has = X.index.difference(ind_nan)
         if attr not in scheme_feat:
             X.loc[:, 'res'] = join_scheme_leafs(X, ind_nan)
