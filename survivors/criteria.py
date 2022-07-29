@@ -95,12 +95,12 @@ def cox(durations_A, durations_B, event_observed_A=None, event_observed_B=None) 
 ### accelerate 2.8 according to library criteria
 @njit
 def coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings):
-    N_1_j = (dur_A >= t_j).sum()#np.where(dur_A >= t_j,1,0).sum()
-    N_2_j = (dur_B >= t_j).sum()#np.where(dur_B >= t_j,1,0).sum()
+    N_1_j = (dur_A >= t_j).sum()
+    N_2_j = (dur_B >= t_j).sum()
     if N_1_j == 0 or N_2_j == 0:
         return 0, 0, 0
-    O_1_j = ((dur_A == t_j) * cens_A).sum() #np.where(dur_A == t_j, cens_A,0).sum()
-    O_2_j = ((dur_B == t_j) * cens_B).sum()#np.where(dur_B == t_j, cens_B,0).sum()
+    O_1_j = ((dur_A == t_j) * cens_A).sum()  # np.where(dur_A == t_j, cens_A,0).sum()
+    O_2_j = ((dur_B == t_j) * cens_B).sum()  # np.where(dur_B == t_j, cens_B,0).sum()
     
     N_j = N_1_j + N_2_j
     O_j = O_1_j + O_2_j
@@ -125,6 +125,7 @@ def lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings):
     
     if weightings == "peto":
         res[:, 0] = np.cumprod(res[:, 0])
+    # logrank = np.dot(res[:, 0], res[:, 1])**2 / np.dot(res[:, 0]*res[:, 0], res[:, 2])
     logrank = np.power((res[:, 0]*res[:, 1]).sum(), 2) / ((res[:, 0]*res[:, 0]*res[:, 2]).sum())
     return logrank
 
