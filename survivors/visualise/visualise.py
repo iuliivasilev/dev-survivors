@@ -54,16 +54,16 @@ def prepare_name(k, descript):
 def get_full_descr_sch(dict_sch, descript):
     res = ""
     ind = 0
-    for k,v in dict_sch.items():
-        ind+=1
-        # res += "СХЕМА " + str(ind) + ' (' + '  '.join(['КОЛ-ВО:'+str(v[0]),'ВЕРОЯТНОСТЬ СМЕРТИ:'+str(v[2]),'СРЕДНЯЯ СУММА:'+str(v[3])]) + ')\n'
-        res += "СХЕМА " + str(ind) + ' (' + '  '.join(['КОЛ-ВО:'+str(v[0]),'ВЕРОЯТНОСТЬ СМЕРТИ:'+str(v[2])]) + ')\n'
+    for k, v in dict_sch.items():
+        ind += 1
+        # res += "СХЕМА " + str(ind) + ' (' + '  '.join(['КОЛ-ВО:'+str(v[0]), 'ВЕРОЯТНОСТЬ СМЕРТИ:'+str(v[2]), 'СРЕДНЯЯ СУММА:'+str(v[3])]) + ')\n'
+        res += "СХЕМА " + str(ind) + ' (' + '  '.join(['КОЛ-ВО:'+str(v[0]), 'ВЕРОЯТНОСТЬ СМЕРТИ:'+str(v[2])]) + ')\n'
         delete_shared = []
         tmp = k.split('*')
         for i, sch in enumerate(tmp):
             if '_'.join(tmp[:i] + tmp[i+1:]).find(sch) == -1:
                 delete_shared.append(sch)
-        res += '\n'.join([descript.get(name,name) for name in delete_shared])            
+        res += '\n'.join([descript.get(name, name) for name in delete_shared])
         res += '\n'
     return res
 
@@ -127,7 +127,7 @@ def visualize_all_sh_km(pred_dict, output_dir, name = None):
             #    if prob < 1.0:
             #    legends.append('Лечение завершено')            
             if name is None:
-                ax = kmf.plot_survival_function(ax=ax, censor_styles = {"marker":'o', "ms":6})#, show_censors = True)
+                ax = kmf.plot_survival_function(ax=ax, censor_styles = {"marker": 'o', "ms": 6})#, show_censors = True)
                 legends.append(descr)
             else:
                 pict_dict.append([prob, N, kmf, descr])# pict_dict.append([prob, SUM_M, N, kmf, descr])
