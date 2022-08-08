@@ -60,4 +60,4 @@ class BootstrapCRAID(BaseEnsemble):
         
         if self.tolerance:
             self.tolerance_find_best()
-        print('fitted:',len(self.models),'models.')
+        print(f"fitted: {len(self.models)} models.")

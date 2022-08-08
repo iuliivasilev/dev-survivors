@@ -93,12 +93,13 @@ class BaseEnsemble(object):
         self.models.append(model)
         self.oob.append(x_oob)
         if self.ens_metric_name == "conc":
-            self.list_pred_oob.append(model.predict(x_oob, target = cnt.TIME_NAME).to_frame())
+            tree_pred = pd.DataFrame(model.predict(x_oob, target=cnt.TIME_NAME), index=x_oob.index)
         elif self.ens_metric_name == "roc":
-            self.list_pred_oob.append(model.predict(x_oob, target = cnt.CENS_NAME).to_frame())
+            tree_pred = pd.DataFrame(model.predict(x_oob, target=cnt.CENS_NAME), index=x_oob.index)
         else:
-            pred_surv = pd.DataFrame(model.predict_at_times(x_oob, bins = self.bins, mode = "surv"), index = x_oob.index)
-            self.list_pred_oob.append(pred_surv.apply(lambda r: np.array(r), axis=1))
+            tree_pred = pd.DataFrame(model.predict_at_times(x_oob, bins=self.bins, mode="surv"), index=x_oob.index)
+            tree_pred = tree_pred.apply(lambda r: np.array(r), axis=1)
+        self.list_pred_oob.append(tree_pred)
     
     def select_model(self, start, end):
         self.models = self.models[start:end]
