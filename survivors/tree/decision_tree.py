@@ -279,7 +279,7 @@ class CRAID(object):
                 dot = self.nodes[i].set_dot_node(dot, path_dir=tmp_dir, **kwargs)
             for i in ordered_nodes:
                 dot = self.nodes[i].set_dot_edges(dot)
-            dot.render(path_dir + self.name + "_", view=False, format="png")
+            dot.render(os.path.join(path_dir, self.name), view=False, cleanup=True, format="png")
 
     def translate(self, describe):
         self.features = [describe.get(f, f) for f in self.features]

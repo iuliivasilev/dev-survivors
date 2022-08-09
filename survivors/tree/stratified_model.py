@@ -33,14 +33,18 @@ class LeafModel(object):
             return value
         return np.repeat(value, X.shape[0], axis=0)
 
-    def predict_survival_at_times(self, X, bins=None):
+    def predict_survival_at_times(self, X=None, bins=None):
         if bins is None:
             bins = self.default_bins
         sf = self.survival.survival_function_at_times(bins).to_numpy()
+        if X is None:
+            return sf
         return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
 
-    def predict_hazard_at_times(self, X, bins=None):
+    def predict_hazard_at_times(self, X=None, bins=None):
         if bins is None:
             bins = self.default_bins
         hf = self.survival.cumulative_hazard_at_times(bins).to_numpy()
+        if X is None:
+            return hf
         return np.repeat(hf[np.newaxis, :], X.shape[0], axis=0)

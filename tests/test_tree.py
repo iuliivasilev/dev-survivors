@@ -1,5 +1,7 @@
 import numpy as np
 import pytest
+import os
+import tempfile
 
 from survivors.datasets import load_pbc_dataset
 from survivors.experiments.grid import generate_sample
@@ -7,8 +9,6 @@ from survivors.experiments.grid import generate_sample
 from survivors.tree import CRAID
 from survivors.ensemble import BoostingCRAID
 
-from survivors.scheme import Scheme
-from survivors.scheme import FilledSchemeStrategy
 
 @pytest.fixture(scope="module")
 def pbs_samples():
@@ -73,9 +73,42 @@ def test_boosting(pbs_samples, params, n_obser, l_expected, boost_bettas):
     assert round(pred_surv[n_obser].mean(), 5) == l_expected[4]
 
 
+@pytest.mark.parametrize(
+    ("params", "mode", "size_expected"),
+    [({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}, "hist", 191784),
+     ({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05, "cut": True}, "surv", 282388),
+     ({"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "signif": 0.05}, "hist", 361978),
+     ({"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "signif": 0.05, "cut": True}, "surv", 381854),
+     ({"criterion": "peto", "depth": 5, "min_samples_leaf": 1, "signif": 0.05}, "hist", 628687),
+     ({"criterion": "peto", "depth": 5, "min_samples_leaf": 1, "signif": 0.05, "cut": True}, "surv", 685853)
+    ]
+)
+def test_tree_visualize(pbs_samples, params, mode, size_expected):
+    X_train, y_train, X_test, y_test, bins = pbs_samples
+    craid_tree = CRAID(**params)
+    craid_tree.fit(X_train, y_train)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        craid_tree.visualize(tmp_dir, mode=mode)
+        stat_result = os.stat(os.path.join(tmp_dir, os.listdir(tmp_dir)[0]))
+        assert stat_result.st_size == size_expected
+
+
+def test_tree_rules(pbs_samples):
+    params = {"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}
+    X_train, y_train, X_test, y_test, bins = pbs_samples
+    craid_tree = CRAID(**params)
+    craid_tree.fit(X_train, y_train)
+
+    x = craid_tree.predict(X_test, mode="rules")
+    a = np.array(np.unique(x, return_counts=True)).T
+    assert (a[0] == np.array(['((bili >= 2.25)| nan) & ((protime >= 11.55)| nan)', 12], dtype=object)).all()
+    assert (a[1] == np.array(['((bili >= 2.25)| nan) & (protime < 11.55)', 11], dtype=object)).all()
+    assert (a[2] == np.array(['(bili < 2.25) & ((age >= 62.905)| nan)', 6], dtype=object)).all()
+    assert (a[3] == np.array(['(bili < 2.25) & (age < 62.905)', 55], dtype=object)).all()
+
+
 def test_tree_scheme(pbs_samples):
     params = {"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}
-
     X_train, y_train, X_test, y_test, bins = pbs_samples
     craid_tree = CRAID(**params)
     craid_tree.fit(X_train, y_train)
