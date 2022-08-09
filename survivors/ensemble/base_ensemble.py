@@ -73,6 +73,9 @@ class BaseEnsemble(object):
         self.tolerance = tolerance
         self.tree_kwargs = tree_kwargs
         self.aggreg_func = aggreg_func
+        self.X_train = None
+        self.y_train = None
+        self.features = None
     
     def update_params(self):
         self.models = []

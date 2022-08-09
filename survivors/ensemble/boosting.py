@@ -6,7 +6,8 @@ from ..tree import CRAID
 from .. import constants as cnt
 from .base_ensemble import BaseEnsemble
 
-def loss_func(var, mode = 'linear'):
+
+def loss_func(var, mode='linear'):
     D = var.max()
     if mode == 'linear':
         return var/D
@@ -16,9 +17,10 @@ def loss_func(var, mode = 'linear'):
         return 1.0 - np.exp(-var/D)
     return None
 
-def count_weight(losses, mode = 'linear'):
-    li = loss_func(losses, mode = mode)
-    l_mean = li.mean() # (li * pred_wei).sum()/pred_wei.sum()
+
+def count_weight(losses, mode='linear'):
+    li = loss_func(losses, mode=mode)
+    l_mean = li.mean()  # (li * pred_wei).sum()/pred_wei.sum()
     betta = l_mean/(1.0 - l_mean)
     new_wei = betta ** (1 - li)
     return new_wei, betta
@@ -59,6 +61,7 @@ class BoostingCRAID(BaseEnsemble):
     def __init__(self, mode_wei = "linear", **kwargs):
         self.name = "BoostingCRAID"
         self.mode_wei = mode_wei
+        self.weights = None
         super().__init__(**kwargs)
         
     def fit(self, X, y):
@@ -71,7 +74,7 @@ class BoostingCRAID(BaseEnsemble):
         self.X_train["ind_start"] = self.X_train.index
         self.y_train = y
         
-        self.weights = np.ones(self.X_train.shape[0], dtype = float)
+        self.weights = np.ones(self.X_train.shape[0], dtype=float)
         self.bettas = []
         self.l_weights = []
         self.update_params()
@@ -119,13 +122,13 @@ class BoostingCRAID(BaseEnsemble):
     #     self.weights[self.X_train.index] *= wei_i
     
     def count_model_weights(self, model, X_sub, y_sub):
-        pred_surv = model.predict_at_times(X_sub, bins = self.bins, mode = "surv")
-        losses = metr.ibs(self.y_train, y_sub, pred_surv, self.bins, axis = 0)
-        wei, betta = count_weight(losses, mode = self.mode_wei)
+        pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
+        losses = metr.ibs(self.y_train, y_sub, pred_sf, self.bins, axis=0)
+        wei, betta = count_weight(losses, mode=self.mode_wei)
         return wei, betta
     
     def update_weight(self, index, wei_i):
-        self.weights[index] *= wei_i
+        self.weights[index] = (self.weights[index] * wei_i)
     
     def add_model(self, model, x_oob, wei_i, betta_i):
         self.bettas.append(betta_i)
@@ -153,9 +156,9 @@ class BoostingCRAID(BaseEnsemble):
 
         """
         if self.aggreg_func == 'median':
-            return np.median(x, axis = 0)
+            return np.median(x, axis=0)
         elif self.aggreg_func == 'wei':
             inv_wei = -1*np.log(self.bettas)
             wei = inv_wei/sum(inv_wei)
-            return np.sum((x.T*wei).T, axis = 0)
-        return np.mean(x, axis = 0)
+            return np.sum((x.T*wei).T, axis=0)
+        return np.mean(x, axis=0)
