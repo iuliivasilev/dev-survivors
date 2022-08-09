@@ -27,8 +27,10 @@ class LeafModel(object):
             return self.lists[feature_name]
         return None
 
-    def predict_mean_feature(self, X, feature_name):
-        value = self.features_mean[feature_name]
+    def predict_mean_feature(self, X=None, feature_name=None):
+        value = self.features_mean.get(feature_name)
+        if X is None:
+            return value
         return np.repeat(value, X.shape[0], axis=0)
 
     def predict_survival_at_times(self, X, bins=None):

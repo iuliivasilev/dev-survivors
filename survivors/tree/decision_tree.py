@@ -121,7 +121,7 @@ class CRAID(object):
 
         self.nodes[0] = Node(X_tr, features=self.features, categ=self.categ, **self.info)
         stack_nodes = np.array([0], dtype=int)
-        while (stack_nodes.shape[0] > 0):
+        while stack_nodes.shape[0] > 0:
             node = self.nodes[stack_nodes[0]]
             stack_nodes = stack_nodes[1:]
             if node.depth >= self.depth:
@@ -155,29 +155,6 @@ class CRAID(object):
         hazards = self.coxph.predict_cumulative_hazard_function(ohenc_node)
         pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
         return pred_haz
-
-    #     def predict(self, X, mode="target", target=cnt.TIME_NAME, end_list=[], bins=None):
-    #         X = format_to_pandas(X, self.features)
-    #         num_node_to_key = dict(zip(sorted(self.nodes.keys()), range(len(self.nodes))))
-    #         node_bin = np.zeros((X.shape[0], len(self.nodes)), dtype=bool)
-    #         node_bin[:, 0] = 1
-    #         X.loc[:, "res"] = np.nan
-    #         for i in sorted(self.nodes.keys()):
-    #             ind = np.where(node_bin[:, num_node_to_key[i]])[0]
-    #             ind_x = X.index[ind]
-    #             if ind.shape[0] > 0:
-    #                 if self.nodes[i].is_leaf or (i in end_list):
-    #                     if target == "surv" or target == "hazard":
-    #                         X.loc[ind_x, "res"] = self.nodes[i].predict(X.loc[ind_x, :], target, bins)
-    #                     elif mode == "target":
-    #                         X.loc[ind_x, "res"] = self.nodes[i].predict(X.loc[ind_x, :], target)
-    #                     elif mode == "rules":
-    #                         X.loc[ind_x, "res"] = " & ".join([s.to_str() for s in self.list_rules[i]])
-    #                 else:
-    #                     pred_edges = self.nodes[i].get_edges(X.loc[ind_x, :])
-    #                     for e in set(pred_edges):
-    #                         node_bin[ind, num_node_to_key[e]] = pred_edges == e
-    #         return X["res"]
 
     def predict(self, X, mode="target", target=cnt.TIME_NAME, end_list=[], bins=None):
         X = format_to_pandas(X, self.features)

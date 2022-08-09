@@ -7,6 +7,8 @@ from survivors.experiments.grid import generate_sample
 from survivors.tree import CRAID
 from survivors.ensemble import BoostingCRAID
 
+from survivors.scheme import Scheme
+from survivors.scheme import FilledSchemeStrategy
 
 @pytest.fixture(scope="module")
 def pbs_samples():
@@ -69,3 +71,49 @@ def test_boosting(pbs_samples, params, n_obser, l_expected, boost_bettas):
     assert round(pred_surv[n_obser][0], 5) == l_expected[2]
     assert round(pred_surv[n_obser][-1], 5) == l_expected[3]
     assert round(pred_surv[n_obser].mean(), 5) == l_expected[4]
+
+
+def test_tree_scheme(pbs_samples):
+    params = {"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}
+
+    X_train, y_train, X_test, y_test, bins = pbs_samples
+    craid_tree = CRAID(**params)
+    craid_tree.fit(X_train, y_train)
+
+    zero_feat_schemes = list(set(craid_tree.predict_schemes(X_test, [])))
+    assert len(zero_feat_schemes) == 4
+    zero_scheme_keys = [list(sch.schemes_dict.keys()) for sch in zero_feat_schemes]
+    assert ['((bili >= 2.25)| nan) & (protime < 11.55)'] in zero_scheme_keys
+    assert ['(bili < 2.25) & (age < 62.905)'] in zero_scheme_keys
+    assert ['((bili >= 2.25)| nan) & ((protime >= 11.55)| nan)'] in zero_scheme_keys
+    assert ['(bili < 2.25) & ((age >= 62.905)| nan)'] in zero_scheme_keys
+
+    one_feat_schemes = list(set(craid_tree.predict_schemes(X_test, ["bili"])))
+    assert len(one_feat_schemes) == 4
+    one_scheme_keys = [list(sch.schemes_dict.keys()) for sch in one_feat_schemes]
+    assert ['((bili >= 2.25)| nan) & (protime < 11.55)',
+            '(bili < 2.25) & (age < 62.905)'] in one_scheme_keys
+    assert ['((bili >= 2.25)| nan) & ((protime >= 11.55)| nan)',
+            '(bili < 2.25) & ((age >= 62.905)| nan)'] in one_scheme_keys
+    assert ['((bili >= 2.25)| nan) & ((protime >= 11.55)| nan)',
+            '(bili < 2.25) & (age < 62.905)'] in one_scheme_keys
+    assert ['((bili >= 2.25)| nan) & (protime < 11.55)',
+            '(bili < 2.25) & ((age >= 62.905)| nan)'] in one_scheme_keys
+
+    two_feat_schemes = list(set(craid_tree.predict_schemes(X_test, ["bili", "protime"])))
+    assert len(two_feat_schemes) == 2
+    two_scheme_keys = [list(sch.schemes_dict.keys()) for sch in two_feat_schemes]
+    assert ['((bili >= 2.25)| nan) & ((protime >= 11.55)| nan)',
+            '((bili >= 2.25)| nan) & (protime < 11.55)',
+            '(bili < 2.25) & ((age >= 62.905)| nan)'] in two_scheme_keys
+    assert ['((bili >= 2.25)| nan) & ((protime >= 11.55)| nan)',
+            '((bili >= 2.25)| nan) & (protime < 11.55)',
+            '(bili < 2.25) & (age < 62.905)'] in two_scheme_keys
+
+    three_feat_schemes = list(set(craid_tree.predict_schemes(X_test, ["bili", "protime", "age"])))
+    assert len(three_feat_schemes) == 1
+    three_scheme_keys = [list(sch.schemes_dict.keys()) for sch in three_feat_schemes]
+    assert ['((bili >= 2.25)| nan) & ((protime >= 11.55)| nan)',
+            '((bili >= 2.25)| nan) & (protime < 11.55)',
+            '(bili < 2.25) & ((age >= 62.905)| nan)',
+            '(bili < 2.25) & (age < 62.905)'] in three_scheme_keys
