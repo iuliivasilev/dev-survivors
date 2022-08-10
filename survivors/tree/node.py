@@ -45,9 +45,9 @@ class Rule(object):
 
 """ Класс вершины дерева решений """
 class Node(object):
-    __slots__ = ("df", "numb", "full_rule",
-                 "depth", "edges", "rule_edges", "features", "leaf_model",
-                 "categ", "woe", "is_leaf", "verbose", "info")
+    # __slots__ = ("df", "numb", "full_rule",
+    #              "depth", "edges", "rule_edges", "features", "leaf_model",
+    #              "categ", "woe", "is_leaf", "verbose", "info")
 
     def __init__(self, df,  numb=0, full_rule=[],
                  depth=0, features=[], categ=[], woe=False,
@@ -56,8 +56,8 @@ class Node(object):
         self.numb = numb
         self.full_rule = full_rule
         self.depth = depth
-        self.edges = np.array([], dtype = object)
-        self.rule_edges = np.array([], dtype = object)
+        self.edges = np.array([], dtype=object)
+        self.rule_edges = np.array([], dtype=object)
         self.features = features
         self.categ = categ
         self.woe = woe
@@ -104,8 +104,8 @@ class Node(object):
         return (attr, attrs[attr])
 
     def split(self):
-        node_edges = np.array([], dtype = object)
-        self.rule_edges = np.array([], dtype = object)
+        node_edges = np.array([], dtype=object)
+        self.rule_edges = np.array([], dtype=object)
 
         attr, best_split = self.find_best_split()
         # The best split is not significant
@@ -162,15 +162,12 @@ class Node(object):
 
     def predict(self, X, target, bins=None):
         res = np.full((X.shape[0]), np.nan, dtype=object)
-        if target == "surv" or target == "hazard":
-            if target == "surv":
-                res = self.leaf_model.predict_survival_at_times(X, bins)  # target(X_node=dataset)
-            else:
-                res = self.leaf_model.predict_hazard_at_times(X, bins)
-        elif target == "depth":
-            res = np.repeat(self.depth, X.shape[0], axis = 0)
-        elif target == "num_node":
-            res = np.repeat(self.numb, X.shape[0], axis = 0)
+        if target == "surv":
+            res = self.leaf_model.predict_survival_at_times(X, bins)  # target(X_node=dataset)
+        elif target == "hazard":
+            res = self.leaf_model.predict_hazard_at_times(X, bins)
+        elif target in self.__dict__:
+            res = np.repeat(getattr(self, target, np.nan), X.shape[0], axis=0)
         else:
             res = self.leaf_model.predict_mean_feature(X, target)  # np.mean(dataset[target])
         return res

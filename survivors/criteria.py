@@ -122,12 +122,13 @@ def lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings):
     res = np.zeros((times.shape[0], 3), dtype=np.float32)
     for j, t_j in enumerate(times):
         res[j] = coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings)
-    
+
     if weightings == "peto":
         res[:, 0] = np.cumprod(res[:, 0])
     # logrank = np.dot(res[:, 0], res[:, 1])**2 / np.dot(res[:, 0]*res[:, 0], res[:, 2])
     logrank = np.power((res[:, 0]*res[:, 1]).sum(), 2) / ((res[:, 0]*res[:, 0]*res[:, 2]).sum())
     return logrank
+
 
 def weight_lr_fast(dur_A, dur_B, cens_A = None, cens_B = None, weightings = ""):
     """

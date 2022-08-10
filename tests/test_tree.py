@@ -93,6 +93,25 @@ def test_tree_visualize(pbs_samples, params, mode, size_expected):
         assert stat_result.st_size == size_expected
 
 
+@pytest.mark.parametrize(
+    ("params", "depth_hist", "numb_hist"),
+    [({"criterion": "peto", "depth": 5, "min_samples_leaf": 3, "signif": 0.05},
+      np.array([4, 8, 0, 10, 62]), np.array([4, 8, 2, 8, 62])),
+     ({"criterion": "peto", "depth": 5, "min_samples_leaf": 3, "signif": 0.05, "cut": True},
+      np.array([24, 0, 0, 0, 60]), np.array([23, 1, 0, 0, 60])),
+    ]
+)
+def test_tree_predict_attr(pbs_samples, params, depth_hist, numb_hist):
+    X_train, y_train, X_test, y_test, bins = pbs_samples
+    craid_tree = CRAID(**params)
+    craid_tree.fit(X_train, y_train)
+
+    pred_depth = craid_tree.predict(X_test, target="depth")
+    pred_numb = craid_tree.predict(X_test, target="numb")
+    assert (np.histogram(pred_depth, bins=5)[0] == depth_hist).all()
+    assert (np.histogram(pred_numb, bins=5)[0] == numb_hist).all()
+
+
 def test_tree_rules(pbs_samples):
     params = {"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}
     X_train, y_train, X_test, y_test, bins = pbs_samples

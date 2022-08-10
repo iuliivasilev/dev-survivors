@@ -144,13 +144,13 @@ class CRAID(object):
     def fit_cox_hazard(self, X, y):
         self.coxph = CoxPHSurvivalAnalysis(alpha=0.1)
         self.ohenc = OneHotEncoder(handle_unknown='ignore')
-        pred_node = self.predict(X, mode="target", target="num_node").reshape(-1, 1)
+        pred_node = self.predict(X, mode="target", target="numb").reshape(-1, 1)
         ohenc_node = self.ohenc.fit_transform(pred_node).toarray()
         self.coxph.fit(ohenc_node, y)
 
     def predict_cox_hazard(self, X, bins):
         bins = np.clip(bins, self.bins.min(), self.bins.max())
-        pred_node = self.predict(X, mode="target", target="num_node").reshape(-1, 1)
+        pred_node = self.predict(X, mode="target", target="numb").reshape(-1, 1)
         ohenc_node = self.ohenc.transform(pred_node).toarray()
         hazards = self.coxph.predict_cumulative_hazard_function(ohenc_node)
         pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
