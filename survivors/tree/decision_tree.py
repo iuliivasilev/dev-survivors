@@ -23,6 +23,7 @@ sns.set()
 def format_to_pandas(X, columns):
     type_df = type(X)
     if type_df.__name__ == "DataFrame":
+        X = X.reset_index(drop=True)
         return X.loc[:, columns]
     elif type_df.__name__ == "ndarray":
         return pd.DataFrame(X, columns=columns)
@@ -164,7 +165,7 @@ class CRAID(object):
         shape = (X.shape[0])
         if not (bins is None):
             shape = (X.shape[0], len(bins))
-        res = np.full(shape, np.nan, dtype=object)
+        res = np.full(shape, np.nan, dtype=float)
         for i in sorted(self.nodes.keys()):
             ind = np.where(node_bin[:, num_node_to_key[i]])[0]
             ind_x = X.index[ind]

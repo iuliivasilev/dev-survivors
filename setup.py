@@ -27,7 +27,7 @@ def parse_requirements(filename):
 
 # New method (https://github.com/pypa/twine)
 # 1. pip install twine
-# 2. pip setup.py sdist (recently delete the dist folder)
+# 2. python setup.py sdist (recently delete the dist folder)
 # 3. (test) twine upload --skip-existing --repository-url https://test.pypi.org/legacy/ dist/* -u **** -p ****
 # 4. (release) twine upload --skip-existing --repository-url https://upload.pypi.org/legacy/ dist/* -u **** -p ****
 
@@ -50,7 +50,7 @@ requirements_list = [
 
 setup(
     name='survivors',
-    version='1.3.1',
+    version='1.4.2',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',
     packages=find_packages(),
