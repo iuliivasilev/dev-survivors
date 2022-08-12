@@ -165,7 +165,7 @@ class CRAID(object):
         shape = (X.shape[0])
         if not (bins is None):
             shape = (X.shape[0], len(bins))
-        res = np.full(shape, np.nan, dtype=float)
+        res = np.full(shape, np.nan, dtype=object)
         for i in sorted(self.nodes.keys()):
             ind = np.where(node_bin[:, num_node_to_key[i]])[0]
             ind_x = X.index[ind]
@@ -181,6 +181,8 @@ class CRAID(object):
                     pred_edges = self.nodes[i].get_edges(X.loc[ind_x, :])
                     for e in set(pred_edges):
                         node_bin[ind, num_node_to_key[e]] = pred_edges == e
+        if not(mode == "rules"):
+            res = res.astype(float)
         return res
 
     def predict_at_times(self, X, bins, mode="surv"):
@@ -297,7 +299,6 @@ class CRAID(object):
                          if np.intersect1d(self.nodes[i].edges, leafs).shape[0] == 2])
 
     def delete_leafs_by_span(self, list_span_leaf):
-        deleted_leafs = np.array([], dtype=int)
         for i in list_span_leaf:
             for e in self.nodes[i].edges:
                 del self.nodes[e]
