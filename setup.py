@@ -50,7 +50,7 @@ requirements_list = [
 
 setup(
     name='survivors',
-    version='1.4.2',
+    version='1.4.3',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',
     packages=find_packages(),

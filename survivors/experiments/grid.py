@@ -172,29 +172,29 @@ class Experiments(object):
     
     def run(self, X, y, dir_path=None, verbose=0):
         self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
-        
         for method, grid in zip(self.methods, self.methods_grid):
             cv_method = crossval_param(method, X, y, self.folds, self.metrics)
-            try:
-                for p in ParameterGrid(grid):
-                    start_time = time.time()
-                    cv_metr = cv_method(**p)
-                    full_time = time.time() - start_time
-                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                                 "PARAMS": str(p), "TIME": full_time}
-                    cv_metr = {m: cv_metr[:, i] for i, m in enumerate(self.metrics)}
-                    curr_dict.update(cv_metr)  # dict(zip(self.metrics, cv_metr))
-                    self.result_table = self.result_table.append(curr_dict, ignore_index=True)
-                    if verbose > 0:
-                        print("EXECUTION TIME OF %s: %s" % (method.__name__, full_time), 
-                              {k: np.mean(v) for k, v in cv_metr.items()})
-            except KeyboardInterrupt:
-                print("HANDELED KeyboardInterrupt")
-                break
-            except Exception as e:
-                print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                if self.except_stop == "all":
-                    break
+            # try:
+            print(method, grid)
+            for p in ParameterGrid(grid):
+                start_time = time.time()
+                cv_metr = cv_method(**p)
+                full_time = time.time() - start_time
+                curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
+                             "PARAMS": str(p), "TIME": full_time}
+                cv_metr = {m: cv_metr[:, i] for i, m in enumerate(self.metrics)}
+                curr_dict.update(cv_metr)  # dict(zip(self.metrics, cv_metr))
+                self.result_table = self.result_table.append(curr_dict, ignore_index=True)
+                if verbose > 0:
+                    print("EXECUTION TIME OF %s: %s" % (method.__name__, full_time),
+                          {k: np.mean(v) for k, v in cv_metr.items()})
+            # except KeyboardInterrupt:
+            #     print("HANDELED KeyboardInterrupt")
+            #     break
+            # except Exception as e:
+            #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
+            #     if self.except_stop == "all":
+            #         break
         for m in self.metrics:
             self.result_table["%s_mean" % (m)] = self.result_table[m].apply(np.mean)
         self.is_table = True
@@ -205,7 +205,7 @@ class Experiments(object):
     def get_result(self):
         return self.result_table
     
-    def get_best_results(self, by_metric, choose = "max"):
+    def get_best_results(self, by_metric, choose="max"):
         if not(by_metric in self.metrics):
             return None
         

@@ -21,7 +21,7 @@ def power_set_nonover(s):
         Contain pairs of nonoverlapping subsets of s elements
 
     """
-    a = np.array(list(chain.from_iterable(combinations(s, r) for r in range(len(s)+1))))
+    a = np.array(list(chain.from_iterable(combinations(s, r) for r in range(len(s)+1))), dtype=object)
     a = np.vstack([a[:int(a.shape[0]/2)], a[int(a.shape[0]/2):][::-1]]).T
     return a
 
