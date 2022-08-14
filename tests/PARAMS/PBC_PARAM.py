@@ -4,8 +4,8 @@ CRAID_param_grid = {
     "depth": [10, 15],
     "criterion": ["peto"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [5] if short else [5],
-    'cut' : [True, False],
-    "woe" : [False], #if short else [True, False], 
+    'cut': [True, False],
+    "woe": [False], #if short else [True, False],
     "signif": [0.05] if short else [0.05, 0.1],
     "max_features": [1.0]
 }

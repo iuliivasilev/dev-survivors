@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import os
+import pytest
 
 from sksurv.linear_model import CoxPHSurvivalAnalysis
 from sksurv.tree import SurvivalTree
@@ -75,7 +77,7 @@ GBSA_param_grid = {
 
 def get_best_by_full_name(df_full, by_metric="IAUC", choose="max"):
     df = df_full.copy()
-    df['METHOD'] = df.apply(lambda x: x["METHOD"].replace("CRAID", "Tree(%s)" % (x['CRIT'])), axis=1)
+    df["METHOD"] = df.apply(lambda x: x["METHOD"].replace("CRAID", f"Tree({x['CRIT']})"), axis=1)
     if not (by_metric in df.columns):
         return None
     best_table = pd.DataFrame([], columns=df.columns)
@@ -91,9 +93,9 @@ def get_best_by_full_name(df_full, by_metric="IAUC", choose="max"):
     return best_table
 
 
-def plot_results(df_full, dir_path=None, metrics=[],
-                 dataset_name="", all_best=False,
-                 by_metric="IAUC", choose="max"):
+def plot_boxplot_results(df_full, dir_path=None, metrics=[],
+                         dataset_name="", all_best=False,
+                         by_metric="IAUC", choose="max"):
     if not (all_best):
         df_ = get_best_by_full_name(df_full, by_metric, choose)
     for m in metrics:
@@ -102,12 +104,12 @@ def plot_results(df_full, dir_path=None, metrics=[],
         plt.rcParams.update({'font.size': 15})
         fig, axs = plt.subplots(1, figsize=(8, 8))
 
-        plt.title("%s %s" % (dataset_name, m))
+        plt.title(f"{dataset_name} {m}")
         plt.boxplot(df_[m][::-1], labels=df_['METHOD'][::-1], showmeans=True, vert=False)
         if dir_path is None:
             plt.show()
         else:
-            plt.savefig(dir_path + dataset_name + "%s_boxplot.png" % (m))
+            plt.savefig(dir_path + f"{dataset_name}_{m}_boxplot.png")
             plt.close(fig)
 
 
@@ -122,8 +124,8 @@ def import_tables(dirs):
     return df
 
 
-def run(dataset='GBSG', with_self=["TREE", "BSTR", "BOOST"],
-        with_external=True, except_stop="all", dir_path="./experiment_results/"):
+def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
+        with_external=True, except_stop="all", dir_path=None):
     """
     Conduct experiments for defined dataset and methods (self and external)
 
@@ -161,6 +163,8 @@ def run(dataset='GBSG', with_self=["TREE", "BSTR", "BOOST"],
     df_full, df_best = run()
 
     """
+    if dir_path is None:
+        dir_path = os.getcwd() + "\\"
     lst_metrics = ["CI", "CI_CENS", "IBS", "IAUC"]
     if not (dataset in DATASETS_LOAD):
         print("DATASET %s IS NOT DEFINED" % (dataset))
@@ -180,9 +184,22 @@ def run(dataset='GBSG', with_self=["TREE", "BSTR", "BOOST"],
     return experim
 
 
-def test_gbsg():
-    gbsg_exp = run("GBSG", with_self=["TREE", "BSTR", "BOOST"], with_external=False)
-    df_gbsg = gbsg_exp.get_result()
-    df_gbsg_best = get_best_by_full_name(df_gbsg, by_metric="IBS", choose="min")
-    df_gbsg_fin = df_gbsg_best.loc[:, ["METHOD", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
-    df_gbsg_fin.to_excel('./table_gbsg_res.xlsx', index=False)
+@pytest.fixture(scope="module")
+def dir_path():
+    return os.path.join(os.getcwd(), "experiment_results")
+
+
+@pytest.mark.parametrize(
+    "dataset", ["PBC"]  # ["GBSG", "PBC", "Wuhan"]
+)
+def test_dataset_exp(dir_path, dataset):
+    res_exp = run(dataset, with_self=["TREE", "BSTR", "BOOST"], with_external=False, dir_path=dir_path+"\\")
+    df_full = res_exp.get_result()
+    df_best_by_metric = get_best_by_full_name(df_full, by_metric="IBS", choose="min")
+    df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
+
+    df_full.to_excel(os.path.join(dir_path, f"table_{dataset}_full.xlsx"), index=False)
+    df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"table_{dataset}_best.xlsx"), index=False)
+    plot_boxplot_results(df_full, dir_path=dir_path,
+                         metrics=["IBS", "IAUC", "CI"],
+                         dataset_name=dataset)
