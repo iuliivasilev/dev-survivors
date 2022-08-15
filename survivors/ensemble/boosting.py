@@ -58,7 +58,7 @@ class BoostingCRAID(BaseEnsemble):
             //ICML. – 1997. – Т. 97. – С. 107-115.
     
     """
-    def __init__(self, mode_wei = "linear", **kwargs):
+    def __init__(self, mode_wei="linear", **kwargs):
         self.name = "BoostingCRAID"
         self.mode_wei = mode_wei
         self.weights = None
@@ -80,7 +80,7 @@ class BoostingCRAID(BaseEnsemble):
         self.update_params()
         
         for i in range(self.n_estimators):
-            x_sub = self.X_train.sample(n = self.size_sample, weights = self.weights, 
+            x_sub = self.X_train.sample(n=self.size_sample, weights=self.weights,
                                         replace=self.bootstrap, random_state=i)
             x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index),:]
             
@@ -88,7 +88,7 @@ class BoostingCRAID(BaseEnsemble):
             X_sub_tr, y_sub_tr = cnt.pd_to_xy(x_sub)
             # X_sub_tr = X_sub_tr.drop('ind_start', axis = 1)
             
-            model = CRAID(features = self.features, random_state = i, **self.tree_kwargs)
+            model = CRAID(features=self.features, random_state=i, **self.tree_kwargs)
             model.fit(X_sub_tr, y_sub_tr)
             
             wei_i, betta_i = self.count_model_weights(model, X_sub_tr, y_sub_tr)
@@ -105,7 +105,7 @@ class BoostingCRAID(BaseEnsemble):
                 else:
                     stop = self.ens_metr[i-1] > self.ens_metr[i]
                 if stop:
-                    self.select_model(0,len(self.models)-1)
+                    self.select_model(0, len(self.models)-1)
                     break
         
         if self.tolerance:

@@ -7,6 +7,7 @@ from .. import metrics as metr
 from ..tree import CRAID
 from .. import constants as cnt
 
+
 class BaseEnsemble(object):
     """
     Base ensemble of survival decision tree.
@@ -56,13 +57,13 @@ class BaseEnsemble(object):
     score_oob : calculate metric "ens_metric_name" for ensemble
     
     """
-    def __init__(self, size_sample = 0.7,
-                 n_estimators = 10,
-                 aggreg = True,
-                 ens_metric_name = "roc",
-                 bootstrap = True,
-                 tolerance = True,
-                 aggreg_func = "mean",
+    def __init__(self, size_sample=0.7,
+                 n_estimators=10,
+                 aggreg=True,
+                 ens_metric_name="roc",
+                 bootstrap=True,
+                 tolerance=True,
+                 aggreg_func="mean",
                  **tree_kwargs):
         self.size_sample = size_sample
         self.n_estimators = n_estimators
@@ -85,8 +86,8 @@ class BaseEnsemble(object):
         
         if self.size_sample < 1.0:
             self.size_sample = int(self.size_sample*self.X_train.shape[0])
-        self.bins = cnt.get_bins(time = self.y_train[cnt.TIME_NAME], 
-                                 cens = self.y_train[cnt.CENS_NAME])
+        self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
+                                 cens=self.y_train[cnt.CENS_NAME])
         cnt.set_seed(10)
     
     def fit(self):
@@ -114,27 +115,27 @@ class BaseEnsemble(object):
             max_index = np.argmin(self.ens_metr)
         else:
             max_index = np.argmax(self.ens_metr)
-        self.select_model(0,max_index+1)
+        self.select_model(0, max_index+1)
         print(self.ens_metr)
     
     def get_aggreg(self, x):
-        if self.aggreg_func == 'median':
-            return np.median(x, axis = 0)
+        if self.aggreg_func == "median":
+            return np.median(x, axis=0)
         elif self.aggreg_func == "mean":
-            return np.mean(x, axis = 0)
+            return np.mean(x, axis=0)
         return None
     
-    def predict_at_times(self, x_test, bins, aggreg = True, mode = "surv"):
+    def predict_at_times(self, x_test, bins, aggreg=True, mode="surv"):
         res = []
         for i in range(len(self.models)):
-            res.append(self.models[i].predict_at_times(x_test, bins = bins, 
-                                                       mode = mode)[np.newaxis, :])
+            res.append(self.models[i].predict_at_times(x_test, bins=bins,
+                                                       mode=mode)[np.newaxis, :])
         res = np.vstack(res)
         if aggreg:
             res = self.get_aggreg(res)
         return res
     
-    def predict(self, x_test, aggreg = True, **kwargs):
+    def predict(self, x_test, aggreg=True, **kwargs):
         res = []
         for i in range(len(self.models)):
             res.append(self.models[i].predict(x_test, **kwargs))
@@ -157,32 +158,32 @@ class BaseEnsemble(object):
         for i in range(len(self.models)):
             X_v = self.oob[i]
             if self.ens_metric_name == "conc":
-                pred = self.models[i].predict(X_v, target = cnt.TIME_NAME)
+                pred = self.models[i].predict(X_v, target=cnt.TIME_NAME)
                 score = concordance_index(X_v[cnt.TIME_NAME], pred)
             else:
-                pred = self.models[i].predict_at_times(X_v, bins = self.bins, mode = "surv")
+                pred = self.models[i].predict_at_times(X_v, bins=self.bins, mode="surv")
                 y_true = cnt.get_y(X_v[cnt.CENS_NAME], X_v[cnt.TIME_NAME])
                 score = metr.ibs(self.y_train, y_true, pred, self.bins)
             scores = np.append(scores, score)
         return np.round(np.mean(scores), 4)
         
-    def aggregate_score_selfoob(self, bins = None):
+    def aggregate_score_selfoob(self, bins=None):
         if self.ens_metric_name in ["conc", "ibs"]:
             list_target_time = [oob_[cnt.TIME_NAME].to_frame() for oob_ in self.oob]
-            target_time = pd.concat(list_target_time, axis=1).mean(axis = 1)
+            target_time = pd.concat(list_target_time, axis=1).mean(axis=1)
             
         if self.ens_metric_name in ["roc", "ibs"]:
             list_target_cens = [oob_[cnt.CENS_NAME].to_frame() for oob_ in self.oob]
-            target_cens = pd.concat(list_target_cens, axis=1).mean(axis = 1)
+            target_cens = pd.concat(list_target_cens, axis=1).mean(axis=1)
             
         if self.ens_metric_name in ["conc", "roc"]:
-            pred = pd.concat(self.list_pred_oob, axis=1).mean(axis = 1)
+            pred = pd.concat(self.list_pred_oob, axis=1).mean(axis=1)
             if self.ens_metric_name == "conc":
                 return concordance_index(target_time, pred)
             return roc_auc_score(target_cens, pred)
         
         if self.ens_metric_name == "ibs":
-            pred = pd.concat(self.list_pred_oob, axis=1).apply(lambda r: r.mean(axis = 0),axis = 1)
+            pred = pd.concat(self.list_pred_oob, axis=1).apply(lambda r: r.mean(axis=0), axis=1)
             pred = np.array(pred.to_list())
             y_true = cnt.get_y(target_cens, target_time)
             return metr.ibs(self.y_train, y_true, pred, self.bins)

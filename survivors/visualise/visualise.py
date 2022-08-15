@@ -209,7 +209,7 @@ def check_correct_list(pred_dict, join = False):
         # df = pd.DataFrame(pred_dict[i][3]) #TODO
         df['cDeath'] = pred_dict[i][0]
         df['dDeath'] = pred_dict[i][1]
-        # df['SUM_M'] = pred_dict[i][2] #TODO
+        # df['SUM_M'] = pred_dict[i][2]  # TODO
         base[i] = df
     if not join:
         return base

@@ -7,7 +7,7 @@ from lifelines import CoxPHFitter
 # import fastlogranktest as flr
 from numba import njit, jit
 
-### Interface functions
+# Interface functions
 def logrank(durations_A, durations_B, event_observed_A=None, event_observed_B=None):
     return weight_lr_fast(durations_A, durations_B, event_observed_A, event_observed_B)
 
@@ -121,7 +121,7 @@ def iterate_coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings):
 def iterate_lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings):
     res = np.zeros((times.shape[0], 3), dtype=np.float32)
     for j, t_j in enumerate(times):
-        res[j] = coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings)
+        res[j] = iterate_coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings)
 
     if weightings == "peto":
         res[:, 0] = np.cumprod(res[:, 0])

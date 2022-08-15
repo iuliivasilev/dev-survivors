@@ -109,7 +109,7 @@ def plot_boxplot_results(df_full, dir_path=None, metrics=[],
         if dir_path is None:
             plt.show()
         else:
-            plt.savefig(dir_path + f"{dataset_name}_{m}_boxplot.png")
+            plt.savefig(os.path.join(dir_path, f"{dataset_name}_{m}_boxplot.png"))
             plt.close(fig)
 
 
@@ -189,6 +189,7 @@ def dir_path():
     return os.path.join(os.getcwd(), "experiment_results")
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
     "dataset", ["PBC"]  # ["GBSG", "PBC", "Wuhan"]
 )

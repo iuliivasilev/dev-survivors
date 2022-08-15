@@ -6,6 +6,7 @@ from ..tree import CRAID
 from .. import constants as cnt
 from .base_ensemble import BaseEnsemble
 
+
 class BootstrapCRAID(BaseEnsemble):
     """
     Bootstrap aggregation (Bagging) ensemble of survival decision tree.
@@ -37,13 +38,13 @@ class BootstrapCRAID(BaseEnsemble):
         self.update_params()
         
         for i in range(self.n_estimators):
-            x_sub = self.X_train.sample(n = self.size_sample, replace=self.bootstrap, random_state=i)
-            x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index),:]
+            x_sub = self.X_train.sample(n=self.size_sample, replace=self.bootstrap, random_state=i)
+            x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index), :]
             
             x_sub = x_sub.reset_index(drop=True)
             X_sub_tr, y_sub_cr = cnt.pd_to_xy(x_sub)
             
-            model = CRAID(features = self.features, random_state = i, **self.tree_kwargs)
+            model = CRAID(features=self.features, random_state=i, **self.tree_kwargs)
             model.fit(X_sub_tr, y_sub_cr)         
 
             self.add_model(model, x_oob)
@@ -55,7 +56,7 @@ class BootstrapCRAID(BaseEnsemble):
                 else:
                     stop = self.ens_metr[i-1] > self.ens_metr[i]
                 if stop:
-                    self.select_model(0,len(self.models)-1)
+                    self.select_model(0, len(self.models)-1)
                     break
         
         if self.tolerance:
