@@ -7,7 +7,8 @@ CRAID_param_grid = {
     'cut': [True, False],
     "woe": [False], #if short else [True, False],
     "signif": [0.05] if short else [0.05, 0.1],
-    "max_features": [1.0]
+    "max_features": [1.0],
+    "n_jobs": [8]
 }
 
 BSTR_param_grid = {
@@ -43,7 +44,7 @@ BOOST_param_grid = {
     "min_samples_leaf": [1] if short else [1, 5, 15],
     "mode_wei": ['square', 'exp'] if short else ['square', 'exp'],
     "n_estimators": [15] if short else [10, 15, 25],
-    "size_sample": [0.5] if short else [0.5, 0.7],
+    "size_sample": [0.5] if short else [0.5, 0.7]
     # "woe" : [],
 }
 
