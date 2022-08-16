@@ -7,12 +7,12 @@ from os.path import dirname, join
 from ..constants import TIME_NAME, CENS_NAME, get_y
 random.seed(10)
 
-sign_gbsg = ['htreat','age','menostat','tumsize','tumgrad','posnodal','prm','esm']
+sign_gbsg = ['htreat', 'age', 'menostat', 'tumsize', 'tumgrad', 'posnodal', 'prm', 'esm']
 categ_gbsg = ['htreat', 'menostat', 'tumgrad']
 
-sign_pbc = ['trt','age', 'sex', 'ascites','hepato', 'spiders', 'edema', 'bili', 'chol', 
+sign_pbc = ['trt', 'age', 'sex', 'ascites', 'hepato', 'spiders', 'edema', 'bili', 'chol',
             'albumin', 'copper', 'alk', 'ast', 'trig', 'platelet', 'protime', 'stage']
-categ_pbc = ['trt', 'sex', 'ascites','hepato', 'spiders']
+categ_pbc = ['trt', 'sex', 'ascites', 'hepato', 'spiders']
 
 def save_pickle(obj, path):
     file_pi = open(path, 'wb') 
