@@ -5,10 +5,10 @@ CRAID_param_grid = {
     "criterion": ["peto"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [5] if short else [5],
     'cut': [True, False],
-    "woe": [False], #if short else [True, False],
+    "woe": [False],  # if short else [True, False],
     "signif": [0.05] if short else [0.05, 0.1],
     "max_features": [1.0],
-    "n_jobs": [8]
+    # "n_jobs": [8]
 }
 
 BSTR_param_grid = {
