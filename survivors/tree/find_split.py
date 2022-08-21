@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+from scipy import stats
 from itertools import chain, combinations
 from .. import criteria as scrit 
 
@@ -24,6 +25,7 @@ def power_set_nonover(s):
     a = np.array(list(chain.from_iterable(combinations(s, r) for r in range(len(s)+1))), dtype=object)
     a = np.vstack([a[:int(a.shape[0]/2)], a[int(a.shape[0]/2):][::-1]]).T
     return a
+
 
 def transform_woe(x_feat, y):
     """
@@ -53,7 +55,7 @@ def transform_woe(x_feat, y):
     N_D = y.sum()
     N_D_ = N_T - y.sum()
 
-    df_woe_iv = pd.crosstab(a[:, 0],a[:, 1])
+    df_woe_iv = pd.crosstab(a[:, 0], a[:, 1])
     all_0 = df_woe_iv[0].sum()
     all_1 = df_woe_iv[1].sum()
 
@@ -75,8 +77,8 @@ def transform_woe(x_feat, y):
 def optimal_criter_split(arr_nan, left, right, criterion):
     """
     Define best split according to criterion (depends on nan allocation).
-    Nan values add into turn branches (left and right), count all p-values.
-    Choose minimal p-value and nan's allocation
+    Nan values add into turn branches (left and right), count all statistical values.
+    Choose maximal statistical value and nan's allocation
 
     Parameters
     ----------
@@ -91,8 +93,8 @@ def optimal_criter_split(arr_nan, left, right, criterion):
 
     Returns
     -------
-    min_p_val : float
-        P-value of best split.
+    max_stat_val : float
+        Statistical value of best split.
     none_to : int
         Number of branch for nan allocation (default 0)
         0 : to left branch
@@ -100,28 +102,28 @@ def optimal_criter_split(arr_nan, left, right, criterion):
 
     """
     none_to = 0
-    min_p_val = 1.0
+    max_stat_val = 1.0
     if arr_nan.shape[1] > 0:
         left_and_nan = np.hstack([left, arr_nan])
         right_and_nan = np.hstack([right, arr_nan])
         a = criterion(left_and_nan[1], right[1], left_and_nan[0], right[0])
         b = criterion(left[1], right_and_nan[1], left[0], right_and_nan[0])
-        # Nans move to a leaf with less p-value
-        none_to = int(a > b)
-        min_p_val = min(a, b)
+        # Nans move to a leaf with maximal statistical value
+        none_to = int(a < b)
+        max_stat_val = max(a, b)
     else:
-        min_p_val = criterion(left[1], right[1], left[0], right[0])
-    return (min_p_val, none_to)
+        max_stat_val = criterion(left[1], right[1], left[0], right[0])
+    return (max_stat_val, none_to)
 
 
-def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
+def get_attrs(max_stat_val, values, none_to, l_sh, r_sh, nan_sh):
     """
     Create dictionary of best split.
 
     Parameters
     ----------
-    min_p_value : float
-        P-value of best split.
+    max_stat_val : float
+        Statistical value of best split.
     values : object
         Splitting value (can be single number or list).
     none_to : int
@@ -137,14 +139,14 @@ def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
     -------
     attrs : dict
         Contain fields about best split.
-        p_value : minimal p-value
+        stat_val : maximal statistic value
         values : splitting value
         pos_nan : list of binary values of allocation nans
         min_split : minimal size of branch
 
     """
     attrs = dict()
-    attrs["p_value"] = min_p_value
+    attrs["stat_val"] = max_stat_val
     attrs["values"] = values
     if none_to:
         attrs["pos_nan"] = [0, 1]
@@ -156,11 +158,11 @@ def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
 
 
 def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, 
-                   signif, thres_cont_bin_max):
+                   signif_val, thres_cont_bin_max):
     """
     Find best split for continious feature.
     Consider all intermiate points of values (with quantile discretization).
-    For each points define two branches and count p-value.
+    For each points define two branches and count statistical values.
     Insignificant and too small splits aren't considered. 
 
     Parameters
@@ -175,7 +177,7 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
         Minimal acceptable size of branches.
     criterion : function
         Weighted log-rank criteria.
-    signif : float
+    signif_val : float
         Minimal acceptable significance of split.
     thres_cont_bin_max : int
         Maximal quantitive of intermiate points.
@@ -199,19 +201,19 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
         right = arr_notnan[1:, np.where(~ind)[0]].astype(np.int32)
         if min(left.shape[1], right.shape[1]) <= min_samples_leaf:
             continue
-        min_p_value, none_to = optimal_criter_split(arr_nan, left, right, criterion)
-        if min_p_value <= signif:
-            attr_loc = get_attrs(min_p_value, value, none_to, 
+        max_stat_val, none_to = optimal_criter_split(arr_nan, left, right, criterion)
+        if max_stat_val >= signif_val:
+            attr_loc = get_attrs(max_stat_val, value, none_to,
                                  left.shape[1], right.shape[1], arr_nan.shape[1])
             attr_dicts.append(attr_loc)
     return attr_dicts
 
 
-def get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif):
+def get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif_val):
     """
     Find best split for categorical feature.
     Consider all nonoverlapping subsets of uniq elements.
-    For each subset define branche and count p-value.
+    For each subset define branche and count statistical value.
     Insignificant and too small splits aren't considered. 
 
     Parameters
@@ -226,7 +228,7 @@ def get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, 
         Minimal acceptable size of branches.
     criterion : function
         Weighted log-rank criteria.
-    signif : float
+    signif_val : float
         Minimal acceptable significance of split.
 
     Returns
@@ -242,9 +244,9 @@ def get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, 
         right = arr_notnan[1:, np.isin(arr_notnan[0], r)].astype(np.int32)
         if min(left.shape[1], right.shape[1]) <= min_samples_leaf:
             continue
-        min_p_value, none_to = optimal_criter_split(arr_nan, left, right, criterion)
-        if min_p_value <= signif:
-            attr_loc = get_attrs(min_p_value, [list(l), list(r)], none_to,
+        max_stat_val, none_to = optimal_criter_split(arr_nan, left, right, criterion)
+        if max_stat_val >= signif_val:
+            attr_loc = get_attrs(max_stat_val, [list(l), list(r)], none_to,
                                  left.shape[1], right.shape[1], arr_nan.shape[1])
             attr_dicts.append(attr_loc)
     return attr_dicts
@@ -254,7 +256,7 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
                     signif=1.0, min_samples_leaf=10, bonf=True, verbose=0, **kwargs):
     """
     Choose best split for fixed feature.
-    Find best splits and choose partition with minimal p-value.
+    Find best splits and choose partition with maximal statistical value.
 
     Parameters
     ----------
@@ -271,7 +273,7 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     thres_cont_bin_max : int, optional
         Maximal quantitive of intermiate points.
     signif : TYPE, optional
-        Minimal acceptable significance of split. The default is 1.0.
+        Maximal acceptable significance p-value of split. The default is 1.0.
     min_samples_leaf : TYPE, optional
         Minimal acceptable size of branches. The default is 10.
     bonf : boolean, optional
@@ -285,6 +287,7 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     -------
     best_attr : dict
         Contain fields about best split.
+        stat_val : maximal statistical value
         p_value : minimal p-value
         values : list of splitting rules
         pos_nan : list of binary values of allocation nans
@@ -294,8 +297,9 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     """
     if criterion in scrit.CRITERIA_DICT:
         criterion = scrit.CRITERIA_DICT[criterion]
-        
-    best_attr = {"p_value": signif, "sign_split": 0,
+
+    signif_val = stats.chi2.isf(min(signif, 1.0), df=1)
+    best_attr = {"stat_val": signif_val, "p_value": signif, "sign_split": 0,
                   "values": [], "pos_nan": [1, 0]}
     attr_dicts = [best_attr]
     # The leaf is too small for split
@@ -310,13 +314,14 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     uniq_set = np.unique(arr_notnan[0])
     
     if type_attr == "categ" and uniq_set.shape[0] > 0:
-        attr_dicts = get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif)
+        attr_dicts = get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif_val)
     else:
-        attr_dicts = get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif, thres_cont_bin_max)
+        attr_dicts = get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif_val, thres_cont_bin_max)
     
     if len(attr_dicts) == 0:
         return best_attr
-    best_attr = min(attr_dicts, key=lambda x: x["p_value"])
+    best_attr = max(attr_dicts, key=lambda x: x["stat_val"])
+    best_attr["p_value"] = stats.chi2.sf(best_attr["stat_val"], df=1)
     best_attr["sign_split"] = len(attr_dicts)
     if best_attr["sign_split"] > 0:
         if type_attr == "cont":
@@ -328,7 +333,6 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
             ind = descr_np[1] >= best_attr["values"]
             l, r = list(descr_np[0, np.where(ind)[0]]), list(descr_np[0, np.where(~ind)[0]])
             best_attr["values"] = [' in %s' % (e) for e in [l, r]]
-        # Bonferroni adjustment
         if bonf:
             best_attr["p_value"] *= best_attr["sign_split"]
         if verbose > 0:

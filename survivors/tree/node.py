@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 from graphviz import Digraph
 from joblib import Parallel, delayed
 
@@ -85,8 +86,8 @@ class Node(object):
         numb_feats = self.info["max_features"]
         numb_feats = np.clip(numb_feats, 1, len(self.features))
         n_jobs = min(numb_feats, self.info["n_jobs"])
-        selected_feats = np.random.choice(self.features, size=numb_feats, replace=False)
 
+        selected_feats = np.random.choice(self.features, size=numb_feats, replace=False)
         args = np.array([])
         for feat in selected_feats:
             t = self.info.copy()
@@ -94,11 +95,12 @@ class Node(object):
             t["arr"] = self.df.loc[:, [feat, cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
             args = np.append(args, t)
         # ml = np.vectorize(lambda x: best_attr_split(**x))(args)
-        with Parallel(n_jobs=n_jobs, verbose=0, batch_size=5) as parallel:
+
+        with Parallel(n_jobs=n_jobs, verbose=0, batch_size=10) as parallel:  # prefer="threads"
             ml = parallel(delayed(best_attr_split)(**a) for a in args)
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
-        attr = min(attrs, key=lambda x: attrs[x]["p_value"])
 
+        attr = min(attrs, key=lambda x: attrs[x]["p_value"])
         if attrs[attr]["sign_split"] > 0 and self.info["bonf"]:
             attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
         return (attr, attrs[attr])

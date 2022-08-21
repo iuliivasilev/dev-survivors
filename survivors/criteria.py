@@ -216,8 +216,10 @@ def weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""):
 
     Returns
     -------
-    p-value : float
-        Chi2 p-value of weighted log-rank test
+    logrank : float
+        Chi2 statistic value of weighted log-rank test
+    # p-value : float
+    #     Chi2 p-value of weighted log-rank test
 
     """
     try:
@@ -237,7 +239,11 @@ def weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""):
                                cens_B.astype("int64"),
                                times_range.astype("int64"),
                                np.int64(weightings))
-        pvalue = stats.chi2.sf(logrank, df=1)
-        return pvalue
+        return logrank
     except:
-        return 1.0
+        return 0.0
+
+    #     pvalue = stats.chi2.sf(logrank, df=1)
+    #     return pvalue
+    # except:
+    #     return 1.0

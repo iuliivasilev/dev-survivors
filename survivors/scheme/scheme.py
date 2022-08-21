@@ -2,6 +2,7 @@ import numpy as np
 import random
 from .. import metrics as metr
 from .. import criteria as scrit
+from scipy import stats
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -79,7 +80,8 @@ class FilledSchemeStrategy(object):
                     diff_dict[l1 + '#' + l2] = scrit.logrank(base[l1].times, base[l2].times, base[l1].cens,
                                                              base[l2].cens)
         while len(base) > 1:
-            max_pair_key, max_p_val = max(diff_dict.items(), key=lambda x: x[1])
+            max_pair_key, min_stat_val = min(diff_dict.items(), key=lambda x: x[1])
+            max_p_val = stats.chi2.sf(min_stat_val, df=1)
             print('Максимальное P-value:', max_p_val)
             if max_p_val < sign_thres:
                 break
