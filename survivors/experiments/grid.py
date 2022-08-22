@@ -102,8 +102,8 @@ def crossval_param(method, X, y, folds, metrics_names=['CI']):
                 pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
                 pred_time = -1*est.predict(X_test)
             
-            metr_lst.append(np.array([metr.METRIC_DICT[metr_name](y_train, y_test, 
-                                                        pred_time, pred_surv, pred_haz, bins)
+            metr_lst.append(np.array([metr.METRIC_DICT[metr_name](y_train, y_test,
+                                      pred_time, pred_surv, pred_haz, bins)
                                       for metr_name in metrics_names]))
         return np.vstack(metr_lst)
     return f
