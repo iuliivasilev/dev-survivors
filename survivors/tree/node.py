@@ -49,7 +49,62 @@ class Node(object):
     # __slots__ = ("df", "numb", "full_rule",
     #              "depth", "edges", "rule_edges", "features", "leaf_model",
     #              "categ", "woe", "is_leaf", "verbose", "info")
+    """
+    Node of decision tree.
+    Allow to separate data into 2 child nodes
 
+    Attributes
+    ----------
+    df : Pandas DataFrame
+        Data of Node
+    numb : int
+        Number or name of Node
+    full_rule : list
+        list of rules from root
+    depth : int
+        Distance from root node
+    edges : array-like
+        numbers of child nodes
+    rule_edges : array-like
+        rules for child nodes
+    features : list
+        Available features
+    categ : list
+        Names of categorical features
+    woe : boolean
+        Mode of categorical preparation
+    is_leaf : boolean
+        True if node don't have subnodes
+    verbose : int
+        Print best split of node
+    info : dict
+        Parameters for finding the best split
+    leaf_model : LeafModel
+        Stratified model
+
+    Methods
+    -------
+    check_params : Fill empty parameters and map max_features to int
+    find_best_split : Choose best split of node according to parameters
+    split : Try to create subnodes by best split
+    set_edges: Set number of child nodes from hash table of main tree
+    set_leaf : Delete subnodes and reset data
+
+    predict : Return statistic values of data
+    predict_scheme : Return all possible outcomes for additional features determination
+
+    prepare_df_for_attr : set input values to numpy format (and fill missing features)
+    get_edges : for input values defines appropriate child nodes
+    get_full_rule : convert full_rules to string format
+
+    get_figure : Create picture of data (hist, survival function)
+    get_description : Return common values of data (size, depth, death, cens)
+
+    set_dot_node : add self node to graphviz dot
+    set_dot_edges : add child nodes to graphviz dot
+    translate : Replace rules and features by dictionary
+
+    """
     def __init__(self, df,  numb=0, full_rule=[],
                  depth=0, features=[], categ=[], woe=False,
                  verbose=0, **info):
@@ -163,6 +218,31 @@ class Node(object):
         return " & ".join([s.to_str() for s in self.full_rule])
 
     def predict(self, X, target, bins=None):
+        """
+        Predict target values for data X
+
+        Parameters
+        ----------
+        X : Pandas dataframe
+            Contain input features of events.
+        target : str or function
+            Column name, mode or aggregate function of leaf sample.
+            Column name : must be in dataset.columns
+                Return mean of feature
+            Mode :
+                "surv" return survival function
+                "hazard" return cumulative hazard function
+                attribute_name return attribute value (e.g. depth, numb)
+                feature_name return aggregate statistic value for node
+        bins : array-like
+            Points of timeline
+
+        Returns
+        -------
+        res : array-like
+            Values by target
+
+        """
         res = np.full((X.shape[0]), np.nan, dtype=object)
         if target == "surv":
             res = self.leaf_model.predict_survival_at_times(X, bins)  # target(X_node=dataset)
