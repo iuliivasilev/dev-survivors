@@ -84,6 +84,52 @@ def cutted_tree(tree_, X, target, mode_f, choose_f, verbose=0):
 
 
 class CRAID(object):
+    """
+    Survival decision tree model.
+
+    Attributes
+    ----------
+    nodes : dict
+        Dictionary of all tree's nodes (numbers from hierarchy)
+    cut : boolean
+        Flag of pruning
+    depth : int
+        Maximal depth of nodes
+    features : list
+        Available features
+    categ : list
+        Names of categorical features
+    random_state : int
+        Fixed seed for building reproducibility
+    name : str
+        Model's name
+    coxph : CoxPHSurvivalAnalysis
+        Model for hazard prediction
+    ohenc : OneHotEncoder
+        Encoding model from number of Node to indicators
+    bins : array-like
+        Points of timeline.
+    info : dict
+        Parameters for building nodes
+
+    Methods
+    -------
+
+    fit : build decision tree with X, y data (iterative splitting node)
+    fit_cox_hazard : fitting Cox model as aggregating model by leaf numbers
+    predict : return values of features, rules or schemes
+    predict_cox_hazard : return survival or hazard function from cox model
+    predict_at_times : return survival or hazard function
+    predict_schemes : return FilledSchemeStrategy or Scheme
+    cut_tree : prunning function
+
+    visualize : build graphviz Digraph for each node
+    translate : Replace rules and features by dictionary
+
+    get_leaf_numbers : return leaf numbers from nodes
+    get_spanning_leaf_numbers : return preleaf numbers from nodes
+    delete_leafs_by_span : set up preleafs from lists to leafs
+    """
     def __init__(self, depth=0,
                  random_state=123,
                  features=[],
@@ -92,7 +138,6 @@ class CRAID(object):
                  **info):
         self.info = info
         self.cut = cut
-        self.remove_files = []
         self.nodes = dict()
         self.depth = depth
         self.features = features
@@ -289,6 +334,8 @@ class CRAID(object):
         self.categ = [describe.get(c, c) for c in self.categ]
         for i in self.nodes.keys():
             self.nodes[i].translate(describe)
+
+    """ Cutting methods """
 
     def get_leaf_numbers(self):
         return np.array([i for i in self.nodes.keys() if self.nodes[i].is_leaf])
