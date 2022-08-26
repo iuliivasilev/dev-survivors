@@ -203,6 +203,32 @@ class CRAID(object):
         return pred_haz
 
     def predict(self, X, mode="target", target=cnt.TIME_NAME, end_list=[], bins=None):
+        """
+        Return values by mode & target
+
+        Parameters
+        ----------
+        X : Pandas dataframe
+            Contain input features of events.
+        mode : str, optional
+            Mode of predicting. The default is "target".
+            "surv" : return values of survival function in bins
+            "hazard" : return values of hazard function in bins
+            "target" : return values of feature (in target variable)
+            "rules" : return full rules from node to leaf
+        target : str or list, optional
+            An aim of predicting. The default is occurred time.
+        end_list : list, optional
+            Numbers of endpoint nodes (for cutting)
+        bins : array-like, optional
+            Points of timeline
+
+        Returns
+        -------
+        res : array-like
+            Values by mode & target
+
+        """
         X = format_to_pandas(X, self.features)
         num_node_to_key = dict(zip(sorted(self.nodes.keys()), range(len(self.nodes))))
         node_bin = np.zeros((X.shape[0], len(self.nodes)), dtype=bool)
