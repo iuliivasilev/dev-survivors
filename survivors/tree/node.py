@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from graphviz import Digraph
 from joblib import Parallel, delayed
 
 from .find_split import best_attr_split

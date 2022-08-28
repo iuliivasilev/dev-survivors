@@ -6,6 +6,7 @@ from .. import criteria as scrit
 
 """ Auxiliary functions """
 
+
 def power_set_nonover(s):
     """
     Build a list of pairs of nonoverlapping sets
@@ -48,12 +49,12 @@ def transform_woe(x_feat, y):
     a = np.vstack([x_feat, y]).T
     a = a[a[:, 0] == a[:, 0]]
 
-    categs = np.unique(a[:, 0]).shape[0]
+    # categs = np.unique(a[:, 0]).shape[0]
     N_T = y.shape[0]
     N_D = y.sum()
     N_D_ = N_T - y.sum()
 
-    df_woe_iv = pd.crosstab(a[:, 0],a[:, 1])
+    df_woe_iv = pd.crosstab(a[:, 0], a[:, 1])
     all_0 = df_woe_iv[0].sum()
     all_1 = df_woe_iv[1].sum()
 
@@ -295,8 +296,7 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     if criterion in scrit.CRITERIA_DICT:
         criterion = scrit.CRITERIA_DICT[criterion]
         
-    best_attr = {"p_value": signif, "sign_split": 0,
-                  "values": [], "pos_nan": [1, 0]}
+    best_attr = {"p_value": signif, "sign_split": 0, "values": [], "pos_nan": [1, 0]}
     attr_dicts = [best_attr]
     # The leaf is too small for split
     if arr.shape[1] < 2*min_samples_leaf:

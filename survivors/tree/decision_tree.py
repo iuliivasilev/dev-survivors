@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import os
-import time
 import copy
 import tempfile
 
@@ -10,7 +9,6 @@ from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import OneHotEncoder
 from sksurv.linear_model import CoxPHSurvivalAnalysis
 
-from .. import metrics as metr
 from .node import Node
 from ..scheme import FilledSchemeStrategy
 from .. import constants as cnt
@@ -143,7 +141,7 @@ class CRAID(object):
         self.features = features
         self.categ = categ
         self.random_state = random_state
-        self.name = "CRAID_%s" % (self.random_state)
+        self.name = f"CRAID_{self.random_state}"
         self.coxph = None
         self.ohenc = None
         self.bins = []
@@ -304,7 +302,7 @@ class CRAID(object):
                         for e in set(pred_edges):
                             node_bin[ind, num_node_to_key[e]] = pred_edges == e
         leaf_keys = self.get_leaf_numbers()
-        leaf_numb = np.array([num_node_to_key[l] for l in leaf_keys])
+        leaf_numb = np.array([num_node_to_key[leaf] for leaf in leaf_keys])
 
         ret_leaf_numbers = np.where(node_bin[:, leaf_numb], leaf_keys, np.inf)
 
@@ -376,4 +374,3 @@ class CRAID(object):
             for e in self.nodes[i].edges:
                 del self.nodes[e]
             self.nodes[i].set_leaf()
-
