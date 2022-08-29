@@ -256,8 +256,8 @@ class Node(object):
     def predict_scheme(self, X, scheme_feats):
         feat_means = np.array([self.leaf_model.features_mean.get(s_f, np.nan)
                                for s_f in scheme_feats])
-        times = self.leaf_model.survival.durations
-        cens = self.leaf_model.survival.event_observed
+        times = self.leaf_model.predict_list_feature(cnt.TIME_NAME)
+        cens = self.leaf_model.predict_list_feature(cnt.CENS_NAME)
 
         return Scheme(self.get_full_rule(), times, cens, feat_means)
 

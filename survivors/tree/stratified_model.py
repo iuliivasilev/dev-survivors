@@ -17,8 +17,8 @@ class LeafModel(object):
         # Another way to fill default_bins
         # cnt.get_bins(time=X_node[cnt.TIME_NAME].to_numpy(),
         #              cens=X_node[cnt.CENS_NAME].to_numpy(), mode='a', num_bins=100)
-        self.survival = metr.get_survival_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
-        self.hazard = metr.get_hazard_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
+        # self.survival = metr.get_survival_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
+        # self.hazard = metr.get_hazard_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
         self.features_mean = X_node.mean(axis=0).to_dict()
         self.lists = X_node.loc[:, need_features].to_dict(orient="list")
 
@@ -27,7 +27,7 @@ class LeafModel(object):
 
     def predict_list_feature(self, feature_name):
         if feature_name in self.lists.keys():
-            return self.lists[feature_name]
+            return np.array(self.lists[feature_name])
         return None
 
     def predict_mean_feature(self, X=None, feature_name=None):
@@ -37,6 +37,8 @@ class LeafModel(object):
         return np.repeat(value, X.shape[0], axis=0)
 
     def predict_survival_at_times(self, X=None, bins=None):
+        if self.survival is None:
+            self.survival = metr.get_survival_func(self.lists[cnt.TIME_NAME], self.lists[cnt.CENS_NAME])
         if bins is None:
             bins = self.default_bins
         sf = self.survival.survival_function_at_times(bins).to_numpy()
@@ -45,6 +47,8 @@ class LeafModel(object):
         return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
 
     def predict_hazard_at_times(self, X=None, bins=None):
+        if self.hazard is None:
+            self.hazard = metr.get_hazard_func(self.lists[cnt.TIME_NAME], self.lists[cnt.CENS_NAME])
         if bins is None:
             bins = self.default_bins
         hf = self.hazard.cumulative_hazard_at_times(bins).to_numpy()
