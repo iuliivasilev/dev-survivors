@@ -270,7 +270,7 @@ def ipa(survival_train, survival_test, estimate, times, axis=-1):
 """ESTIMATE FUNCTION"""
 
 
-def get_survival_func(ddeath, cdeath, bins = None):
+def get_survival_func(ddeath, cdeath, bins=None):
     """
     Build Kaplan-Meier Estimate of survival function
 
@@ -297,7 +297,7 @@ def get_survival_func(ddeath, cdeath, bins = None):
     return kmf
 
 
-def get_hazard_func(ddeath, cdeath, bins = None):
+def get_hazard_func(ddeath, cdeath, bins=None):
     """
     Build Nelson-Aalen Estimate of Hazard function
 

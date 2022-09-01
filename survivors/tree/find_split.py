@@ -45,7 +45,6 @@ def transform_woe(x_feat, y):
         Mapped x_feat for woe's values.
     descr_np : array
         Array with 2 dims: source categories, mapping woe's.
-
     """
     a = np.vstack([x_feat, y]).T
     a = a[a[:, 0] == a[:, 0]]

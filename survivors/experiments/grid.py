@@ -1,15 +1,6 @@
-# import sksurv.metrics
-# import os
-# import random
 import numpy as np
 import pandas as pd
 import time
-# from time import strftime, gmtime
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-# sns.set()
-# from lifelines import KaplanMeierFitter
-# from lifelines.utils import concordance_index
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import ParameterGrid

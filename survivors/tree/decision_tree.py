@@ -58,7 +58,7 @@ def cutted_tree(tree_, X, target, mode_f, choose_f, verbose=0):
 
     best_metr[c] = mode_f(y, y_pred)
     best_tree[c] = copy.deepcopy(tree)
-    while (len(tree.nodes) > 1):
+    while len(tree.nodes) > 1:
         tree, val = find_best_uncut(tree, X, y, target, mode_f, choose_f)
         c = tree.get_leaf_numbers().shape[0]
         best_metr[c] = val
