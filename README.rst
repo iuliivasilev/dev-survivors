@@ -5,7 +5,7 @@ survivors
 
 survivors is a Python module for `survival analysis`_. 
 
-It allows building survival models: Survival Tree, Bagging ensemble, Adaptive Boosting ensemble.
+It allows for building survival models: Survival Tree, Bagging ensemble, Adaptive Boosting ensemble.
 
 =======================
 About Survival Analysis
@@ -14,9 +14,9 @@ About Survival Analysis
 The objective in `survival analysis`_ (also referred to as time-to-event or reliability analysis)
 is to establish a connection between covariates and the time of an event.
 
-Survival analysis is a set of statistical models and methods used for estimating  time until the occurrence of an event (or the probability that an event has not occurred). These methods are widely used in demography, e.g. for estimating lifespan or age at the first childbirth, in healthcare, e.g. for estimating duration of staying in a hospital or survival time after the diagnosis of a disease, in engineering (for reliability analysis), in insurance, economics, and social sciences.
+Survival analysis is a set of statistical models and methods used for estimating time until the occurrence of an event (or the probability that an event has not occurred). These methods are widely used in demography, e.g. for estimating lifespan or age at the first childbirth, in healthcare, e.g. for estimating the duration of staying in a hospital or survival time after the diagnosis of a disease, in engineering (for reliability analysis), in insurance, economics, and social sciences.
 
-Statistical methods need data, but complete data may not be available, i.e. the exact time of the event may be unknown for certain reasons  (the event did not occur before the end of the study or it is unknown whether it occurred). In this case, events are called censored. The data are censored from below (left censored) when below a given value the exact values of observations is unknown. Right censored data (censored from above) does not have exact observations above a given value. Further in this paper, right censoring is considered.
+Statistical methods need data, but complete data may not be available, i.e. the exact time of the event may be unknown for certain reasons  (the event did not occur before the end of the study or it is unknown whether it occurred). In this case, events are called censored. The data are censored from below (left-censored) when below a given value the exact values of observations are unknown. Right censored data (censored from above) does not have exact observations above a given value. Further in this paper, right censoring is considered.
 
 ============
 Requirements
@@ -53,13 +53,38 @@ The `user guide <https://google.com>`_ provides
 in-depth information on the key concepts of survivors, an overview of available survival models,
 and hands-on examples in the form of `Jupyter notebooks <https://jupyter.org/>`_.
 
+The "demonstration" directory contains examples of using the library as Jupyter Notebook.
+The example is a variant of solving a multi-stage problem:
+
+1. Import the library
+2. Loading and preparing data
+3. Model training
+4. Getting a forecast
+5. Visualization of the constructed model
+6. Visualization of true and predicted survival functions
+
+==========
+Scenarios
+==========
+
+Based on the **survivors**, it is possible to carry out the following work scenarios:
+
+1. Collecting data from patient medical histories (hospital tests, medications, treatment) from various medical institutions. The medical history can be presented as a set of tables in csv or xlsx format, or as a hierarchical structure of xml files.
+
+2. Building survival analysis models. There are available the following models: a decision tree, a bagging ensemble, and a boosting ensemble. For each model, there is a wide range of hyperparameters, which provide the flexibility of the model.
+
+3. Predicting the probability and time of the event. Forecasts can be used by the user to solve the problem of classifying or ranking new patients according to the expected severity of the disease.
+
+4. Predicting the individual survival functions and cumulative hazard of patients. Forecasts can be used to support medical decisions and adjust treatment.
+
+
 ==========
 References
 ==========
 
 Methods from **survivors** are based on following paper.
 
-  Vasilev I., Petrovskiy M., Mashechkin I. Survival Analysis Algorithms based on Decision Trees with Weighted Log-rank Criteria. – 2022.
+Vasilev I., Petrovskiy M., Mashechkin I. Survival Analysis Algorithms based on Decision Trees with Weighted Log-rank Criteria. - 2022.
 
 .. code::
 
