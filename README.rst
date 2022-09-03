@@ -36,6 +36,7 @@ Requirements
 - scikit-learn
 - lifelines
 - scikit-survival
+- openpyxl
 
 ============
 Installation
