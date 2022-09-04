@@ -55,17 +55,17 @@ class Node(object):
     Attributes
     ----------
     df : Pandas DataFrame
-        Data of Node
+        Data of the Node
     numb : int
-        Number or name of Node
+        Number or name of the Node
     full_rule : list
-        list of rules from root
+        List of rules from the root
     depth : int
-        Distance from root node
+        Distance from the root
     edges : array-like
-        numbers of child nodes
+        Numbers of child nodes
     rule_edges : array-like
-        rules for child nodes
+        Rules for child nodes
     features : list
         Available features
     categ : list
@@ -73,11 +73,11 @@ class Node(object):
     woe : boolean
         Mode of categorical preparation
     is_leaf : boolean
-        True if node don't have subnodes
+        True if node has no subnodes
     verbose : int
-        Print best split of node
+        Print the best split of the node
     info : dict
-        Parameters for finding the best split
+        Parameters for finding the best splitting
     leaf_model : LeafModel
         Stratified model
 
@@ -89,18 +89,18 @@ class Node(object):
     set_edges: Set number of child nodes from hash table of main tree
     set_leaf : Delete subnodes and reset data
 
-    predict : Return statistic values of data
+    predict : Return statistic values of a data
     predict_scheme : Return all possible outcomes for additional features determination
 
     prepare_df_for_attr : set input values to numpy format (and fill missing features)
-    get_edges : for input values defines appropriate child nodes
-    get_full_rule : convert full_rules to string format
+    get_edges : defines appropriate child nodes according to input values
+    get_full_rule : convert full_rules to a string format
 
-    get_figure : Create picture of data (hist, survival function)
-    get_description : Return common values of data (size, depth, death, cens)
+    get_figure : Create picture of a data (hist, survival function)
+    get_description : Return common values of a data (size, depth, death, cens)
 
-    set_dot_node : add self node to graphviz dot
-    set_dot_edges : add child nodes to graphviz dot
+    set_dot_node : add self node to the graphviz dot
+    set_dot_edges : add child nodes to the graphviz dot
     translate : Replace rules and features by dictionary
 
     """
@@ -134,7 +134,7 @@ class Node(object):
             self.info["max_features"] = int(self.info["max_features"]*len(self.features))
         self.leaf_model.fit(self.df)
 
-    """ GROUP FUNCTIONS: CREATE LEAFS """
+    """ GROUP FUNCTIONS: CREATE LEAVES """
 
     def find_best_split(self):
         numb_feats = self.info["max_features"]
@@ -218,14 +218,14 @@ class Node(object):
 
     def predict(self, X, target, bins=None):
         """
-        Predict target values for data X
+        Predict target values for X data
 
         Parameters
         ----------
         X : Pandas dataframe
-            Contain input features of events.
+            Contain input features of events
         target : str or function
-            Column name, mode or aggregate function of leaf sample.
+            Column name, mode or aggregate function of a leaf sample
             Column name : must be in dataset.columns
                 Return mean of feature
             Mode :

@@ -102,7 +102,7 @@ def crossval_param(method, X, y, folds, metrics_names=['CI']):
 
 class Experiments(object):
     """
-    Class recieves methods, metrics and grids, 
+    Class receives methods, metrics and grids,
           produces cross-validation experiments,
           stores table of results : name, params, time, metrics (by sample and mean)
 
@@ -112,8 +112,8 @@ class Experiments(object):
         Must have predicting methods according to metrics:
             IBS - survival func
             IAUC - cumulative hazard func
-            CI - occured time
-            CI_CENS - occured time
+            CI - occurred time
+            CI_CENS - occurred time
     methods_grid : list
         Each grid is dictionary: key - param name, values - list
     metrics : list
