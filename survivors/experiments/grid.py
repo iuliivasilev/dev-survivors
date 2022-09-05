@@ -159,7 +159,7 @@ class Experiments(object):
             if metr_name in metr.METRIC_DICT:
                 self.metrics.append(metr_name)
             else:
-                print("METRIC %s IS NOT DEFINED" % (metr_name))
+                print(f"METRIC {metr_name} IS NOT DEFINED")
     
     def run(self, X, y, dir_path=None, verbose=0):
         self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
@@ -177,7 +177,7 @@ class Experiments(object):
                 curr_dict.update(cv_metr)  # dict(zip(self.metrics, cv_metr))
                 self.result_table = self.result_table.append(curr_dict, ignore_index=True)
                 if verbose > 0:
-                    print("EXECUTION TIME OF %s: %s" % (method.__name__, full_time),
+                    print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
                           {k: np.mean(v) for k, v in cv_metr.items()})
             # except KeyboardInterrupt:
             #     print("HANDELED KeyboardInterrupt")
@@ -187,7 +187,7 @@ class Experiments(object):
             #     if self.except_stop == "all":
             #         break
         for m in self.metrics:
-            self.result_table["%s_mean" % (m)] = self.result_table[m].apply(np.mean)
+            self.result_table[f"{m}_mean"] = self.result_table[m].apply(np.mean)
         self.is_table = True
         if not(dir_path is None):
             # add_time = strftime("%H:%M:%S", gmtime(time.time()))
@@ -200,7 +200,7 @@ class Experiments(object):
         if not(by_metric in self.metrics):
             return None
         
-        best_table = pd.DataFrame([], columns = self.result_table.columns)
+        best_table = pd.DataFrame([], columns=self.result_table.columns)
         for method in self.result_table['METHOD'].unique():
             sub_table = self.result_table[self.result_table["METHOD"] == method]
             if sub_table.shape[0] == 0:
@@ -217,7 +217,7 @@ class Experiments(object):
         # if dir_path.find(".csv") != -1:
         #     save_table.to_csv(dir_path + dataset)
         # else: #to_excel
-        self.result_table.to_excel("%s_FULL_TABLE.xlsx" % (dir_path + self.dataset_name), index=False)
+        self.result_table.to_excel(f"{dir_path + self.dataset_name}_FULL_TABLE.xlsx", index=False)
             
     # def plot_results(self, dir_path):
     #     df = self.result_table.copy()

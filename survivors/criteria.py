@@ -20,6 +20,7 @@ def peto(durations_A, durations_B, event_observed_A=None, event_observed_B=None)
 def tarone_ware(durations_A, durations_B, event_observed_A=None, event_observed_B=None):
     return weight_lr_fast(durations_A, durations_B, event_observed_A, event_observed_B, weightings="tarone-ware")
 
+
 CRITERIA_DICT = {
     "logrank": logrank,
     "wilcoxon": wilcoxon,
@@ -198,15 +199,15 @@ def weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""):
     Parameters
     ----------
     dur_A : array-like
-        Time of occured events from first sample.
+        Time of occurred events from first sample.
     dur_B : array-like
-        Time of occured events from second sample.
+        Time of occurred events from second sample.
     cens_A : array-like, optional
-        Indicate of occured events from first sample.
-        The default is None (all events occured).
+        Indicate of occurred events from first sample.
+        The default is None (all events occurred).
     cens_B : array-like, optional
-        Indicate of occured events from second sample.
-        The default is None (all events occured).
+        Indicate of occurred events from second sample.
+        The default is None (all events occurred).
     weightings : str, optional
         Weights of criteria. The default is "" (log-rank).
         Log-rank :math:'w = 1'

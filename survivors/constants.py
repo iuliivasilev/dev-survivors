@@ -25,7 +25,7 @@ def get_y(cens, time):
     cens : array-like, shape = (n_events,)
         Censoring flags.
     time : array-like, shape = (n_events,)
-        Time of occured events.
+        Time of occurred events.
 
     Returns
     -------
@@ -73,9 +73,9 @@ def get_bins(time, cens=None, mode='a', num_bins=100):
     Parameters
     ----------
     time : array-like
-        Time of occured events.
+        Time of occurred events.
     cens : array-like, optional
-        Censoring flags. The default is None (all events occured).
+        Censoring flags. The default is None (all events occurred).
     mode : str, optional
         Method of generation. The default is 'a'.
         'a' : all points (from min to max)
