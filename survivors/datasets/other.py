@@ -24,7 +24,7 @@ def load_pickle(path):
 def load_gbsg_dataset():
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, 'GBSG.csv'))
-    df = df.rename({"rfst":TIME_NAME,"cens":CENS_NAME},axis = 1)
+    df = df.rename({"rfst": TIME_NAME, "cens":CENS_NAME}, axis=1)
     
     y = get_y(df[CENS_NAME], df[TIME_NAME])
     X = df.loc[:, sign_gbsg]
