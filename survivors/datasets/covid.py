@@ -41,6 +41,7 @@ def_categ = {
     'Группа риска': {'Хроники': 0, 'Беременные': 1, 'Старше 65': 2}
 }
 
+# True categorical dictionary (takes into account filled values)
 def_categ_full = {
     'osmotr_tyazhest': {'без симптомов': 0, 'легкая': 3, 'средняя': 5, 'тяжелая': 7},
     'has_odyshka_ili_zatrudnennoe_dyhanie': {'отсутствует': 0, 'присутствует': 1, 0: 0, 1: 1},
