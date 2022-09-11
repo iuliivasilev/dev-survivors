@@ -9,6 +9,7 @@ from test_experiments import run
 from survivors.tree import CRAID
 from survivors.ensemble import BoostingCRAID
 
+
 def pbs_samples():
     X, y, features, categ, sch_nan = load_pbc_dataset()
     a = generate_sample(X, y, 5)

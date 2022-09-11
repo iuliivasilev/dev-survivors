@@ -21,9 +21,11 @@ METRIC_DICT = {
 DESCEND_METRICS = ['ibs', 'IBS']
 """ list: Metrics with decreasing quality improvement """
 
+
 @jit
 def get_before(estim, wei):
     return np.square(estim) * wei
+
 
 @jit
 def get_after(estim, prob_cens):
