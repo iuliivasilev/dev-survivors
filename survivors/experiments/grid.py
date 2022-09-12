@@ -213,10 +213,6 @@ class Experiments(object):
         return best_table
     
     def save(self, dir_path):
-        # save_table = self.result_table.copy()
-        # if dir_path.find(".csv") != -1:
-        #     save_table.to_csv(dir_path + dataset)
-        # else: #to_excel
         self.result_table.to_excel(f"{dir_path + self.dataset_name}_FULL_TABLE.xlsx", index=False)
             
     # def plot_results(self, dir_path):

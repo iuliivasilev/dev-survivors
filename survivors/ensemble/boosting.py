@@ -82,11 +82,10 @@ class BoostingCRAID(BaseEnsemble):
         for i in range(self.n_estimators):
             x_sub = self.X_train.sample(n=self.size_sample, weights=self.weights,
                                         replace=self.bootstrap, random_state=i)
-            x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index),:]
+            x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index), :]
             
             x_sub = x_sub.reset_index(drop=True)
             X_sub_tr, y_sub_tr = cnt.pd_to_xy(x_sub)
-            # X_sub_tr = X_sub_tr.drop('ind_start', axis = 1)
             
             model = CRAID(features=self.features, random_state=i, **self.tree_kwargs)
             model.fit(X_sub_tr, y_sub_tr)

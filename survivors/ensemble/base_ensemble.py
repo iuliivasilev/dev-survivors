@@ -4,7 +4,6 @@ from lifelines.utils import concordance_index
 from sklearn.metrics import roc_auc_score
 
 from .. import metrics as metr
-from ..tree import CRAID
 from .. import constants as cnt
 
 
@@ -19,7 +18,7 @@ class BaseEnsemble(object):
     n_estimators : int
         Number of base models 
     ens_metric_name : str
-        Metric defines quantitve of ensemble
+        Metric defines quantitative of ensemble
     descend_metr : boolean 
         Flag of descend for ens_metric_name
     bootstrap : boolean
@@ -49,7 +48,7 @@ class BaseEnsemble(object):
     fit : build ensemble with X, y data (abstract)
     add_model : updating ensemble with new model and oob
     select_model : remaining fixed models
-    tolerance_find_best : iterative method of selecting best subensemble
+    tolerance_find_best : iterative method of selecting best sub ensemble
     
     predict : return values of features, rules or schemes (look at CRAID)
     predict_at_times : return survival or hazard function

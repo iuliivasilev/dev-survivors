@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 
-# from .. import metrics as metr
 from ..tree import CRAID
 from .. import constants as cnt
 from .base_ensemble import BaseEnsemble
