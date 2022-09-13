@@ -119,7 +119,7 @@ def iterate_coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings):
     return w_j, num, denom
 
 @njit
-def iterate_lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings):
+def iterate_lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings) -> float:
     res = np.zeros((times.shape[0], 3), dtype=np.float32)
     for j, t_j in enumerate(times):
         res[j] = iterate_coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings)
@@ -131,7 +131,7 @@ def iterate_lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings):
     return logrank
 
 
-def iterate_weight_lr_fast(dur_A, dur_B, cens_A = None, cens_B = None, weightings = ""):
+def iterate_weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings="") -> float:
     try:
         if cens_A is None:
             cens_A = np.ones(dur_A.shape[0])

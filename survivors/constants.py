@@ -3,7 +3,7 @@ import random
 import numpy as np
 
 RANDOM_STATE = 123
-""" int: Fixed seed for model stability """
+""" int: Fixed seed for model reproducibility """
 
 CENS_NAME = 'cens'
 TIME_NAME = 'time'

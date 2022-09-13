@@ -72,7 +72,7 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
             None
 
     """
-    test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored = True)
+    test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored=True)
     # estimate, times = _check_estimate_2d(estimate, test_time, times)
     estimate = np.array(estimate)
     if estimate.ndim == 1 and times.shape[0] == 1:
@@ -279,11 +279,11 @@ def get_survival_func(ddeath, cdeath, bins=None):
     Parameters
     ----------
     ddeath : array-like
-        Times of occured events
+        Times of occurred events
     cdeath : array-like
-        Indicate of occured events (Censoring flag)
+        Indicate of occurred events (Censoring flag)
     bins : array-like, optional
-        Points of surival function. The default is None.
+        Points of survival function. The default is None.
 
     Returns
     -------
@@ -306,9 +306,9 @@ def get_hazard_func(ddeath, cdeath, bins=None):
     Parameters
     ----------
     ddeath : array-like
-        Times of occured events
+        Times of occurred events
     cdeath : array-like
-        Indicate of occured events (Censoring flag)
+        Indicate of occurred events (Censoring flag)
     bins : array-like, optional
         Points of hazard function. The default is None.
 

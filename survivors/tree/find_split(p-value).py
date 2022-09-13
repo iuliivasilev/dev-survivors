@@ -9,7 +9,7 @@ from .. import criteria as scrit
 
 def power_set_nonover(s):
     """
-    Build a list of pairs of nonoverlapping sets
+    Build a list of pairs of non-overlapping sets
     
     Parameters
     ----------
@@ -19,7 +19,7 @@ def power_set_nonover(s):
     Returns
     -------
     a : array
-        Contain pairs of nonoverlapping subsets of s elements
+        Contain pairs of non-overlapping subsets of s elements
 
     """
     a = np.array(list(chain.from_iterable(combinations(s, r) for r in range(len(s)+1))), dtype=object)
@@ -132,7 +132,7 @@ def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
     r_sh : int
         Size of right branch.
     nan_sh : int
-        Quantitive of nan events.
+        Quantitative of nan events.
 
     Returns
     -------
@@ -159,8 +159,8 @@ def get_attrs(min_p_value, values, none_to, l_sh, r_sh, nan_sh):
 def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, 
                    signif, thres_cont_bin_max):
     """
-    Find best split for continious feature.
-    Consider all intermiate points of values (with quantile discretization).
+    Find best split for continuous feature.
+    Consider all intermediate points of values (with quantile discretization).
     For each points define two branches and count p-value.
     Insignificant and too small splits aren't considered. 
 
@@ -179,7 +179,7 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
     signif : float
         Minimal acceptable significance of split.
     thres_cont_bin_max : int
-        Maximal quantitive of intermiate points.
+        Maximal quantitative of intermiate points.
 
     Returns
     -------
@@ -211,8 +211,8 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
 def get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif):
     """
     Find best split for categorical feature.
-    Consider all nonoverlapping subsets of uniq elements.
-    For each subset define branche and count p-value.
+    Consider all non-overlapping subsets of uniq elements.
+    For each subset define branch and count p-value.
     Insignificant and too small splits aren't considered. 
 
     Parameters
@@ -265,12 +265,12 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
         Function or name of criteria. The default is "logrank".
         If str then replace to realization from criteria_dict
     type_attr : str, optional
-        Continious, categorical or WOE features. The default is "cont".
-        Continious : get_cont_attrs
+        Continuous, categorical or WOE features. The default is "cont".
+        Continuous : get_cont_attrs
         Categorical : get_categ_attrs
-        WOE : mapping from categorical to continious and apply get_cont_attrs
+        WOE : mapping from categorical to continuous and apply get_cont_attrs
     thres_cont_bin_max : int, optional
-        Maximal quantitive of intermiate points.
+        Maximal quantitative of intermediate points.
     signif : TYPE, optional
         Minimal acceptable significance of split. The default is 1.0.
     min_samples_leaf : TYPE, optional
@@ -290,7 +290,7 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
         values : list of splitting rules
         pos_nan : list of binary values of allocation nans
         min_split : minimal size of branch
-        sign_split : quantitive of significant splits
+        sign_split : quantitative of significant splits
 
     """
     if criterion in scrit.CRITERIA_DICT:

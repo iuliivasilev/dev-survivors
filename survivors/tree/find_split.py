@@ -5,7 +5,9 @@ from scipy import stats
 from itertools import chain, combinations
 from .. import criteria as scrit 
 
+
 """ Auxiliary functions """
+
 
 def power_set_nonover(s):
     """
