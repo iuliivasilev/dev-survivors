@@ -47,7 +47,6 @@ class BoostingCRAID(BaseEnsemble):
 
     Methods
     -------
-    
     fit : build ensemble with X, y data
     count_model_weights : count weights according ibs and mode scheme
     add_model : add model, weights and bettas
@@ -56,7 +55,6 @@ class BoostingCRAID(BaseEnsemble):
     ----------
     .. [1] Drucker H. Improving regressors using boosting techniques 
             //ICML. – 1997. – Т. 97. – С. 107-115.
-    
     """
     def __init__(self, mode_wei="linear", **kwargs):
         self.name = "BoostingCRAID"
@@ -152,7 +150,6 @@ class BoostingCRAID(BaseEnsemble):
         Returns
         -------
         float
-
         """
         if self.aggreg_func == 'median':
             return np.median(x, axis=0)

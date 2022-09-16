@@ -43,7 +43,6 @@ class BaseEnsemble(object):
 
     Methods
     -------
-    
     update_params : attributes preparation
     fit : build ensemble with X, y data (abstract)
     add_model : updating ensemble with new model and oob
@@ -54,7 +53,6 @@ class BaseEnsemble(object):
     predict_at_times : return survival or hazard function
 
     score_oob : calculate metric "ens_metric_name" for ensemble
-    
     """
     def __init__(self, size_sample=0.7,
                  n_estimators=10,

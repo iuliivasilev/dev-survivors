@@ -18,9 +18,7 @@ class BootstrapCRAID(BaseEnsemble):
 
     Methods
     -------
-    
     fit : build ensemble with X, y data
-    
     """
     def __init__(self, **kwargs):
         self.name = "BootstrapCRAID"

@@ -133,6 +133,21 @@ map_bool = {'0': 'Нет', '1': 'Да'}
 
 
 def create_none_ft(fill_df, sign_f, fill_none=False):
+    """
+    Fill nans in input DataFrame for definite features.
+    Also, there is renumbering of categorical features
+    (in dictionary def_categ or have a constraint for unique values).
+
+    Parameters
+    ----------
+    fill_df : DataFrame
+    sign_f : list
+    fill_none : bool
+
+    Returns
+    -------
+    DataFrame
+    """
     for i in sign_f:
         #fill_df['none_'+i] = fill_df[i].apply(lambda x: int(x != x))
         if i in set(def_categ.keys()):
@@ -159,6 +174,19 @@ def create_none_ft(fill_df, sign_f, fill_none=False):
 
 
 def dest_date(x, y, with_neg=False):
+    """
+    Calculate the destination between dates.
+
+    Parameters
+    ----------
+    x : str
+    y : str
+    with_neg : bool
+
+    Returns
+    -------
+    int
+    """
     days = np.nan
     try:
         p_1 = parser.parse(x)
