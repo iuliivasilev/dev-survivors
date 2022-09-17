@@ -55,3 +55,18 @@ class LeafModel(object):
         if X is None:
             return hf
         return np.repeat(hf[np.newaxis, :], X.shape[0], axis=0)
+
+
+class LeafOnlyHazardModel(LeafModel):
+    def predict_survival_at_times(self, X=None, bins=None):
+        hf = self.predict_hazard_at_times(self, X=X, bins=bins)
+        sf = np.exp(-1*hf)
+        if X is None:
+            return sf
+        return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
+
+
+LEAF_MODEL_DICT = {
+    "base": LeafModel,
+    "only_hazard": LeafOnlyHazardModel
+}
