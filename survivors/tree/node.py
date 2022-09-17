@@ -6,7 +6,7 @@ from joblib import Parallel, delayed
 
 from .find_split import best_attr_split
 from .. import constants as cnt
-from .stratified_model import LeafModel
+from .stratified_model import LEAF_MODEL_DICT
 from ..scheme import Scheme
 
 sns.set()
@@ -79,7 +79,7 @@ class Node(object):
     info : dict
         Parameters for finding the best splitting
     leaf_model : LeafModel
-        Stratified model
+        Stratified model by parameter <<leaf_model>> (map with LEAF_MODEL_DICT)
 
     Methods
     -------
@@ -106,20 +106,20 @@ class Node(object):
     """
     def __init__(self, df,  numb=0, full_rule=[],
                  depth=0, features=[], categ=[], woe=False,
-                 verbose=0, **info):
+                 verbose=0, leaf_model="base", **info):
         self.df = df
         self.numb = numb
         self.full_rule = full_rule
         self.depth = depth
-        self.edges = np.array([], dtype=object)
-        self.rule_edges = np.array([], dtype=object)
+        self.edges = np.array([], dtype=int)
+        self.rule_edges = np.array([], dtype=Rule)
         self.features = features
         self.categ = categ
         self.woe = woe
         self.is_leaf = True
         self.verbose = verbose
         self.info = info
-        self.leaf_model = LeafModel()
+        self.leaf_model = LEAF_MODEL_DICT.get(leaf_model, "base")()
         self.check_params()
 
     def check_params(self):
@@ -160,8 +160,8 @@ class Node(object):
         return (attr, attrs[attr])
 
     def split(self):
-        node_edges = np.array([], dtype=object)
-        self.rule_edges = np.array([], dtype=object)
+        node_edges = np.array([], dtype=int)
+        self.rule_edges = np.array([], dtype=Rule)
 
         attr, best_split = self.find_best_split()
         # The best split is not significant
@@ -194,7 +194,7 @@ class Node(object):
     def set_leaf(self):
         if self.is_leaf:
             return
-        self.edges = np.array([])
+        self.edges = np.array([], dtype=int)
         self.is_leaf = True
 
     def prepare_df_for_attr(self, X):
