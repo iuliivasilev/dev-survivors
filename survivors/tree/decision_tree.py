@@ -43,7 +43,7 @@ def find_best_uncut(tree, X, y, target, mode_f, choose_f):
         d[el] = round(mode_f(y, y_pred), 4)
 
     new_leaf, val = choose_f(d.items(), key=lambda x: x[1])
-    tree.delete_leafs_by_span([new_leaf])
+    tree.delete_leaves_by_span([new_leaf])
     return tree, val
 
 
@@ -119,14 +119,14 @@ class CRAID(object):
     predict_cox_hazard : return survival or hazard function from cox model
     predict_at_times : return survival or hazard function
     predict_schemes : return FilledSchemeStrategy or Scheme
-    cut_tree : prunning function
+    cut_tree : pruning function
 
     visualize : build graphviz Digraph for each node
     translate : Replace rules and features by dictionary
 
     get_leaf_numbers : return leaf numbers from nodes
-    get_spanning_leaf_numbers : return preleaf numbers from nodes
-    delete_leafs_by_span : set up preleafs from lists to leafs
+    get_spanning_leaf_numbers : return pre-leaves numbers from nodes
+    delete_leaves_by_span : set up pre-leaves from lists to leaves
     """
     def __init__(self, depth=0,
                  random_state=123,
@@ -225,7 +225,6 @@ class CRAID(object):
         -------
         res : array-like
             Values by mode & target
-
         """
         X = format_to_pandas(X, self.features)
         num_node_to_key = dict(zip(sorted(self.nodes.keys()), range(len(self.nodes))))
@@ -276,7 +275,6 @@ class CRAID(object):
         -------
         array-like
             Vector of function values in times (bins).
-
         """
         X = format_to_pandas(X, self.features)
         if mode == "cox-hazard":
@@ -322,7 +320,7 @@ class CRAID(object):
 
     def cut_tree(self, X, target, mode_f=roc_auc_score, choose_f=max):
         """
-        Method of prunning tree.
+        Method of pruning tree.
         Find best subtree, which reaches best value of metric "mode_f""
 
         Parameters
@@ -365,11 +363,11 @@ class CRAID(object):
         return np.array([i for i in self.nodes.keys() if self.nodes[i].is_leaf])
 
     def get_spanning_leaf_numbers(self):
-        leafs = self.get_leaf_numbers()
+        leaves = self.get_leaf_numbers()
         return np.array([i for i in self.nodes.keys()
-                         if np.intersect1d(self.nodes[i].edges, leafs).shape[0] == 2])
+                         if np.intersect1d(self.nodes[i].edges, leaves).shape[0] == 2])
 
-    def delete_leafs_by_span(self, list_span_leaf):
+    def delete_leaves_by_span(self, list_span_leaf):
         for i in list_span_leaf:
             for e in self.nodes[i].edges:
                 del self.nodes[e]

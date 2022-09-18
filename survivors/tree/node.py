@@ -142,7 +142,7 @@ class Node(object):
         n_jobs = min(numb_feats, self.info["n_jobs"])
 
         selected_feats = np.random.choice(self.features, size=numb_feats, replace=False)
-        args = np.array([])
+        args = np.array([], dtype=dict)
         for feat in selected_feats:
             t = self.info.copy()
             t["type_attr"] = ("woe" if self.woe else "categ") if feat in self.categ else "cont"
@@ -289,7 +289,7 @@ class Node(object):
         return label
 
     def set_dot_node(self, dot, path_dir="", depth=None, **args):
-        if not(depth is None) and depth < self.depth :
+        if not(depth is None) and depth < self.depth:
             return dot
         img_path = path_dir + str(self.numb) + '.png'
         self.get_figure(save_path=img_path, **args)

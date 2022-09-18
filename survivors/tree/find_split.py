@@ -51,7 +51,7 @@ def transform_woe(x_feat, y):
     a = np.vstack([x_feat, y]).T
     a = a[a[:, 0] == a[:, 0]]
 
-    categs = np.unique(a[:, 0]).shape[0]
+    # categs = np.unique(a[:, 0]).shape[0]
     N_T = y.shape[0]
     N_D = y.sum()
     N_D_ = N_T - y.sum()
@@ -190,7 +190,7 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
 
     """
     if uniq_set.shape[0] > thres_cont_bin_max:
-            uniq_set = np.quantile(arr_notnan[0], [i/float(thres_cont_bin_max) for i in range(1, thres_cont_bin_max)])
+        uniq_set = np.quantile(arr_notnan[0], [i/float(thres_cont_bin_max) for i in range(1, thres_cont_bin_max)])
     else:  # Set intermediate points
         uniq_set = (uniq_set[:-1] + uniq_set[1:])*0.5
     uniq_set = np.round(uniq_set, 3)
@@ -315,9 +315,11 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     uniq_set = np.unique(arr_notnan[0])
     
     if type_attr == "categ" and uniq_set.shape[0] > 0:
-        attr_dicts = get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif_val)
+        attr_dicts = get_categ_attrs(uniq_set, arr_notnan, arr_nan,
+                                     min_samples_leaf, criterion, signif_val)
     else:
-        attr_dicts = get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, signif_val, thres_cont_bin_max)
+        attr_dicts = get_cont_attrs(uniq_set, arr_notnan, arr_nan,
+                                    min_samples_leaf, criterion, signif_val, thres_cont_bin_max)
     
     if len(attr_dicts) == 0:
         return best_attr

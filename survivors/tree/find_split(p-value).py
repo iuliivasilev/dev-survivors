@@ -179,7 +179,7 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
     signif : float
         Minimal acceptable significance of split.
     thres_cont_bin_max : int
-        Maximal quantitative of intermiate points.
+        Maximal quantitative of intermediate points.
 
     Returns
     -------
