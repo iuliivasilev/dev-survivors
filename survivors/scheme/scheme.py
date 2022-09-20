@@ -38,7 +38,7 @@ class Scheme(object):
         return self.rule
 
     def get_description(self):
-        descr = "\nКОЛ-ВО:" + str(self.shape) + ' '
+        descr = "\nКОЛ-ВО:{self.shape} "
         descr += f"ВЕРОЯТНОСТЬ СОБЫТИЯ:{self.predict_proba()} "
         descr += f"ВРЕМЯ СОБЫТИЯ:{self.predict_time()} "
         descr += "\n" + self.get_str_rules()
@@ -67,9 +67,9 @@ class FilledSchemeStrategy(object):
     def join_nearest_leaves(self, sign_thres=0.05, diff_func=random.random):
         def delete_k_from_dict(d, del_k):
             d_ = dict()
-            for k in d.keys():
-                if not (del_k in k.split("#")):
-                    d_[k] = d[k]
+            for k_ in d.keys():
+                if not (del_k in k_.split("#")):
+                    d_[k_] = d[k_]
             return d_
 
         base = self.schemes_dict

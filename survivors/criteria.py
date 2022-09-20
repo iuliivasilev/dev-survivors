@@ -11,11 +11,14 @@ from numba import njit, jit
 def logrank(durations_A, durations_B, event_observed_A=None, event_observed_B=None):
     return weight_lr_fast(durations_A, durations_B, event_observed_A, event_observed_B)
 
+
 def wilcoxon(durations_A, durations_B, event_observed_A=None, event_observed_B=None):
     return weight_lr_fast(durations_A, durations_B, event_observed_A, event_observed_B, weightings="wilcoxon")
 
+
 def peto(durations_A, durations_B, event_observed_A=None, event_observed_B=None):
     return weight_lr_fast(durations_A, durations_B, event_observed_A, event_observed_B, weightings="peto")
+
 
 def tarone_ware(durations_A, durations_B, event_observed_A=None, event_observed_B=None):
     return weight_lr_fast(durations_A, durations_B, event_observed_A, event_observed_B, weightings="tarone-ware")
@@ -28,6 +31,7 @@ CRITERIA_DICT = {
     "tarone-ware": tarone_ware
 }
 """ dict: Available criteria in library and its realization """
+
 
 def logrank_self(durations_A, durations_B, event_observed_A=None, event_observed_B=None) -> float:
     # 27.1 ms ± 1.26 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
@@ -84,6 +88,7 @@ def logrank_self(durations_A, durations_B, event_observed_A=None, event_observed
         pval = 1.0
     return pval
     
+
 def cox(durations_A, durations_B, event_observed_A=None, event_observed_B=None) -> float:
     dfA = pd.DataFrame({'E': event_observed_A, 'T': durations_A, 'group': 0})
     dfB = pd.DataFrame({'E': event_observed_B, 'T': durations_B, 'group': 1})
@@ -92,8 +97,9 @@ def cox(durations_A, durations_B, event_observed_A=None, event_observed_B=None) 
     cph = CoxPHFitter().fit(df_, 'T', 'E')
     return cph.log_likelihood_ratio_test().p_value
 
-### 06/02/2022 Numpy+Numba 
-### accelerate 2.8 according to library criteria
+
+# 06/02/2022 Numpy+Numba
+# accelerate 2.8 according to library criteria
 @njit
 def iterate_coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings):
     N_1_j = (dur_A >= t_j).sum()
@@ -117,6 +123,7 @@ def iterate_coeffs_t_j(dur_A, dur_B, cens_A, cens_B, t_j, weightings):
     num = O_1_j - E_1_j
     denom = E_1_j*(N_j - O_j) * N_2_j/(N_j*(N_j - 1))
     return w_j, num, denom
+
 
 @njit
 def iterate_lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings) -> float:
@@ -221,7 +228,6 @@ def weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""):
         Chi2 statistic value of weighted log-rank test
     # p-value : float
     #     Chi2 p-value of weighted log-rank test
-
     """
     try:
         times = np.unique(np.hstack((dur_A, dur_B)))
