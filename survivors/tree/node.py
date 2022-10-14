@@ -148,6 +148,7 @@ class Node(object):
             t["type_attr"] = ("woe" if self.woe else "categ") if feat in self.categ else "cont"
             t["arr"] = self.df.loc[:, [feat, cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
             args = np.append(args, t)
+
         # ml = np.vectorize(lambda x: best_attr_split(**x))(args)
 
         with Parallel(n_jobs=n_jobs, verbose=0, batch_size=10) as parallel:  # prefer="threads"
