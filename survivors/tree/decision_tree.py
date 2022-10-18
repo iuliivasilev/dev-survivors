@@ -14,8 +14,8 @@ from ..scheme import FilledSchemeStrategy
 from .. import constants as cnt
 
 import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
+# import seaborn as sns
+# sns.set()
 
 
 def format_to_pandas(X, columns):
