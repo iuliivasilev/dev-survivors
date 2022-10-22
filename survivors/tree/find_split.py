@@ -193,7 +193,7 @@ def get_cont_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion,
         uniq_set = np.quantile(arr_notnan[0], [i/float(thres_cont_bin_max) for i in range(1, thres_cont_bin_max)])
     else:  # Set intermediate points
         uniq_set = (uniq_set[:-1] + uniq_set[1:])*0.5
-    uniq_set = np.round(uniq_set, 3)
+    uniq_set = list(set(np.round(uniq_set, 3)))
     attr_dicts = []
     for value in uniq_set:
         # Filter by attr value
