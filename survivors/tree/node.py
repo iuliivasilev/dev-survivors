@@ -135,19 +135,34 @@ class Node(object):
         self.leaf_model.fit(self.df)
 
     """ GROUP FUNCTIONS: CREATE LEAVES """
+    def get_comb_fast(self, features):
+        X = self.df.loc[:, features + [cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
+
+        def create_params_f(v_feature, name):
+            d = self.info.copy()
+            d["arr"] = np.vstack((v_feature, X[-2:]))
+            d["type_attr"] = ("woe" if self.woe else "categ") if name in self.categ else "cont"
+            return d
+
+        return list(map(create_params_f, X[:-2], features))
+
+    def get_comb(self, features):
+        args = np.array([], dtype=dict)
+        for feat in features:
+            t = self.info.copy()
+            t["type_attr"] = ("woe" if self.woe else "categ") if feat in self.categ else "cont"
+            t["arr"] = self.df.loc[:, [feat, cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
+            args = np.append(args, t)
+        return args
 
     def find_best_split(self):
         numb_feats = self.info["max_features"]
         numb_feats = np.clip(numb_feats, 1, len(self.features))
         n_jobs = min(numb_feats, self.info["n_jobs"])
 
-        selected_feats = np.random.choice(self.features, size=numb_feats, replace=False)
-        args = np.array([], dtype=dict)
-        for feat in selected_feats:
-            t = self.info.copy()
-            t["type_attr"] = ("woe" if self.woe else "categ") if feat in self.categ else "cont"
-            t["arr"] = self.df.loc[:, [feat, cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
-            args = np.append(args, t)
+        selected_feats = list(np.random.choice(self.features, size=numb_feats, replace=False))
+        # args = self.get_comb(selected_feats)
+        args = self.get_comb_fast(selected_feats)
 
         # ml = np.vectorize(lambda x: best_attr_split(**x))(args)
 
