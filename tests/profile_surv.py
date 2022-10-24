@@ -44,7 +44,7 @@ def profile_tree(dataset="PBC", n_jobs=1):
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats('cumtime')
     stats.print_stats()
-    stats.dump_stats(f'profile_reports/{dataset}/tree_output_{n_jobs}.pstats')
+    stats.dump_stats(f'profile_reports/{dataset}/tree_output_isf_{n_jobs}.pstats')
 
 
 def profile_boost():
