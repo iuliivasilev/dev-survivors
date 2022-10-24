@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from joblib import Parallel, delayed
+from scipy import stats
 
 from .find_split import best_attr_split
 from .. import constants as cnt
@@ -127,6 +128,7 @@ class Node(object):
         self.info.setdefault("n_jobs", 16)
         self.info.setdefault("max_features", 1.0)
         self.info.setdefault("signif", 1.1)
+        self.info.setdefault("signif_stat", stats.chi2.isf(min(self.info["signif"], 1.0), df=1))
         self.info.setdefault("thres_cont_bin_max", 100)
         if self.info["max_features"] == "sqrt":
             self.info["max_features"] = int(np.trunc(np.sqrt(len(self.features))+0.5))

@@ -254,7 +254,7 @@ def get_categ_attrs(uniq_set, arr_notnan, arr_nan, min_samples_leaf, criterion, 
 
 
 def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_max=100,
-                    signif=1.0, min_samples_leaf=10, bonf=True, verbose=0, **kwargs):
+                    signif=1.0, signif_stat=0.0, min_samples_leaf=10, bonf=True, verbose=0, **kwargs):
     """
     Choose best split for fixed feature.
     Find best splits and choose partition with maximal statistical value.
@@ -273,8 +273,10 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
         WOE : mapping from categorical to continuous and apply get_cont_attrs
     thres_cont_bin_max : int, optional
         Maximal size of intermediate points.
-    signif : TYPE, optional
+    signif : double, optional
         Maximal acceptable significance p-value of split. The default is 1.0.
+    signif_stat : double, optional
+        Minimal acceptable significance statistical value of split. The default is 0.0.
     min_samples_leaf : TYPE, optional
         Minimal acceptable size of branches. The default is 10.
     bonf : boolean, optional
@@ -299,13 +301,12 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     if criterion in scrit.CRITERIA_DICT:
         criterion = scrit.CRITERIA_DICT[criterion]
 
-    signif_val = stats.chi2.isf(min(signif, 1.0), df=1)
-    best_attr = {"stat_val": signif_val, "p_value": signif,
+    best_attr = {"stat_val": signif_stat, "p_value": signif,
                  "sign_split": 0, "values": [], "pos_nan": [1, 0]}
-    attr_dicts = [best_attr]
     # The leaf is too small for split
     if arr.shape[1] < 2*min_samples_leaf:
-        return best_attr 
+        return best_attr
+
     ind = np.isnan(arr[0])
     arr_nan = arr[1:, np.where(ind)[0]].astype(np.int32)
     arr_notnan = arr[:, np.where(~ind)[0]]
@@ -316,10 +317,10 @@ def best_attr_split(arr, criterion="logrank", type_attr="cont", thres_cont_bin_m
     
     if type_attr == "categ" and uniq_set.shape[0] > 0:
         attr_dicts = get_categ_attrs(uniq_set, arr_notnan, arr_nan,
-                                     min_samples_leaf, criterion, signif_val)
+                                     min_samples_leaf, criterion, signif_stat)
     else:
         attr_dicts = get_cont_attrs(uniq_set, arr_notnan, arr_nan,
-                                    min_samples_leaf, criterion, signif_val, thres_cont_bin_max)
+                                    min_samples_leaf, criterion, signif_stat, thres_cont_bin_max)
     
     if len(attr_dicts) == 0:
         return best_attr
