@@ -47,18 +47,22 @@ def profile_tree(dataset="PBC", n_jobs=1):
     stats.dump_stats(f'profile_reports/{dataset}/tree_output_isf_{n_jobs}.pstats')
 
 
-def profile_boost():
-    params = {"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3, "n_jobs": 1}
+def profile_boost(dataset="PBC", n_jobs=1):
+    params = {"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3, "n_jobs": n_jobs}
 
-    X_train, y_train, X_test, y_test, bins = get_samples()
+    X_train, y_train, X_test, y_test, bins = get_samples(dataset=dataset)
     profiler = cProfile.Profile()
     profiler.enable()
-    craid_tree = BoostingCRAID(**params)
-    craid_tree.fit(X_train, y_train)
+    for i in range(5):
+        bst_model = BoostingCRAID(**params)
+        bst_model.fit(X_train, y_train)
+        bst_model.predict_at_times(X_test, bins=bins, mode="surv")
+        bst_model.predict(X_test, target=TIME_NAME)
+        bst_model.predict_at_times(X_test, bins=bins, mode="hazard")
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats('cumtime')
     stats.print_stats()
-    stats.dump_stats('profile_reports/boost_output.pstats')
+    stats.dump_stats(f'profile_reports/{dataset}/bst_output_isf_{n_jobs}.pstats')
 
 
 def profile_exp():
@@ -74,6 +78,6 @@ def profile_exp():
 if __name__ == '__main__':
     # Visualize in browser html with command prompt "snakeviz file.pstats"
     for n in [2**i for i in range(5)]:
-        profile_tree(dataset="PBC", n_jobs=n)
-        profile_tree(dataset="ONK", n_jobs=n)
+        profile_boost(dataset="PBC", n_jobs=n)
+        profile_boost(dataset="ONK", n_jobs=n)
     # profile_exp()

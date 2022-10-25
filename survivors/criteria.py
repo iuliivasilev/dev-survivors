@@ -189,6 +189,8 @@ def lr_statistic(dur_1, dur_2, cens_1, cens_2, times_range, weightings):
     res[:, 1] = O_1_j - E_1_j
     res[:, 2] = E_1_j * (N_j - O_j) * N_2_j / (N_j * (N_j - 1))
     res[:, 0] = 1.0
+    # if np.any(N_j <= 1):
+    #     return 0.0
     if weightings == 2:
         res[:, 0] = N_j
     elif weightings == 3:
@@ -247,7 +249,10 @@ def weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""):
                                times_range.astype("int64"),
                                np.int64(weightings))
         return logrank
-    except:
+    except Exception as err:
+        # print("Error type:", type(err))  # the exception instance
+        # print("Error args:", err.args)  # arguments stored in .args
+        # print("Error:", err)
         return 0.0
 
     #     pvalue = stats.chi2.sf(logrank, df=1)
