@@ -18,6 +18,27 @@ DATASETS_LOAD = {
     "COVID": ds.load_covid_dataset
 }
 
+TREE_PARAMS = {
+    # Baseline time: 83,97 -> 8.7
+    "PBC": {'categ': ['trt', 'sex', 'ascites', 'hepato', 'spiders'],
+            'criterion': 'peto', 'cut': True, 'depth': 10,
+            'max_features': 1.0, 'min_samples_leaf': 5, 'signif': 0.05, 'woe': False},
+    # Baseline time: 108,19 -> 10.8
+    "ONK": {'categ': ['Диагноз'], 'criterion': 'peto', 'cut': True,
+            'depth': 10, 'max_features': 1.0, 'min_samples_leaf': 100,
+            'signif': 0.05, 'woe': False}
+}
+
+BOOST_PARAMS = {
+    # Baseline time: 418,59 -> 90.1
+    "PBC": {'aggreg_func': 'wei', 'categ': ['trt', 'sex', 'ascites', 'hepato', 'spiders'],
+            'criterion': 'peto', 'depth': 15, 'ens_metric_name': 'roc', 'max_features': 'sqrt',
+            'min_samples_leaf': 1, 'mode_wei': 'square', 'n_estimators': 15, 'size_sample': 0.5},
+    # Baseline time: 350,59 -> 77.3
+    "ONK": {'aggreg_func': 'wei', 'categ': ['Диагноз'], 'criterion': 'peto',
+            'depth': 15, 'ens_metric_name': 'conc', 'max_features': 'sqrt',
+            'min_samples_leaf': 100, 'mode_wei': 'square', 'n_estimators': 30, 'size_sample': 0.5}
+}
 
 def get_samples(dataset="PBC"):
     X, y, features, categ, sch_nan = DATASETS_LOAD[dataset]()
@@ -26,8 +47,9 @@ def get_samples(dataset="PBC"):
 
 
 def profile_tree(dataset="PBC", n_jobs=1):
-    # params = {"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05, "n_jobs": 1}
-    params = {"criterion": "peto", "depth": 10, "min_samples_leaf": 1, "signif": 0.05, "n_jobs": n_jobs}
+    # params = {"criterion": "peto", "depth": 10, "min_samples_leaf": 1, "signif": 0.05, "n_jobs": n_jobs}
+    params = TREE_PARAMS[dataset]
+    params["n_jobs"] = n_jobs
 
     X_train, y_train, X_test, y_test, bins = get_samples(dataset=dataset)
 
@@ -44,11 +66,13 @@ def profile_tree(dataset="PBC", n_jobs=1):
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats('cumtime')
     stats.print_stats()
-    stats.dump_stats(f'profile_reports/{dataset}/tree_output_isf_{n_jobs}.pstats')
+    stats.dump_stats(f'profile_reports/{dataset}/tree_output_{n_jobs}.pstats')
 
 
 def profile_boost(dataset="PBC", n_jobs=1):
-    params = {"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3, "n_jobs": n_jobs}
+    # params = {"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3, "n_jobs": n_jobs}
+    params = BOOST_PARAMS[dataset]
+    params["n_jobs"] = n_jobs
 
     X_train, y_train, X_test, y_test, bins = get_samples(dataset=dataset)
     profiler = cProfile.Profile()
@@ -62,7 +86,7 @@ def profile_boost(dataset="PBC", n_jobs=1):
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats('cumtime')
     stats.print_stats()
-    stats.dump_stats(f'profile_reports/{dataset}/bst_output_isf_{n_jobs}.pstats')
+    stats.dump_stats(f'profile_reports/{dataset}/bst_output_{n_jobs}.pstats')
 
 
 def profile_exp():
@@ -78,6 +102,8 @@ def profile_exp():
 if __name__ == '__main__':
     # Visualize in browser html with command prompt "snakeviz file.pstats"
     for n in [2**i for i in range(5)]:
+        profile_tree(dataset="PBC", n_jobs=n)
+        profile_tree(dataset="ONK", n_jobs=n)
         profile_boost(dataset="PBC", n_jobs=n)
         profile_boost(dataset="ONK", n_jobs=n)
     # profile_exp()
