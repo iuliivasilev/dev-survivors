@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from scipy import stats
-from lifelines import CoxPHFitter
+# from lifelines import CoxPHFitter
 # from lifelines.statistics import logrank_test
 # import fastlogranktest as flr
 from numba import njit, jit
@@ -89,13 +89,13 @@ def logrank_self(durations_A, durations_B, event_observed_A=None, event_observed
     return pval
     
 
-def cox(durations_A, durations_B, event_observed_A=None, event_observed_B=None) -> float:
-    dfA = pd.DataFrame({'E': event_observed_A, 'T': durations_A, 'group': 0})
-    dfB = pd.DataFrame({'E': event_observed_B, 'T': durations_B, 'group': 1})
-    df_ = pd.concat([dfA, dfB])
-
-    cph = CoxPHFitter().fit(df_, 'T', 'E')
-    return cph.log_likelihood_ratio_test().p_value
+# def cox(durations_A, durations_B, event_observed_A=None, event_observed_B=None) -> float:
+#     dfA = pd.DataFrame({'E': event_observed_A, 'T': durations_A, 'group': 0})
+#     dfB = pd.DataFrame({'E': event_observed_B, 'T': durations_B, 'group': 1})
+#     df_ = pd.concat([dfA, dfB])
+#
+#     cph = CoxPHFitter().fit(df_, 'T', 'E')
+#     return cph.log_likelihood_ratio_test().p_value
 
 
 # 06/02/2022 Numpy+Numba
@@ -166,8 +166,13 @@ def iterate_weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""
 
 
 # @cuda.jit
-@njit('f8(i8[:], i8[:], i8[:], i8[:], i8[:], i8)', cache=True)
-def lr_statistic(dur_1, dur_2, cens_1, cens_2, times_range, weightings):
+@njit('f8(f8[:], f8[:], i8[:], i8[:], i8)', cache=True)
+def lr_statistic(dur_1, dur_2, cens_1, cens_2, weightings):
+    times = np.unique(np.hstack((dur_1, dur_2)))
+    dur_1 = np.searchsorted(times, dur_1) + 1
+    dur_2 = np.searchsorted(times, dur_2) + 1
+    times_range = np.array([1, times.shape[0]], dtype=np.int32)
+
     bins = times_range[1] - times_range[0] + 1
     n_1_j = np.histogram(dur_1, bins=bins, range=times_range)[0]
     n_2_j = np.histogram(dur_2, bins=bins, range=times_range)[0]
@@ -232,27 +237,22 @@ def weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""):
     #     Chi2 p-value of weighted log-rank test
     """
     try:
-        times = np.unique(np.hstack((dur_A, dur_B)))
-        dur_A = np.searchsorted(times, dur_A) + 1
-        dur_B = np.searchsorted(times, dur_B) + 1
-        times_range = np.array([1, times.shape[0]])
         if cens_A is None:
             cens_A = np.ones(dur_A.shape[0])
         if cens_B is None:
             cens_B = np.ones(dur_B.shape[0])
         d = {"logrank": 1, "wilcoxon": 2, "tarone-ware": 3, "peto": 4}
         weightings = d.get(weightings, 1)
-        logrank = lr_statistic(dur_A.astype("int64"),
-                               dur_B.astype("int64"),
+        logrank = lr_statistic(dur_A.astype("float64"),
+                               dur_B.astype("float64"),
                                cens_A.astype("int64"),
                                cens_B.astype("int64"),
-                               times_range.astype("int64"),
                                np.int64(weightings))
         return logrank
     except Exception as err:
-        # print("Error type:", type(err))  # the exception instance
-        # print("Error args:", err.args)  # arguments stored in .args
-        # print("Error:", err)
+        #         print("Error type:", type(err))  # the exception instance
+        #         print("Error args:", err.args)  # arguments stored in .args
+        #         print("Error:", err)
         return 0.0
 
     #     pvalue = stats.chi2.sf(logrank, df=1)
