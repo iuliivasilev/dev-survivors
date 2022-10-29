@@ -19,22 +19,22 @@ DATASETS_LOAD = {
 }
 
 TREE_PARAMS = {
-    # Baseline time: 83,97 -> 8.7
+    # Baseline time: 83,97 -> 7.11
     "PBC": {'categ': ['trt', 'sex', 'ascites', 'hepato', 'spiders'],
             'criterion': 'peto', 'cut': True, 'depth': 10,
             'max_features': 1.0, 'min_samples_leaf': 5, 'signif': 0.05, 'woe': False},
-    # Baseline time: 108,19 -> 10.8
+    # Baseline time: 108,19 -> 10.4
     "ONK": {'categ': ['Диагноз'], 'criterion': 'peto', 'cut': True,
             'depth': 10, 'max_features': 1.0, 'min_samples_leaf': 100,
             'signif': 0.05, 'woe': False}
 }
 
 BOOST_PARAMS = {
-    # Baseline time: 418,59 -> 90.1
+    # Baseline time: 418,59 -> 86.3
     "PBC": {'aggreg_func': 'wei', 'categ': ['trt', 'sex', 'ascites', 'hepato', 'spiders'],
             'criterion': 'peto', 'depth': 15, 'ens_metric_name': 'roc', 'max_features': 'sqrt',
             'min_samples_leaf': 1, 'mode_wei': 'square', 'n_estimators': 15, 'size_sample': 0.5},
-    # Baseline time: 350,59 -> 77.3
+    # Baseline time: 350,59 -> 77.4
     "ONK": {'aggreg_func': 'wei', 'categ': ['Диагноз'], 'criterion': 'peto',
             'depth': 15, 'ens_metric_name': 'conc', 'max_features': 'sqrt',
             'min_samples_leaf': 100, 'mode_wei': 'square', 'n_estimators': 30, 'size_sample': 0.5}
