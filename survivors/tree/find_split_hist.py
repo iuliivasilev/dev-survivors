@@ -12,7 +12,10 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
                       weightings, obs_weights):
     N_1_j = np.cumsum(time_hist_1[::-1])[::-1]
     N_2_j = np.cumsum(time_hist_2[::-1])[::-1]
-    ind = np.where(N_1_j + N_2_j != 0)
+    ind = np.where((cens_hist_1 + cens_hist_2 != 0) & (N_1_j * N_2_j != 0))[0]
+    if ind.shape[0] == 0:
+        return 0.0
+
     N_1_j = N_1_j[ind]
     N_2_j = N_2_j[ind]
     O_1_j = cens_hist_1[ind]
@@ -205,7 +208,9 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     if weights is None:
         weights_hist = None
     else:
-        weights_hist = np.bincount(dur, weights=weights, minlength=max_bin + 1)
+        print(weights.shape)
+        print(arr.shape)
+        weights_hist = np.bincount(dur, weights=weights/sum(weights), minlength=max_bin + 1)
 
     # for each split values get branches
     attr_dicts = []
