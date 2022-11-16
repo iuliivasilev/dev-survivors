@@ -56,10 +56,13 @@ class BoostingCRAID(BaseEnsemble):
     .. [1] Drucker H. Improving regressors using boosting techniques 
             //ICML. – 1997. – Т. 97. – С. 107-115.
     """
-    def __init__(self, mode_wei="linear", **kwargs):
+    def __init__(self, mode_wei="linear", weighted_tree=False, **kwargs):
         self.name = "BoostingCRAID"
         self.mode_wei = mode_wei
         self.weights = None
+        self.weighted_tree = weighted_tree
+        if self.weighted_tree:
+            kwargs["weights_feature"] = "weights_obs"
         super().__init__(**kwargs)
         
     def fit(self, X, y):
@@ -81,10 +84,12 @@ class BoostingCRAID(BaseEnsemble):
             x_sub = self.X_train.sample(n=self.size_sample, weights=self.weights,
                                         replace=self.bootstrap, random_state=i)
             x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index), :]
-            
+
             x_sub = x_sub.reset_index(drop=True)
             X_sub_tr, y_sub_tr = cnt.pd_to_xy(x_sub)
-            
+            if self.weighted_tree:
+                X_sub_tr["weights_obs"] = self.weights[x_sub['ind_start']]
+
             model = CRAID(features=self.features, random_state=i, **self.tree_kwargs)
             model.fit(X_sub_tr, y_sub_tr)
             
