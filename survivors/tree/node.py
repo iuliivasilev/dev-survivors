@@ -6,6 +6,7 @@ from joblib import Parallel, delayed
 from scipy import stats
 
 from .find_split import best_attr_split
+from .find_split_hist import hist_best_attr_split
 from .. import constants as cnt
 from .stratified_model import LEAF_MODEL_DICT
 from ..scheme import Scheme
@@ -42,6 +43,11 @@ class Rule(object):
         if self.has_nan_:
             s = f"({s}| nan)"  # не указано)"
         return s
+
+    def print(self):
+        print(f"has_nan: {self.has_nan()}")
+        print(f"feature: {self.get_feature()}")
+        print(f"condition: {self.get_condition()}")
 
 
 """ Класс вершины дерева решений """
@@ -107,7 +113,7 @@ class Node(object):
     """
     def __init__(self, df,  numb=0, full_rule=[],
                  depth=0, features=[], categ=[], woe=False,
-                 verbose=0, leaf_model="base", **info):
+                 verbose=0, **info):
         self.df = df
         self.numb = numb
         self.full_rule = full_rule
@@ -120,7 +126,6 @@ class Node(object):
         self.is_leaf = True
         self.verbose = verbose
         self.info = info
-        self.leaf_model = LEAF_MODEL_DICT.get(leaf_model, "base")()
         self.check_params()
 
     def check_params(self):
@@ -128,12 +133,18 @@ class Node(object):
         self.info.setdefault("n_jobs", 16)
         self.info.setdefault("max_features", 1.0)
         self.info.setdefault("signif", 1.1)
+        self.info.setdefault("weights_feature", None)
         self.info.setdefault("signif_stat", stats.chi2.isf(min(self.info["signif"], 1.0), df=1))
         self.info.setdefault("thres_cont_bin_max", 100)
         if self.info["max_features"] == "sqrt":
             self.info["max_features"] = int(np.trunc(np.sqrt(len(self.features))+0.5))
         elif isinstance(self.info["max_features"], float):
             self.info["max_features"] = int(self.info["max_features"]*len(self.features))
+        if not(self.info["weights_feature"] is None):
+            self.info["weights"] = self.df[self.info["weights_feature"]].to_numpy()
+
+        self.info.setdefault("leaf_model", "base")
+        self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base")()
         self.leaf_model.fit(self.df)
 
     """ GROUP FUNCTIONS: CREATE LEAVES """
@@ -169,13 +180,22 @@ class Node(object):
         # ml = np.vectorize(lambda x: best_attr_split(**x))(args)
 
         with Parallel(n_jobs=n_jobs, verbose=0, batch_size=10) as parallel:  # prefer="threads"
-            ml = parallel(delayed(best_attr_split)(**a) for a in args)
+            ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
 
         attr = min(attrs, key=lambda x: attrs[x]["p_value"])
         if attrs[attr]["sign_split"] > 0 and self.info["bonf"]:
             attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
         return (attr, attrs[attr])
+
+    def ind_for_nodes(self, X_attr, best_split, is_categ):
+        rule_id = best_split["pos_nan"].index(0)
+        query = best_split["values"][rule_id]
+        if is_categ:
+            values = np.isin(X_attr, eval(query[query.find("["):]))
+        else:
+            values = eval("X_attr" + query)
+        return np.where(values, rule_id, 1 - rule_id)
 
     def split(self):
         node_edges = np.array([], dtype=int)
@@ -190,17 +210,35 @@ class Node(object):
 
         if self.verbose > 0:
             print('='*6, best_split["p_value"], attr)
-        for v, p_n in zip(best_split["values"], best_split["pos_nan"]):
-            query = attr + v
-            if p_n == 1:
-                query = "(" + attr + v + ") or (" + attr + " != " + attr + ")"
-            rule = Rule(feature=attr, condition=v, has_nan=p_n)
-            d_node = self.df.query(query).copy()
+
+        branch_ind = self.ind_for_nodes(self.df[attr], best_split, attr in self.categ)
+
+        for n_b in np.unique(branch_ind):
+            rule = Rule(feature=attr,
+                        condition=best_split["values"][n_b],
+                        has_nan=best_split["pos_nan"][n_b])
+            d_node = self.df[branch_ind == n_b].copy()
             N = Node(df=d_node, full_rule=self.full_rule + [rule],
                      features=self.features, categ=self.categ,
-                     depth=self.depth+1, verbose=self.verbose, **self.info)
+                     depth=self.depth + 1, verbose=self.verbose, **self.info)
             node_edges = np.append(node_edges, N)
             self.rule_edges = np.append(self.rule_edges, rule)
+
+        if self.rule_edges.shape[0] == 1:
+            print(branch_ind, self.df[attr], best_split, attr in self.categ)
+            raise ValueError('ERROR: Only one branch created!')
+
+        # for v, p_n in zip(best_split["values"], best_split["pos_nan"]):
+        #     query = attr + v
+        #     if p_n == 1:
+        #         query = "(" + attr + v + ") or (" + attr + " != " + attr + ")"
+        #     rule = Rule(feature=attr, condition=v, has_nan=p_n)
+        #     d_node = self.df.query(query).copy()
+        #     N = Node(df=d_node, full_rule=self.full_rule + [rule],
+        #              features=self.features, categ=self.categ,
+        #              depth=self.depth+1, verbose=self.verbose, **self.info)
+        #     node_edges = np.append(node_edges, N)
+        #     self.rule_edges = np.append(self.rule_edges, rule)
 
         return node_edges
 
@@ -224,6 +262,7 @@ class Node(object):
     def get_edges(self, X):
         X_np = self.prepare_df_for_attr(X)
         rule_id = 1 if self.rule_edges[0].has_nan() else 0
+
         query = self.rule_edges[rule_id].get_condition()
         if self.rule_edges[0].get_feature() in self.categ:
             values = np.isin(X_np, eval(query[query.find("["):]))
