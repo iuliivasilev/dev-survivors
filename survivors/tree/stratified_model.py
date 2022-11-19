@@ -63,7 +63,7 @@ class LeafOnlyHazardModel(LeafModel):
         sf = np.exp(-1*hf)
         if X is None:
             return sf
-        return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
+        return sf
 
 
 class LeafOnlySurviveModel(LeafModel):
@@ -72,7 +72,7 @@ class LeafOnlySurviveModel(LeafModel):
         hf = -1*np.log(sf)
         if X is None:
             return hf
-        return np.repeat(hf[np.newaxis, :], X.shape[0], axis=0)
+        return hf
 
 
 LEAF_MODEL_DICT = {
