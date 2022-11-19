@@ -193,7 +193,7 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         uniq_set = (uniq_set[:-1] + uniq_set[1:]) * 0.5
     uniq_set = np.unique(np.round(uniq_set, 3))
 
-    index_vals_bin = np.digitize(vals_notna, uniq_set)
+    index_vals_bin = np.digitize(vals_notna, uniq_set, right=True)
 
     # find global hist by times
     na_time_hist, na_cens_hist = get_sa_hists(dur[ind], cens[ind], minlength=max_bin + 1)
@@ -208,9 +208,12 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     if weights is None:
         weights_hist = None
     else:
-        print(weights.shape)
-        print(arr.shape)
-        weights_hist = np.bincount(dur, weights=weights/sum(weights), minlength=max_bin + 1)
+        # print(weights.shape)
+        # print(arr.shape)
+        # print(weights)
+        weights_hist = np.bincount(dur, weights=weights/sum(weights),  # /sum(weights),
+                                   minlength=max_bin + 1)
+        # weights_hist = np.cumsum(weights_hist[::-1])[::-1]
 
     # for each split values get branches
     attr_dicts = []
@@ -236,7 +239,6 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         if max_stat_val >= signif_stat:
             attr_loc = get_attrs(max_stat_val, uniq_set[u], none_to, num_l, num_r, num_nan)
             attr_dicts.append(attr_loc)
-    #         print(uniq_set[u], max_stat_val)
     if len(attr_dicts) == 0:
         return best_attr
     best_attr = select_best_split_info(attr_dicts, type_attr, bonf, descr_woe=descr_woe)

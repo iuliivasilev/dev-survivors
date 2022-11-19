@@ -28,7 +28,7 @@ class BootstrapCRAID(BaseEnsemble):
         self.features = X.columns
         X = X.reset_index(drop=True)
         X[cnt.CENS_NAME] = y[cnt.CENS_NAME].astype(np.int32)
-        X[cnt.TIME_NAME] = y[cnt.TIME_NAME].astype(np.int32)
+        X[cnt.TIME_NAME] = y[cnt.TIME_NAME].astype(np.float32)
         
         self.X_train = X
         self.y_train = y
