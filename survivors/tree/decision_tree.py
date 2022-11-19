@@ -153,7 +153,7 @@ class CRAID(object):
         X = X.reset_index(drop=True)
         X_tr = X.copy()
         X_tr[cnt.CENS_NAME] = y[cnt.CENS_NAME].astype(np.int32)
-        X_tr[cnt.TIME_NAME] = y[cnt.TIME_NAME].astype(np.int32)
+        X_tr[cnt.TIME_NAME] = y[cnt.TIME_NAME].astype(np.float32)
 
         if not ("min_samples_leaf" in self.info):
             self.info["min_samples_leaf"] = 0.01 * X_tr.shape[0]
@@ -182,23 +182,23 @@ class CRAID(object):
         if self.cut:
             self.cut_tree(X_val, cnt.CENS_NAME, mode_f=roc_auc_score, choose_f=max)
 
-        self.fit_cox_hazard(X, y)
+        # self.fit_cox_hazard(X, y)
         return
 
-    def fit_cox_hazard(self, X, y):
-        self.coxph = CoxPHSurvivalAnalysis(alpha=0.1)
-        self.ohenc = OneHotEncoder(handle_unknown='ignore')
-        pred_node = self.predict(X, mode="target", target="numb").reshape(-1, 1)
-        ohenc_node = self.ohenc.fit_transform(pred_node).toarray()
-        self.coxph.fit(ohenc_node, y)
+    # def fit_cox_hazard(self, X, y):
+    #     self.coxph = CoxPHSurvivalAnalysis(alpha=0.1)
+    #     self.ohenc = OneHotEncoder(handle_unknown='ignore')
+    #     pred_node = self.predict(X, mode="target", target="numb").reshape(-1, 1)
+    #     ohenc_node = self.ohenc.fit_transform(pred_node).toarray()
+    #     self.coxph.fit(ohenc_node, y)
 
-    def predict_cox_hazard(self, X, bins):
-        bins = np.clip(bins, self.bins.min(), self.bins.max())
-        pred_node = self.predict(X, mode="target", target="numb").reshape(-1, 1)
-        ohenc_node = self.ohenc.transform(pred_node).toarray()
-        hazards = self.coxph.predict_cumulative_hazard_function(ohenc_node)
-        pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
-        return pred_haz
+    # def predict_cox_hazard(self, X, bins):
+    #     bins = np.clip(bins, self.bins.min(), self.bins.max())
+    #     pred_node = self.predict(X, mode="target", target="numb").reshape(-1, 1)
+    #     ohenc_node = self.ohenc.transform(pred_node).toarray()
+    #     hazards = self.coxph.predict_cumulative_hazard_function(ohenc_node)
+    #     pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
+    #     return pred_haz
 
     def predict(self, X, mode="target", target=cnt.TIME_NAME, end_list=[], bins=None):
         """
@@ -277,8 +277,8 @@ class CRAID(object):
             Vector of function values in times (bins).
         """
         X = format_to_pandas(X, self.features)
-        if mode == "cox-hazard":
-            return self.predict_cox_hazard(X, bins)
+        # if mode == "cox-hazard":
+        #     return self.predict_cox_hazard(X, bins)
         return self.predict(X, target=mode, bins=bins)
 
     def predict_schemes(self, X, scheme_feats):
