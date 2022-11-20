@@ -37,16 +37,27 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
-    "criterion": ["logrank"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"],
-    "depth": [15, 25],
-    "ens_metric_name": ["ibs"] if short else ["roc"],
-    "max_features": [0.3] if short else ["sqrt"],
-    "min_samples_leaf": [1] if short else [1, 5, 15],
+    "criterion": ["weights"] if short else ["weights"],  # , "logrank", "peto", "tarone-ware", "wilcoxon"],
+    "depth": [15],  # 25],
+    "ens_metric_name": ["roc"] if short else ["ibs", "roc"],
+    "max_features": ["sqrt"] if short else ["sqrt"],  # 0.3
+    "min_samples_leaf": [1] if short else [1, 5],  # 15],
     "mode_wei": ['square', 'exp'] if short else ['square', 'exp'],
-    "n_estimators": [15] if short else [10, 15, 25],
-    "size_sample": [0.5] if short else [0.5, 0.7]
+    "n_estimators": [15] if short else [25],  # [10, 15, 25],
+    "size_sample": [0.5] if short else [0.5, 0.7],
+    "leaf_model": ["base"] if short else ["only_hazard", "only_survive", "base"],
+    "weighted_tree": [True],
+    "n_jobs": [1]
     # "woe" : [],
 }
+
+# BOOST_param_grid_error = {'aggreg_func': ['wei'],
+#                     'criterion': ['weights'],
+#                     'depth': [15], 'ens_metric_name': ['ibs'],
+#                     'leaf_model': ['only_hazard'],
+#                     'max_features': ['sqrt'], 'min_samples_leaf': [5],
+#                     'mode_wei': ['exp'], 'n_estimators': [25],
+#                     'n_jobs': [1], 'size_sample': [0.7], 'weighted_tree': [True]}
 
 PBC_PARAMS = {
     "TREE": CRAID_param_grid,
