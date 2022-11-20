@@ -30,9 +30,9 @@ def pbs_samples():
 @pytest.mark.parametrize(
     ("params", "n_obser", "l_expected"),
     [({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05},
-     12, [0.17045, 1971.20455, 1.0, 0.32086, 0.79905]),
+     12, [0.17045, 1971.205, 1.0, 0.32086, 0.79905]),
      ({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05, "cut": True},
-      12, [0.10588, 2069.91765, 1.0, 0.83601, 0.90273])
+      12, [0.10588, 2069.918, 1.0, 0.83601, 0.90273])
     ]
 )
 def test_tree(pbs_samples, params, n_obser, l_expected):
@@ -45,7 +45,7 @@ def test_tree(pbs_samples, params, n_obser, l_expected):
     pred_surv = craid_tree.predict_at_times(X_test, bins=bins, mode="surv")
 
     assert round(pred_prob[n_obser], 5) == l_expected[0]
-    assert round(pred_time[n_obser], 5) == l_expected[1]
+    assert round(pred_time[n_obser], 3) == l_expected[1]
     assert round(pred_surv[n_obser][0], 5) == l_expected[2]
     assert round(pred_surv[n_obser][-1], 5) == l_expected[3]
     assert round(pred_surv[n_obser].mean(), 5) == l_expected[4]
@@ -54,7 +54,7 @@ def test_tree(pbs_samples, params, n_obser, l_expected):
 @pytest.mark.parametrize(
     ("params", "n_obser", "l_expected", "boost_bettas"),
     [({"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3},
-     12, [0.13312, 1908.03485, 1.0, 0.74072, 0.87483], [0.06726, 0.08173, 0.04871])
+     12, [0.13312, 1908.035, 1.0, 0.74072, 0.87483], [0.06726, 0.08173, 0.04871])
     ]
 )
 def test_boosting(pbs_samples, params, n_obser, l_expected, boost_bettas):
@@ -67,7 +67,7 @@ def test_boosting(pbs_samples, params, n_obser, l_expected, boost_bettas):
 
     assert list(np.round(bstr.bettas, 5)) == boost_bettas
     assert round(pred_prob[n_obser], 5) == l_expected[0]
-    assert round(pred_time[n_obser], 5) == l_expected[1]
+    assert round(pred_time[n_obser], 3) == l_expected[1]
     assert round(pred_surv[n_obser][0], 5) == l_expected[2]
     assert round(pred_surv[n_obser][-1], 5) == l_expected[3]
     assert round(pred_surv[n_obser].mean(), 5) == l_expected[4]

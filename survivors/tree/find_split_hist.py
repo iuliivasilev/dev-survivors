@@ -211,9 +211,9 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         # print(weights.shape)
         # print(arr.shape)
         # print(weights)
-        weights_hist = np.bincount(dur, weights=weights/sum(weights),  # /sum(weights),
+        weights_hist = np.bincount(dur, weights=weights,  # /sum(weights),
                                    minlength=max_bin + 1)
-        # weights_hist = np.cumsum(weights_hist[::-1])[::-1]
+        weights_hist = np.cumsum(weights_hist[::-1])[::-1]
 
     # for each split values get branches
     attr_dicts = []
