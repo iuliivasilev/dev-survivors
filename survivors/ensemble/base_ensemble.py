@@ -81,7 +81,7 @@ class BaseEnsemble(object):
         self.ens_metr = np.zeros(self.n_estimators)
         self.list_pred_oob = []
         
-        if self.size_sample < 1.0:
+        if isinstance(self.size_sample, float):
             self.size_sample = int(self.size_sample*self.X_train.shape[0])
         self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
                                  cens=self.y_train[cnt.CENS_NAME])
