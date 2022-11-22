@@ -56,7 +56,7 @@ class BoostingCRAID(BaseEnsemble):
     .. [1] Drucker H. Improving regressors using boosting techniques 
             //ICML. – 1997. – Т. 97. – С. 107-115.
     """
-    def __init__(self, mode_wei="linear", weighted_tree=False, **kwargs):
+    def __init__(self, mode_wei="linear", weighted_tree=True, **kwargs):
         self.name = "BoostingCRAID"
         self.mode_wei = mode_wei
         self.weights = None
