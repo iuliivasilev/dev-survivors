@@ -23,15 +23,16 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.5] if short else [0.5, 0.7],
-    "n_estimators": [15] if short else [15], 
-    "ens_metric_name": ["ibs"] if short else ["conc", "ibs"],
-    "depth": [15],
+    "n_estimators": [15] if short else [50],
+    "ens_metric_name": ["ibs"] if short else ["roc", "conc", "ibs"],
+    "depth": [5],
     "mode_wei": ['exp'] if short else ['square', 'exp'],
-    # "woe" : [],
-    "criterion": ["logrank"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"],
-    "min_samples_leaf": [25] if short else [15, 20, 25],
-    "max_features": [0.7] if short else [0.7],
-    "aggreg_func": ['wei'] if short else ['wei', 'mean']
+    "criterion": ["logrank"] if short else ["weights", "logrank", "peto", "tarone-ware", "wilcoxon"],  # ["weights"],
+    "min_samples_leaf": [25] if short else [20],
+    "max_features": [0.7] if short else [0.7, "sqrt"],
+    "aggreg_func": ['wei'] if short else ['wei', 'mean'],
+    "leaf_model": ["base"] if short else ["wei_survive"],  # "only_hazard", "base"],
+    "n_jobs": [1]
 }
 
 GBSG_PARAMS = {
