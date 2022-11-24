@@ -19,6 +19,7 @@ class LeafModel(object):
         #              cens=X_node[cnt.CENS_NAME].to_numpy(), mode='a', num_bins=100)
         # self.survival = metr.get_survival_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
         # self.hazard = metr.get_hazard_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
+
         self.features_mean = X_node.mean(axis=0).to_dict()
         self.lists = X_node.loc[:, need_features].to_dict(orient="list")
 
@@ -75,8 +76,95 @@ class LeafOnlySurviveModel(LeafModel):
         return hf
 
 
+class KaplanMeier:
+    def __init__(self):
+        self.timeline = None
+        self.survival_function = None
+
+    def fit(self, durations, right_censor, weights):
+        self.timeline = np.unique(durations)
+
+        dur_ = np.searchsorted(self.timeline, durations)
+        hist_dur = np.bincount(dur_, weights=weights)
+        hist_cens = np.bincount(dur_, weights=right_censor*weights)
+        cumul_hist = np.cumsum(hist_dur[::-1])[::-1]
+        self.survival_function = np.hstack([1.0, np.cumprod((1.0 - hist_cens / (cumul_hist)))])
+
+    def survival_function_at_times(self, times):
+        place_bin = np.digitize(times, self.timeline)
+        return self.survival_function[np.clip(place_bin, 0, None)]
+
+
+class NelsonAalen:
+    def __init__(self):
+        self.timeline = None
+        self.survival_function = None
+
+    def fit(self, durations, right_censor, weights):
+        self.timeline = np.unique(durations)
+
+        dur_ = np.searchsorted(self.timeline, durations)
+        hist_dur = np.bincount(dur_, weights=weights)
+        hist_cens = np.bincount(dur_, weights=right_censor*weights)
+        cumul_hist = np.cumsum(hist_dur[::-1])[::-1]
+        self.hazard_function = np.hstack([0.0, np.cumsum(hist_cens / cumul_hist)])
+
+    def cumulative_hazard_at_times(self, times):
+        place_bin = np.digitize(times, self.timeline)
+        return self.hazard_function[np.clip(place_bin, 0, None)]
+
+
+class WeightSurviveModel(LeafModel):
+    def __init__(self, weights_name="weights_obs"):
+        self.shape = None
+        self.survival = None
+        self.hazard = None
+        self.features_mean = dict()
+        self.lists = dict()
+        self.weights_name = weights_name
+        self.default_bins = np.array([1, 10, 100, 1000])
+
+    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME]):
+        if self.weights_name is None:
+            self.weights = np.ones_like(X_node[cnt.TIME_NAME])
+        else:
+            self.weights = X_node[self.weights_name].to_numpy()
+        self.survival = KaplanMeier()
+        self.survival.fit(X_node[cnt.TIME_NAME].to_numpy(),
+                          X_node[cnt.CENS_NAME].to_numpy(),
+                          self.weights)
+        self.hazard = NelsonAalen()
+        self.hazard.fit(X_node[cnt.TIME_NAME].to_numpy(),
+                        X_node[cnt.CENS_NAME].to_numpy(),
+                        self.weights)
+        super().fit(X_node, need_features)
+
+    def predict_survival_at_times(self, X=None, bins=None):
+        if bins is None:
+            bins = self.default_bins
+        sf = self.survival.survival_function_at_times(bins)
+        if X is None:
+            return sf
+        return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
+
+    def predict_hazard_at_times(self, X=None, bins=None):
+        if bins is None:
+            bins = self.default_bins
+        hf = self.hazard.cumulative_hazard_at_times(bins)
+        if X is None:
+            return hf
+        return np.repeat(hf[np.newaxis, :], X.shape[0], axis=0)
+
+
+class BaseFastSurviveModel(WeightSurviveModel):
+    def __init__(self):
+        super().__init__(weights_name=None)
+
+
 LEAF_MODEL_DICT = {
     "base": LeafModel,
     "only_hazard": LeafOnlyHazardModel,
-    "only_survive": LeafOnlySurviveModel
+    "only_survive": LeafOnlySurviveModel,
+    "wei_survive": WeightSurviveModel,
+    "base_fast": BaseFastSurviveModel
 }
