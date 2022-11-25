@@ -81,7 +81,7 @@ python setup.py install
 
 #### Installing by tar.gz
 python setup.py sdist
-pip install dist/scsurvivors-1.0.tar.gz
+pip install dist/survivors-*.tar.gz
 
 #### Uninstalling
-pip uninstall scsurvivors
+pip uninstall survivors
