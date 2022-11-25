@@ -59,8 +59,8 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
                                     weights_hist.astype("float32"))
         return logrank
     except Exception as err:
-        print(err)
-        print(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2)
+        # print(err)
+        # print(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2, weights_hist)
         return 0.0
 
 
@@ -213,7 +213,8 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         # print(weights)
         weights_hist = np.bincount(dur, weights=weights,  # /sum(weights),
                                    minlength=max_bin + 1)
-        weights_hist = np.cumsum(weights_hist[::-1])[::-1]
+        weights_hist = np.cumsum(weights_hist[::-1])[::-1]  # np.sqrt()
+        # weights_hist = weights_hist / weights_hist.sum()
 
     # for each split values get branches
     attr_dicts = []
