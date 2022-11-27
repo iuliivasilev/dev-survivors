@@ -8,7 +8,7 @@ from scipy import stats
 from .find_split import best_attr_split
 from .find_split_hist import hist_best_attr_split
 from .. import constants as cnt
-from .stratified_model import LEAF_MODEL_DICT
+from .stratified_model import LEAF_MODEL_DICT, LeafModel
 from ..scheme import Scheme
 
 sns.set()
@@ -144,7 +144,12 @@ class Node(object):
             self.info["weights"] = self.df[self.info["weights_feature"]].to_numpy()
 
         self.info.setdefault("leaf_model", "base")
-        self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base")()
+        if isinstance(self.info["leaf_model"], str):
+            self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base")()
+        elif isinstance(self.info["leaf_model"], LeafModel):
+            self.leaf_model = self.info["leaf_model"]()
+        else:
+            self.leaf_model = None
         self.leaf_model.fit(self.df)
 
     """ GROUP FUNCTIONS: CREATE LEAVES """
@@ -207,7 +212,6 @@ class Node(object):
             if self.verbose > 0:
                 print(f'Конец ветви, незначащее p-value: {best_split["p_value"]}')
             return node_edges
-
         if self.verbose > 0:
             print('='*6, best_split["p_value"], attr)
 
