@@ -1,0 +1,15 @@
+BOOST_param_grid = {
+    "size_sample": [0.5] if short else [0.5],
+    "n_estimators": [15] if short else [50],
+    "ens_metric_name": ["ibs"] if short else ["conc", "ibs", "roc"],
+    "depth": [5],
+    "mode_wei": ['exp'] if short else ['square', 'exp'],
+    # "woe" : [],
+    "criterion": ["logrank"] if short else ["weights", "logrank", "peto", "tarone-ware", "wilcoxon"],
+    "min_samples_leaf": [25] if short else [20],
+    "max_features": [0.7] if short else [0.7],
+    "aggreg_func": ['wei'] if short else ['wei', 'mean'],
+    "leaf_model": ["base"] if short else ["only_hazard", "base"],
+    "weighted_tree": [True],
+    "n_jobs": [1]
+}
