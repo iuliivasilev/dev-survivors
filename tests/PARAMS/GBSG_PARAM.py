@@ -31,7 +31,7 @@ BOOST_param_grid = {
     "min_samples_leaf": [25] if short else [20],
     "max_features": [0.7] if short else [0.7, "sqrt"],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
-    "leaf_model": ["base"] if short else ["wei_survive"],  # "only_hazard", "base"],
+    "leaf_model": ["base"] if short else ["base_fast", "wei_survive"],  # "only_hazard", "base"],
     "n_jobs": [1]
 }
 

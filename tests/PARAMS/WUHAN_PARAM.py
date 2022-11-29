@@ -43,10 +43,11 @@ BOOST_param_grid = {
     "depth": [15],
     "mode_wei": ['exp'] if short else ['exp', 'linear'],
     # "woe" : [],
-    "criterion": ["logrank"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"],
+    "criterion": ["logrank"] if short else ["weights", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [10, 25],
     "max_features": [0.7] if short else [0.7],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
+    "leaf_model": ["base"] if short else ["base_fast", "wei_survive"],
     "n_jobs": [32]
 }
 

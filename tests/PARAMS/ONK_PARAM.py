@@ -27,13 +27,14 @@ BOOST_param_grid = {
     "size_sample": [0.9],  # [0.5, 0.7],
     "n_estimators": [30],
     "ens_metric_name": ["ibs"] if short else ["conc", "ibs"],
-    "depth": [5, 10],
+    "depth": [10],
     "mode_wei": ['exp'] if short else ['exp', 'square'],
     # "woe" : [],
     "criterion": ["logrank"] if short else ["weights", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [5] if short else [100],  # [20, 100] #[30, 50],
     "max_features": [0.4] if short else [0.5, 0.7],  # [0.2, 0.5],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
+    "leaf_model": ["base_fast", "wei_survive"],
     "n_jobs": [1]
 }
 

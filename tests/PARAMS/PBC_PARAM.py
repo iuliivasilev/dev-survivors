@@ -1,4 +1,4 @@
-short = False
+short = True
 
 CRAID_param_grid = {
     "depth": [10, 15],
@@ -45,7 +45,8 @@ BOOST_param_grid = {
     "mode_wei": ['square', 'exp'] if short else ['square', 'exp'],
     "n_estimators": [15] if short else [25],  # [10, 15, 25],
     "size_sample": [0.5] if short else [0.5, 0.7],
-    "leaf_model": ["base"] if short else ["only_hazard", "only_survive", "base"],
+    "leaf_model": ["base", "only_hazard", "only_survive", "wei_survive", "base_fast"],
+    # "leaf_model": ["base"] if short else ["base_fast", "wei_survive"],
     "weighted_tree": [True],
     "n_jobs": [1]
     # "woe" : [],
