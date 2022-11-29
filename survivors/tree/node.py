@@ -146,8 +146,10 @@ class Node(object):
         self.info.setdefault("leaf_model", "base")
         if isinstance(self.info["leaf_model"], str):
             self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base")()
-        elif isinstance(self.info["leaf_model"], LeafModel):
+        elif isinstance(self.info["leaf_model"], type):  # Check is class
             self.leaf_model = self.info["leaf_model"]()
+            if not(isinstance(self.leaf_model, LeafModel)):
+                self.leaf_model = None
         else:
             self.leaf_model = None
         self.leaf_model.fit(self.df)
@@ -311,11 +313,11 @@ class Node(object):
         elif target in self.__dict__:
             res = np.repeat(getattr(self, target, np.nan), X.shape[0], axis=0)
         else:
-            res = self.leaf_model.predict_mean_feature(X, target)  # np.mean(dataset[target])
+            res = self.leaf_model.predict_feature(X, target)  # np.mean(dataset[target])
         return res
 
     def predict_scheme(self, X, scheme_feats):
-        feat_means = np.array([self.leaf_model.features_mean.get(s_f, np.nan)
+        feat_means = np.array([self.leaf_model.features_predict.get(s_f, np.nan)
                                for s_f in scheme_feats])
         times = self.leaf_model.predict_list_feature(cnt.TIME_NAME)
         cens = self.leaf_model.predict_list_feature(cnt.CENS_NAME)
@@ -341,8 +343,8 @@ class Node(object):
         plt.close(fig)
 
     def get_description(self):
-        m_cens = round(self.leaf_model.predict_mean_feature(X=None, feature_name=cnt.CENS_NAME), 2)
-        m_time = round(self.leaf_model.predict_mean_feature(X=None, feature_name=cnt.TIME_NAME), 2)
+        m_cens = round(self.leaf_model.predict_feature(X=None, feature_name=cnt.CENS_NAME), 2)
+        m_time = round(self.leaf_model.predict_feature(X=None, feature_name=cnt.TIME_NAME), 2)
         label = "\n".join([f"size = {self.leaf_model.get_shape()[0]}",
                            f"cens/size = {m_cens}",
                            f"depth = {self.depth}",

@@ -14,6 +14,8 @@ from survivors.ensemble import BoostingCRAID
 from survivors.experiments import grid as exp
 from survivors import datasets as ds
 
+from survivors.tree.stratified_model import LEAF_MODEL_DICT
+
 from PARAMS.GBSG_PARAM import GBSG_PARAMS
 from PARAMS.PBC_PARAM import PBC_PARAMS
 from PARAMS.ONK_PARAM import ONK_PARAMS
@@ -172,13 +174,16 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
     experim = exp.Experiments(folds=5, except_stop=except_stop, dataset_name=dataset)
     experim.set_metrics(lst_metrics)
     if with_external:
-        experim.add_method(CoxPHSurvivalAnalysis, cox_param_grid)
-        experim.add_method(SurvivalTree, ST_param_grid)
-        experim.add_method(RandomSurvivalForest, RSF_param_grid)
-        experim.add_method(GradientBoostingSurvivalAnalysis, GBSA_param_grid)
+        experim.add_method(LEAF_MODEL_DICT["base"], {})
+        experim.add_method(LEAF_MODEL_DICT["base_fast"], {})
+        # experim.add_method(CoxPHSurvivalAnalysis, cox_param_grid)
+        # experim.add_method(SurvivalTree, ST_param_grid)
+        # experim.add_method(RandomSurvivalForest, RSF_param_grid)
+        # experim.add_method(GradientBoostingSurvivalAnalysis, GBSA_param_grid)
     if len(with_self) > 0:
         for alg in with_self:
             PARAMS_[dataset][alg]["categ"] = [categ]
+            PARAMS_[dataset][alg]["leaf_model"] = ["base", "base_fast", LEAF_MODEL_DICT["base"], LEAF_MODEL_DICT["base_fast"]]
             experim.add_method(SELF_ALGS[alg], PARAMS_[dataset][alg])
     experim.run(X, y, dir_path=dir_path, verbose=1)
     return experim
@@ -189,18 +194,18 @@ def dir_path():
     return os.path.join(os.getcwd(), "experiment_results")
 
 
-@pytest.mark.skip(reason="no way of currently testing this")
+# @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    "dataset", ["PBC"]  # ["GBSG", "PBC", "Wuhan"]
+    "dataset", ["PBC"]  # ["GBSG", "PBC", "WUHAN"]
 )
 def test_dataset_exp(dir_path, dataset):
-    res_exp = run(dataset, with_self=["TREE", "BSTR", "BOOST"], with_external=False, dir_path=dir_path+"\\")
+    res_exp = run(dataset, with_self=["TREE"], with_external=True, dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]
     df_full = res_exp.get_result()
     df_best_by_metric = get_best_by_full_name(df_full, by_metric="IBS", choose="min")
-    df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
+    df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
 
-    df_full.to_excel(os.path.join(dir_path, f"table_{dataset}_full.xlsx"), index=False)
-    df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"table_{dataset}_best.xlsx"), index=False)
+    df_full.to_excel(os.path.join(dir_path, f"test_leaf_models_{dataset}_full.xlsx"), index=False)
+    df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"test_leaf_models_{dataset}_best.xlsx"), index=False)
     plot_boxplot_results(df_full, dir_path=dir_path,
                          metrics=["IBS", "IAUC", "CI"],
                          dataset_name=dataset)

@@ -7,6 +7,7 @@ from sklearn.model_selection import ParameterGrid
 
 from .. import constants as cnt
 from .. import metrics as metr
+from ..tree.stratified_model import LeafModel
 
 
 def generate_sample(X, y, folds):
@@ -76,17 +77,24 @@ def crossval_param(method, X, y, folds, metrics_names=['CI']):
     def f(**kwargs):
         metr_lst = []
         for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds):
+            est = method(**kwargs)
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
-                est = method(**kwargs)
                 est.fit(X_train, y_train)
                 pred_surv = est.predict_at_times(X_test, bins=bins, mode="surv")
                 pred_time = est.predict(X_test, target=cnt.TIME_NAME)
                 pred_haz = est.predict_at_times(X_test, bins=bins, mode="hazard")
-            else:
+            elif isinstance(est, LeafModel):
+                X_train[cnt.TIME_NAME] = y_train[cnt.TIME_NAME]
+                X_train[cnt.CENS_NAME] = y_train[cnt.CENS_NAME]
+                est.fit(X_train)
+                pred_surv = est.predict_survival_at_times(X_test, bins=bins)
+                pred_time = est.predict_feature(X_test, feature_name=cnt.TIME_NAME)
+                pred_haz = est.predict_hazard_at_times(X_test, bins=bins)
+            else:  # Methods from scikit-survival
                 X_train = X_train.fillna(0).replace(np.nan, 0)
                 X_test = X_test.fillna(0).replace(np.nan, 0)
-                
-                est = method(**kwargs).fit(X_train, y_train)
+
+                est = est.fit(X_train, y_train)
                 survs = est.predict_survival_function(X_test)
                 hazards = est.predict_cumulative_hazard_function(X_test)
                 pred_surv = np.array(list(map(lambda x: x(bins), survs)))

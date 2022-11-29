@@ -20,15 +20,15 @@ class LeafModel(object):
     def __init__(self):
         self.survival = None
         self.hazard = None
-        self.features_mean = dict()
+        self.features_predict = dict()
 
     def fit(self, X_node):
         self.survival = metr.get_survival_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
         self.hazard = metr.get_hazard_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
-        self.features_mean = X_node.mean(axis=0).to_dict()
+        self.features_predict = X_node.mean(axis=0).to_dict()
 
-    def predict_mean_feature(self, X, feature_name):
-        return self.features_mean[feature_name]
+    def predict_feature(self, X, feature_name):
+        return self.features_predict[feature_name]
 
     def predict_survival_at_times(self, X, bins):
         return self.survival.survival_function_at_times(bins).to_numpy()
@@ -249,7 +249,7 @@ class Node(object):
             else:
                 dataset = self.get_df_node()
                 if target in dataset.columns:
-                    X.loc[:, name_tg] = self.leaf_model.predict_mean_feature(X, target)  # np.mean(dataset[target])
+                    X.loc[:, name_tg] = self.leaf_model.predict_feature(X, target)  # np.mean(dataset[target])
         else:
             X = self.prepare_df_for_attr(X)
             ind_nan = self.get_split_nan_index(X)
