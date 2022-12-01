@@ -8,19 +8,13 @@ class LeafModel(object):
         self.shape = None
         self.survival = None
         self.hazard = None
-        self.features_mean = dict()
+        self.features_predict = dict()
         self.lists = dict()
         self.default_bins = np.array([1, 10, 100, 1000])
 
     def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME]):
         self.shape = X_node.shape
-        # Another way to fill default_bins
-        # cnt.get_bins(time=X_node[cnt.TIME_NAME].to_numpy(),
-        #              cens=X_node[cnt.CENS_NAME].to_numpy(), mode='a', num_bins=100)
-        # self.survival = metr.get_survival_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
-        # self.hazard = metr.get_hazard_func(X_node[cnt.TIME_NAME], X_node[cnt.CENS_NAME])
-
-        self.features_mean = X_node.mean(axis=0).to_dict()
+        self.features_predict = X_node.mean(axis=0).to_dict()
         self.lists = X_node.loc[:, need_features].to_dict(orient="list")
 
     def get_shape(self):
@@ -31,11 +25,22 @@ class LeafModel(object):
             return np.array(self.lists[feature_name])
         return None
 
-    def predict_mean_feature(self, X=None, feature_name=None):
-        value = self.features_mean.get(feature_name)
+    def predict_feature(self, X=None, feature_name=None):
+        value = self.features_predict.get(feature_name)
         if X is None:
             return value
         return np.repeat(value, X.shape[0], axis=0)
+
+    def predict_survival_at_times(self, X=None, bins=None):
+        pass
+
+    def predict_hazard_at_times(self, X=None, bins=None):
+        pass
+
+
+class LeafSurviveAndHazard(LeafModel):
+    def __init__(self):
+        super().__init__()
 
     def predict_survival_at_times(self, X=None, bins=None):
         if self.survival is None:
@@ -58,7 +63,7 @@ class LeafModel(object):
         return np.repeat(hf[np.newaxis, :], X.shape[0], axis=0)
 
 
-class LeafOnlyHazardModel(LeafModel):
+class LeafOnlyHazardModel(LeafSurviveAndHazard):
     def predict_survival_at_times(self, X=None, bins=None):
         hf = self.predict_hazard_at_times(X=X, bins=bins)
         sf = np.exp(-1*hf)
@@ -67,7 +72,7 @@ class LeafOnlyHazardModel(LeafModel):
         return sf
 
 
-class LeafOnlySurviveModel(LeafModel):
+class LeafOnlySurviveModel(LeafSurviveAndHazard):
     def predict_hazard_at_times(self, X=None, bins=None):
         sf = self.predict_survival_at_times(X=X, bins=bins)
         hf = -1*np.log(sf)
@@ -96,9 +101,10 @@ class KaplanMeier:
 
 
 class NelsonAalen:
-    def __init__(self):
+    def __init__(self, smoothing=True):
         self.timeline = None
         self.survival_function = None
+        self.smoothing = smoothing
 
     def fit(self, durations, right_censor, weights):
         self.timeline = np.unique(durations)
@@ -106,8 +112,16 @@ class NelsonAalen:
         dur_ = np.searchsorted(self.timeline, durations)
         hist_dur = np.bincount(dur_, weights=weights)
         hist_cens = np.bincount(dur_, weights=right_censor*weights)
-        cumul_hist = np.cumsum(hist_dur[::-1])[::-1]
-        self.hazard_function = np.hstack([0.0, np.cumsum(hist_cens / cumul_hist)])
+        cumul_hist_dur = np.cumsum(hist_dur[::-1])[::-1]
+        if self.smoothing and all(weights == 1):
+            cumul_hist_dur = cumul_hist_dur.astype("int")
+            hist_cens = hist_cens.astype("int")
+            cum_ = np.cumsum(1.0 / np.arange(1, np.max(cumul_hist_dur) + 1))
+            hf = cum_[cumul_hist_dur - 1] - np.where(cumul_hist_dur - hist_cens - 1 >= 0,
+                                                     cum_[cumul_hist_dur - hist_cens - 1], 0)
+        else:
+            hf = hist_cens / cumul_hist_dur
+        self.hazard_function = np.hstack([0.0, np.cumsum(hf)])
 
     def cumulative_hazard_at_times(self, times):
         place_bin = np.digitize(times, self.timeline)
@@ -119,7 +133,7 @@ class WeightSurviveModel(LeafModel):
         self.shape = None
         self.survival = None
         self.hazard = None
-        self.features_mean = dict()
+        self.features_predict = dict()
         self.lists = dict()
         self.weights_name = weights_name
         self.default_bins = np.array([1, 10, 100, 1000])
@@ -162,7 +176,7 @@ class BaseFastSurviveModel(WeightSurviveModel):
 
 
 LEAF_MODEL_DICT = {
-    "base": LeafModel,
+    "base": LeafSurviveAndHazard,
     "only_hazard": LeafOnlyHazardModel,
     "only_survive": LeafOnlySurviveModel,
     "wei_survive": WeightSurviveModel,
