@@ -136,7 +136,7 @@ def load_onk_dataset(diag={'C20', 'C50.4', 'C61'},
     ONK_N = prep_ONK('ID_N', 'KOD_N', join(dir_env, 'ONK_N.xlsx'))
     ONK_M = prep_ONK('ID_M', 'KOD_M', join(dir_env, 'ONK_M.xlsx'))
     
-    sourceDF = pd.read_csv(join(dir_env, 'AGGREG_PRED_THREADS.csv'))
+    sourceDF = pd.read_csv(join(dir_env, 'AGGREG_THREADS.csv'))
     if len(diag) > 0:
         sourceDF = sourceDF[sourceDF['DIAG'].isin(diag)]
         

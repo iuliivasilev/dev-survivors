@@ -101,9 +101,9 @@ def profile_exp():
 
 if __name__ == '__main__':
     # Visualize in browser html with command prompt "snakeviz file.pstats"
-    for n in [2**i for i in range(5)]:
-        profile_tree(dataset="PBC", n_jobs=n)
-        profile_tree(dataset="ONK", n_jobs=n)
-        profile_boost(dataset="PBC", n_jobs=n)
-        profile_boost(dataset="ONK", n_jobs=n)
-    # profile_exp()
+    # for n in [2**i for i in range(5)]:
+    #     profile_tree(dataset="PBC", n_jobs=n)
+    #     profile_tree(dataset="ONK", n_jobs=n)
+    #     profile_boost(dataset="PBC", n_jobs=n)
+    #     profile_boost(dataset="ONK", n_jobs=n)
+    profile_exp()
