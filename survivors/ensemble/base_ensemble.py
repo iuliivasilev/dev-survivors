@@ -85,11 +85,12 @@ class BaseEnsemble(object):
             self.size_sample = int(self.size_sample*self.X_train.shape[0])
         self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
                                  cens=self.y_train[cnt.CENS_NAME])
+
         cnt.set_seed(10)
     
     def fit(self):
         pass
-    
+
     def add_model(self, model, x_oob):
         self.models.append(model)
         self.oob.append(x_oob)
@@ -101,7 +102,7 @@ class BaseEnsemble(object):
             tree_pred = pd.DataFrame(model.predict_at_times(x_oob, bins=self.bins, mode="surv"), index=x_oob.index)
             tree_pred = tree_pred.apply(lambda r: np.array(r), axis=1)
         self.list_pred_oob.append(tree_pred)
-    
+
     def select_model(self, start, end):
         self.models = self.models[start:end]
         self.oob = self.oob[start:end]
@@ -163,25 +164,80 @@ class BaseEnsemble(object):
                 score = metr.ibs(self.y_train, y_true, pred, self.bins)
             scores = np.append(scores, score)
         return np.round(np.mean(scores), 4)
-        
+
     def aggregate_score_selfoob(self, bins=None):
         if self.ens_metric_name in ["conc", "ibs"]:
             list_target_time = [oob_[cnt.TIME_NAME].to_frame() for oob_ in self.oob]
             target_time = pd.concat(list_target_time, axis=1).mean(axis=1)
-            
+
         if self.ens_metric_name in ["roc", "ibs"]:
             list_target_cens = [oob_[cnt.CENS_NAME].to_frame() for oob_ in self.oob]
             target_cens = pd.concat(list_target_cens, axis=1).mean(axis=1)
-            
+
         if self.ens_metric_name in ["conc", "roc"]:
             pred = pd.concat(self.list_pred_oob, axis=1).mean(axis=1)
             if self.ens_metric_name == "conc":
                 return concordance_index(target_time, pred)
             return roc_auc_score(target_cens, pred)
-        
+
         if self.ens_metric_name == "ibs":
             pred = pd.concat(self.list_pred_oob, axis=1).apply(lambda r: r.mean(axis=0), axis=1)
             pred = np.array(pred.to_list())
+            y_true = cnt.get_y(target_cens, target_time)
+            return metr.ibs(self.y_train, y_true, pred, self.bins)
+        return None
+
+
+class FastBaseEnsemble(BaseEnsemble):
+    def update_params(self):
+        self.models = []
+        self.ens_metr = np.zeros(self.n_estimators)
+
+        if isinstance(self.size_sample, float):
+            self.size_sample = int(self.size_sample * self.X_train.shape[0])
+        self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
+                                 cens=self.y_train[cnt.CENS_NAME])
+
+        if self.ens_metric_name in ["ibs", "iauc"]:
+            dim = (self.X_train.shape[0], self.bins.shape[0])
+        else:
+            dim = (self.X_train.shape[0])
+        self.oob_prediction = np.zeros(dim, dtype=np.float)
+        self.oob_count = np.zeros((self.X_train.shape[0]), dtype=np.int)
+
+        cnt.set_seed(10)
+
+    def add_model(self, model, x_oob):
+        self.models.append(model)
+
+        oob_index = x_oob.index.values
+        self.oob_count[oob_index] += 1
+        if self.ens_metric_name == "conc":
+            self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.TIME_NAME)
+        elif self.ens_metric_name == "roc":
+            self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.CENS_NAME)
+        else:
+            self.oob_prediction[oob_index] += model.predict_at_times(x_oob, bins=self.bins, mode="surv")
+
+    def select_model(self, start, end):
+        self.models = self.models[start:end]
+
+    def aggregate_score_selfoob(self):
+        index_join_oob = np.where(self.oob_count != 0)
+        if self.ens_metric_name == "ibs":
+            pred = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob][:, None]
+        else:
+            pred = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob]
+
+        join_oob = self.y_train[index_join_oob]
+        target_time = join_oob[cnt.TIME_NAME]
+        target_cens = join_oob[cnt.CENS_NAME]
+
+        if self.ens_metric_name == "conc":
+            return concordance_index(target_time, pred)
+        elif self.ens_metric_name == "roc":
+            return roc_auc_score(target_cens, pred)
+        elif self.ens_metric_name == "ibs":
             y_true = cnt.get_y(target_cens, target_time)
             return metr.ibs(self.y_train, y_true, pred, self.bins)
         return None
