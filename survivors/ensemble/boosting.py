@@ -4,7 +4,7 @@ import numpy as np
 from .. import metrics as metr
 from ..tree import CRAID
 from .. import constants as cnt
-from .base_ensemble import BaseEnsemble
+from .base_ensemble import BaseEnsemble, FastBaseEnsemble
 
 
 def loss_func(var, mode='linear'):
@@ -18,15 +18,19 @@ def loss_func(var, mode='linear'):
     return None
 
 
-def count_weight(losses, mode='linear'):
+def count_weight(losses, mode='linear', pred_wei=None):
     li = loss_func(losses, mode=mode)
-    l_mean = li.mean()  # (li * pred_wei).sum()/pred_wei.sum()
+    if pred_wei is None:
+        l_mean = li.mean()  # (li * pred_wei).sum()/pred_wei.sum()
+    else:
+        norm_wei = pred_wei/pred_wei.sum()
+        l_mean = (li * norm_wei).sum()
     betta = l_mean/(1.0 - l_mean)
     new_wei = betta ** (1 - li)
     return new_wei, betta
 
 
-class BoostingCRAID(BaseEnsemble):
+class BoostingCRAID(FastBaseEnsemble):
     """
     Adaptive boosting ensemble of survival decision tree.
     On each iteration probabilities of observations change by scheme.
@@ -56,11 +60,12 @@ class BoostingCRAID(BaseEnsemble):
     .. [1] Drucker H. Improving regressors using boosting techniques 
             //ICML. – 1997. – Т. 97. – С. 107-115.
     """
-    def __init__(self, mode_wei="linear", weighted_tree=True, **kwargs):
+    def __init__(self, mode_wei="linear", weighted_tree=True, all_weight=False, **kwargs):
         self.name = "BoostingCRAID"
         self.mode_wei = mode_wei
         self.weights = None
         self.weighted_tree = weighted_tree
+        self.all_weight = all_weight
         if self.weighted_tree:
             kwargs["weights_feature"] = "weights_obs"
         super().__init__(**kwargs)
@@ -124,13 +129,24 @@ class BoostingCRAID(BaseEnsemble):
     #     self.weights[self.X_train.index] *= wei_i
     
     def count_model_weights(self, model, X_sub, y_sub):
+        if self.all_weight:
+            X_sub = self.X_train
+            y_sub = self.y_train
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
         losses = metr.ibs(self.y_train, y_sub, pred_sf, self.bins, axis=0)
-        wei, betta = count_weight(losses, mode=self.mode_wei)
+
+        pred_wei = None
+        if self.all_weight:
+            pred_wei = self.weights
+        wei, betta = count_weight(losses, mode=self.mode_wei, pred_wei=pred_wei)
         return wei, betta
     
     def update_weight(self, index, wei_i):
-        self.weights[index] = (self.weights[index] * wei_i)
+        if self.all_weight:
+            self.weights = self.weights * wei_i
+        else:
+            self.weights[index] = (self.weights[index] * wei_i)
+        self.weights = self.weights/self.weights.sum()
     
     def add_model(self, model, x_oob, wei_i, betta_i):
         self.bettas.append(betta_i)
