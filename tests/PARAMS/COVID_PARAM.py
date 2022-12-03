@@ -25,7 +25,7 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.5] if short else [0.5],  # , 0.7],
-    "n_estimators": [15], 
+    "n_estimators": [15],
     "ens_metric_name": ["ibs"] if short else ["conc", "ibs"],
     "depth": [15],
     "mode_wei": ['exp'] if short else ['square'],  # ,'exp'],
@@ -35,7 +35,8 @@ BOOST_param_grid = {
     "max_features": [0.3],  # ["sqrt"],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "leaf_model": ["base"] if short else ["base_fast", "wei_survive"],
-    "n_jobs": [40]
+    "all_weight": [True, False],
+    "n_jobs": [2]
 }
 
 COVID_PARAMS = {
