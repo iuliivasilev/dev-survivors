@@ -4,10 +4,20 @@ import time
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import ParameterGrid
+from sklearn.model_selection import train_test_split
 
 from .. import constants as cnt
 from .. import metrics as metr
 from ..tree.stratified_model import LeafModel
+
+
+def prepare_sample(X, y, train_index, test_index):
+    X_train, X_test = X.iloc[train_index, :], X.iloc[test_index, :]
+    y_train, y_test = y[train_index], y[test_index]
+    bins = cnt.get_bins(time=y_train[cnt.TIME_NAME], cens=y_train[cnt.CENS_NAME])
+    y_train[cnt.TIME_NAME] = np.clip(y_train[cnt.TIME_NAME], bins.min() - 1, bins.max() + 1)
+    y_test[cnt.TIME_NAME] = np.clip(y_test[cnt.TIME_NAME], bins.min(), bins.max())
+    return X_train, y_train, X_test, y_test, bins
 
 
 def generate_sample(X, y, folds):
@@ -39,14 +49,15 @@ def generate_sample(X, y, folds):
     """
     skf = StratifiedKFold(n_splits=folds)
     for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
-        X_train, X_test = X.loc[train_index, :], X.loc[test_index, :]
-        y_train, y_test = y[train_index], y[test_index]
-        bins = cnt.get_bins(time=y_train[cnt.TIME_NAME], cens=y_train[cnt.CENS_NAME])
-        y_train[cnt.TIME_NAME] = np.clip(y_train[cnt.TIME_NAME], bins.min()-1, bins.max()+1)
-        y_test[cnt.TIME_NAME] = np.clip(y_test[cnt.TIME_NAME], bins.min(), bins.max())
-        yield (X_train, y_train, X_test, y_test, bins)
+        X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
+        yield X_train, y_train, X_test, y_test, bins
     pass
-    
+
+
+def count_metric(y_train, y_test, pred_time, pred_surv, pred_haz, bins, metrics_names):
+    return np.array([metr.METRIC_DICT[metr_name](y_train, y_test, pred_time, pred_surv, pred_haz, bins)
+                     for metr_name in metrics_names])
+
 
 def crossval_param(method, X, y, folds, metrics_names=['CI']):
     """
@@ -101,9 +112,8 @@ def crossval_param(method, X, y, folds, metrics_names=['CI']):
                 pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
                 pred_time = -1*est.predict(X_test)
             
-            metr_lst.append(np.array([metr.METRIC_DICT[metr_name](y_train, y_test,
-                                      pred_time, pred_surv, pred_haz, bins)
-                                      for metr_name in metrics_names]))
+            metr_lst.append(count_metric(y_train, y_test, pred_time,
+                                         pred_surv, pred_haz, bins, metrics_names))
         return np.vstack(metr_lst)
     return f
 
@@ -147,7 +157,7 @@ class Experiments(object):
     save : export table as xlsx
     
     """
-    def __init__(self, folds=5, except_stop="all", dataset_name="NONE_NAME"):
+    def __init__(self, folds=5, except_stop="all", dataset_name="NONE_NAME", mode="CV"):
         self.methods = []
         self.methods_grid = []
         self.metrics = ["CI"]
@@ -156,6 +166,7 @@ class Experiments(object):
         self.except_stop = except_stop
         self.dataset_name = dataset_name
         self.result_table = None
+        self.mode = mode
         
     def add_method(self, method, grid):
         self.methods.append(method)
@@ -171,6 +182,11 @@ class Experiments(object):
     
     def run(self, X, y, dir_path=None, verbose=0):
         self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
+        if self.mode != "CV":
+            X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME], test_size=0.33, random_state=42)
+            X, y, X_HO, y_HO, bins = prepare_sample(X, y, X_TR.index, X_HO.index)
+            self.hold_out_data = [X, y, X_HO, y_HO, bins]
+
         for method, grid in zip(self.methods, self.methods_grid):
             cv_method = crossval_param(method, X, y, self.folds, self.metrics)
             # try:
@@ -200,17 +216,35 @@ class Experiments(object):
         if not(dir_path is None):
             # add_time = strftime("%H:%M:%S", gmtime(time.time()))
             self.save(dir_path)
-    
+
+    def get_hold_out_result(self):
+        df_HO_best = self.get_best_results("IBS", choose="min")
+        X, y, X_HO, y_HO, bins = self.hold_out_data
+        str_all_methods = [m.__name__ for m in self.methods]
+        for i, (str_method, str_p) in enumerate(zip(df_HO_best["METHOD"], df_HO_best["PARAMS"])):
+            ind_method = str_all_methods.index(str_method)
+            est = self.methods[ind_method](**eval(str_p))
+            est.fit(X, y)
+            pred_surv = est.predict_at_times(X_HO, bins=bins, mode="surv")
+            pred_time = est.predict(X_HO, target=cnt.TIME_NAME)
+            pred_haz = est.predict_at_times(X_HO, bins=bins, mode="hazard")
+            res_metr = count_metric(y, y_HO, pred_time, pred_surv, pred_haz, bins, self.metrics)
+            for name, metr in zip(self.metrics, res_metr):
+                df_HO_best.loc[i, name + "_HO"] = metr
+        return df_HO_best
+
     def get_result(self):
         return self.result_table
     
     def get_best_results(self, by_metric, choose="max"):
         if not(by_metric in self.metrics):
             return None
-        
-        best_table = pd.DataFrame([], columns=self.result_table.columns)
-        for method in self.result_table['METHOD'].unique():
-            sub_table = self.result_table[self.result_table["METHOD"] == method]
+        df = self.result_table
+        df["METHOD_FULL"] = df.apply(lambda x: x["METHOD"].replace("CRAID", f"Tree({x['CRIT']})"), axis=1)
+
+        best_table = pd.DataFrame([], columns=df.columns)
+        for method in df['METHOD_FULL'].unique():
+            sub_table = df[df["METHOD_FULL"] == method]
             if sub_table.shape[0] == 0:
                 continue
             if choose == "max":
