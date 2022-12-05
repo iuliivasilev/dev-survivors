@@ -13,9 +13,10 @@ class LeafModel(object):
         self.default_bins = np.array([1, 10, 100, 1000])
 
     def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME]):
-        self.shape = X_node.shape
-        self.features_predict = X_node.mean(axis=0).to_dict()
-        self.lists = X_node.loc[:, need_features].to_dict(orient="list")
+        X_sub = X_node[need_features]
+        self.shape = X_sub.shape
+        self.features_predict = X_sub.mean(axis=0).to_dict()
+        self.lists = X_sub.to_dict(orient="list")
 
     def get_shape(self):
         return self.shape
@@ -130,32 +131,25 @@ class NelsonAalen:
 
 class WeightSurviveModel(LeafModel):
     def __init__(self, weights_name="weights_obs"):
-        self.shape = None
-        self.survival = None
-        self.hazard = None
-        self.features_predict = dict()
-        self.lists = dict()
         self.weights_name = weights_name
-        self.default_bins = np.array([1, 10, 100, 1000])
+        super().__init__()
 
     def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME]):
         if self.weights_name is None:
             self.weights = np.ones_like(X_node[cnt.TIME_NAME])
         else:
             self.weights = X_node[self.weights_name].to_numpy()
-        self.survival = KaplanMeier()
-        self.survival.fit(X_node[cnt.TIME_NAME].to_numpy(),
-                          X_node[cnt.CENS_NAME].to_numpy(),
-                          self.weights)
-        self.hazard = NelsonAalen()
-        self.hazard.fit(X_node[cnt.TIME_NAME].to_numpy(),
-                        X_node[cnt.CENS_NAME].to_numpy(),
-                        self.weights)
+
         super().fit(X_node, need_features)
 
     def predict_survival_at_times(self, X=None, bins=None):
         if bins is None:
             bins = self.default_bins
+        if self.survival is None:
+            self.survival = KaplanMeier()
+            self.survival.fit(self.lists[cnt.TIME_NAME],
+                              self.lists[cnt.CENS_NAME],
+                              self.weights)
         sf = self.survival.survival_function_at_times(bins)
         if X is None:
             return sf
@@ -164,6 +158,11 @@ class WeightSurviveModel(LeafModel):
     def predict_hazard_at_times(self, X=None, bins=None):
         if bins is None:
             bins = self.default_bins
+        if self.hazard is None:
+            self.hazard = NelsonAalen()
+            self.hazard.fit(self.lists[cnt.TIME_NAME],
+                            self.lists[cnt.CENS_NAME],
+                            self.weights)
         hf = self.hazard.cumulative_hazard_at_times(bins)
         if X is None:
             return hf
