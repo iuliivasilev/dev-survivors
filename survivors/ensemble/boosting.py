@@ -9,6 +9,9 @@ from .base_ensemble import BaseEnsemble, FastBaseEnsemble
 
 def loss_func(var, mode='linear'):
     D = var.max()
+    if D == 0:
+        var = np.full(var.shape[0], 1e-5)
+        D = 1
     if mode == 'linear':
         return var/D
     elif mode == 'square':
@@ -25,6 +28,7 @@ def count_weight(losses, mode='linear', pred_wei=None):
     else:
         norm_wei = pred_wei/pred_wei.sum()
         l_mean = (li * norm_wei).sum()
+
     betta = l_mean/(1.0 - l_mean)
     new_wei = betta ** (1 - li)
     return new_wei, betta
@@ -146,6 +150,9 @@ class BoostingCRAID(FastBaseEnsemble):
             self.weights = self.weights * wei_i
         else:
             self.weights[index] = (self.weights[index] * wei_i)
+        # ws = self.weights.sum()
+        # if ws == 0.0 or ws != ws:
+        #     self.weights = np.ones(self.X_train.shape[0], dtype=float)
         self.weights = self.weights/self.weights.sum()
     
     def add_model(self, model, x_oob, wei_i, betta_i):

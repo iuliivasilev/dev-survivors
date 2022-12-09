@@ -139,7 +139,6 @@ class WeightSurviveModel(LeafModel):
             self.weights = np.ones_like(X_node[cnt.TIME_NAME])
         else:
             self.weights = X_node[self.weights_name].to_numpy()
-
         super().fit(X_node, need_features)
 
     def predict_survival_at_times(self, X=None, bins=None):
