@@ -20,7 +20,7 @@ def prepare_sample(X, y, train_index, test_index):
     return X_train, y_train, X_test, y_test, bins
 
 
-def generate_sample(X, y, folds):
+def generate_sample(X, y, folds, mode="CV"):
     """
     Generate cross-validate samples with StratifiedKFold.
 
@@ -47,10 +47,23 @@ def generate_sample(X, y, folds):
         Points of timeline.
 
     """
+
+    # tscv = TimeSeriesSplit()
+    # for train_index, test_index in tscv.split(X):
+    #     print("TRAIN:", train_index, "TEST:", test_index)
+
     skf = StratifiedKFold(n_splits=folds)
-    for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
-        X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
-        yield X_train, y_train, X_test, y_test, bins
+    if mode == "TIME-CV":
+        train_index = np.array([], dtype=int)
+        for train_index_, test_index_ in skf.split(X, y[cnt.CENS_NAME]):
+            if train_index.shape[0] > 0:
+                X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index_)
+                yield X_train, y_train, X_test, y_test, bins
+            train_index = np.hstack([train_index, test_index_])
+    else:
+        for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
+            X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
+            yield X_train, y_train, X_test, y_test, bins
     pass
 
 
@@ -59,7 +72,7 @@ def count_metric(y_train, y_test, pred_time, pred_surv, pred_haz, bins, metrics_
                      for metr_name in metrics_names])
 
 
-def crossval_param(method, X, y, folds, metrics_names=['CI']):
+def crossval_param(method, X, y, folds, metrics_names=['CI'], mode="CV"):
     """
     Return function, which on sample X, y apply cross-validation and calculate 
     metrics on each folds. 
@@ -87,7 +100,7 @@ def crossval_param(method, X, y, folds, metrics_names=['CI']):
     """
     def f(**kwargs):
         metr_lst = []
-        for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds):
+        for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds, mode):
             est = method(**kwargs)
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 est.fit(X_train, y_train)
@@ -182,16 +195,16 @@ class Experiments(object):
     
     def run(self, X, y, dir_path=None, verbose=0):
         self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
-        if self.mode != "CV":
+        if self.mode == "HOLD-OUT":
             X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME], test_size=0.33, random_state=42)
             X, y, X_HO, y_HO, bins = prepare_sample(X, y, X_TR.index, X_HO.index)
             self.hold_out_data = [X, y, X_HO, y_HO, bins]
 
         for method, grid in zip(self.methods, self.methods_grid):
-            cv_method = crossval_param(method, X, y, self.folds, self.metrics)
-            # try:
+            cv_method = crossval_param(method, X, y, self.folds, self.metrics, self.mode)
             print(method, grid)
             for p in ParameterGrid(grid):
+                # try:
                 start_time = time.time()
                 cv_metr = cv_method(**p)
                 full_time = time.time() - start_time
@@ -202,23 +215,34 @@ class Experiments(object):
                 self.result_table = self.result_table.append(curr_dict, ignore_index=True)
                 if verbose > 0:
                     print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
-                          {k: np.mean(v) for k, v in cv_metr.items()})
-            # except KeyboardInterrupt:
-            #     print("HANDELED KeyboardInterrupt")
-            #     break
-            # except Exception as e:
-            #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-            #     if self.except_stop == "all":
-            #         break
+                              {k: np.mean(v) for k, v in cv_metr.items()})
+                # except KeyboardInterrupt:
+                #     print("HANDELED KeyboardInterrupt")
+                #     break
+                # except Exception as e:
+                #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
+                #     if self.except_stop == "all":
+                #         break
+        if self.mode == "TIME-CV":
+            for m in self.metrics:
+                self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
+            for m in self.metrics:
+                self.result_table[f"{m}_last"] = self.result_table[m].apply(lambda x: x[-1])
+
         for m in self.metrics:
             self.result_table[f"{m}_mean"] = self.result_table[m].apply(np.mean)
+
         self.is_table = True
         if not(dir_path is None):
             # add_time = strftime("%H:%M:%S", gmtime(time.time()))
             self.save(dir_path)
 
+    def get_time_cv_result(self):
+        df_time_cv_best = self.get_best_results("IBS_pred_mean", choose="min")
+        return df_time_cv_best
+
     def get_hold_out_result(self):
-        df_HO_best = self.get_best_results("IBS", choose="min")
+        df_HO_best = self.get_best_results("IBS_mean", choose="min")
         X, y, X_HO, y_HO, bins = self.hold_out_data
         str_all_methods = [m.__name__ for m in self.methods]
         for i, (str_method, str_p) in enumerate(zip(df_HO_best["METHOD"], df_HO_best["PARAMS"])):
@@ -237,7 +261,7 @@ class Experiments(object):
         return self.result_table
     
     def get_best_results(self, by_metric, choose="max"):
-        if not(by_metric in self.metrics):
+        if not(by_metric in self.result_table.columns):
             return None
         df = self.result_table
         df["METHOD_FULL"] = df.apply(lambda x: x["METHOD"].replace("CRAID", f"Tree({x['CRIT']})"), axis=1)
@@ -248,9 +272,9 @@ class Experiments(object):
             if sub_table.shape[0] == 0:
                 continue
             if choose == "max":
-                best_row = sub_table.loc[sub_table[by_metric].apply(np.mean).idxmax()]
+                best_row = sub_table.loc[sub_table[by_metric].idxmax()]
             else:
-                best_row = sub_table.loc[sub_table[by_metric].apply(np.mean).idxmin()]
+                best_row = sub_table.loc[sub_table[by_metric].idxmin()]
             best_table = best_table.append(dict(best_row), ignore_index=True)
         return best_table
     
