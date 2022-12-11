@@ -89,14 +89,14 @@ def profile_boost(dataset="PBC", n_jobs=1):
     stats.dump_stats(f'profile_reports/{dataset}/bst_output_numba_{n_jobs}.pstats')
 
 
-def profile_exp():
+def profile_exp(dataset="ONK"):
     profiler = cProfile.Profile()
     profiler.enable()
-    res_exp = run("PBC", with_self=["TREE"], with_external=False)
+    res_exp = run(dataset, with_self=["BOOST"], with_external=False)
     profiler.disable()
     stats = pstats.Stats(profiler).sort_stats('cumtime')
     stats.print_stats()
-    stats.dump_stats('profile_reports/exp_output.pstats')
+    stats.dump_stats(f"profile_reports/{dataset}_after_optimize.pstats")
 
 
 if __name__ == '__main__':
@@ -106,4 +106,4 @@ if __name__ == '__main__':
     #     profile_tree(dataset="ONK", n_jobs=n)
     #     profile_boost(dataset="PBC", n_jobs=n)
     #     profile_boost(dataset="ONK", n_jobs=n)
-    profile_exp()
+    profile_exp("ONK")
