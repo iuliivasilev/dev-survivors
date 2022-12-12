@@ -10,6 +10,7 @@ from .base_ensemble import BaseEnsemble, FastBaseEnsemble
 def loss_func(var, mode='linear'):
     D = var.max()
     if D == 0:
+        print("ALL LOSSES ARE NULL")
         var = np.full(var.shape[0], 1e-5)
         D = 1
     if mode == 'linear':

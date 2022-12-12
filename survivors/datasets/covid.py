@@ -199,8 +199,9 @@ def dest_date(x, y, with_neg=False):
     return days
 
 
-def load_covid_dataset():
-    dir_env = join(dirname(__file__), "data", "COVID")
+def load_covid_dataset(dir_env=None):
+    if dir_env is None:
+        dir_env = join(dirname(__file__), "data", "COVID")
     cyto = pd.read_csv(join(dir_env, "cyto_with_schemes.csv"))
     cyto = create_none_ft(cyto, sign)
     cyto[TIME_NAME] = cyto.apply(lambda row: dest_date(row['Дата создания ЭС'], row['Дата закрытия ЭС']), axis=1)
