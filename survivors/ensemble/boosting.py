@@ -19,6 +19,12 @@ def loss_func(var, mode='linear'):
         return (var/D)**2
     elif mode == 'exp':
         return 1.0 - np.exp(-var/D)
+    elif mode == 'softmax':
+        sm = np.exp(var/D)
+        return sm/np.sum(sm)
+    elif mode == 'sigmoid':
+        # corr = np.exp((var - np.mean(var)) / np.std(var))
+        return 1 / (1 + np.exp(-var/D))
     return None
 
 
