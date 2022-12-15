@@ -11,6 +11,14 @@ from .. import metrics as metr
 from ..tree.stratified_model import LeafModel
 
 
+def to_str_from_dict_list(d, strat):
+    if isinstance(strat, str):
+        return str(d.get(strat, ""))
+    elif isinstance(strat, list):
+        return ";".join([str(d.get(e, "")) for e in strat])
+    return None
+
+
 def prepare_sample(X, y, train_index, test_index):
     X_train, X_test = X.iloc[train_index, :], X.iloc[test_index, :]
     y_train, y_test = y[train_index], y[test_index]
@@ -237,8 +245,8 @@ class Experiments(object):
             # add_time = strftime("%H:%M:%S", gmtime(time.time()))
             self.save(dir_path)
 
-    def get_time_cv_result(self):
-        df_time_cv_best = self.get_best_results("IBS_pred_mean", choose="min")
+    def get_time_cv_result(self, stratify="criterion"):
+        df_time_cv_best = self.get_best_results("IBS_pred_mean", choose="min", stratify=stratify)
         return df_time_cv_best
 
     def get_hold_out_result(self):
@@ -260,11 +268,13 @@ class Experiments(object):
     def get_result(self):
         return self.result_table
     
-    def get_best_results(self, by_metric, choose="max"):
+    def get_best_results(self, by_metric, choose="max", stratify="criterion"):
         if not(by_metric in self.result_table.columns):
             return None
-        df = self.result_table
-        df["METHOD_FULL"] = df.apply(lambda x: x["METHOD"].replace("CRAID", f"Tree({x['CRIT']})"), axis=1)
+        df = self.result_table.copy()
+        stratify_name = f"Stratify({stratify})"
+        df[stratify_name] = df["PARAMS"].apply(lambda x: to_str_from_dict_list(eval(x), stratify))
+        df["METHOD_FULL"] = df.apply(lambda x: x["METHOD"].replace("CRAID", f"Tree({x[stratify_name]})"), axis=1)
 
         best_table = pd.DataFrame([], columns=df.columns)
         for method in df['METHOD_FULL'].unique():
