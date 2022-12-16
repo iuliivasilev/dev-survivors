@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.stats as ss
 from .. import metrics as metr
 from .. import constants as cnt
 
@@ -86,15 +87,35 @@ class KaplanMeier:
     def __init__(self):
         self.timeline = None
         self.survival_function = None
+        self.confidence_interval_ = None
+        self.alpha = 0.05
 
-    def fit(self, durations, right_censor, weights):
+    def fit(self, durations, right_censor, weights=None):
+        if weights is None:
+            weights = np.ones(right_censor.shape)
         self.timeline = np.unique(durations)
 
         dur_ = np.searchsorted(self.timeline, durations)
         hist_dur = np.bincount(dur_, weights=weights)
-        hist_cens = np.bincount(dur_, weights=right_censor*weights)
-        cumul_hist = np.cumsum(hist_dur[::-1])[::-1]
-        self.survival_function = np.hstack([1.0, np.cumprod((1.0 - hist_cens / (cumul_hist)))])
+        self.hist_cens = np.bincount(dur_, weights=right_censor*weights)
+        self.cumul_hist_dur = np.cumsum(hist_dur[::-1])[::-1]
+        self.survival_function = np.hstack([1.0, np.cumprod((1.0 - self.hist_cens / (self.cumul_hist_dur)))])
+
+    def count_confidence_interval(self):
+        ''' exponential Greenwood: https://www.math.wustl.edu/~sawyer/handouts/greenwood.pdf '''
+        z = ss.norm.ppf(1 - self.alpha / 2)
+        cumulative_sq_ = np.sqrt(np.hstack([0.0, np.cumsum(self.hist_cens / (self.cumul_hist_dur * (self.cumul_hist_dur - self.hist_cens)))]))
+        np.nan_to_num(cumulative_sq_, copy=False, nan=0)
+        v = np.log(self.survival_function)
+        np.nan_to_num(v, copy=False, nan=0)
+        self.confidence_interval_ = np.vstack([np.exp(v * np.exp(- z * cumulative_sq_ / v)),
+                                               np.exp(v * np.exp(+ z * cumulative_sq_ / v))]).T
+        np.nan_to_num(self.confidence_interval_, copy=False, nan=1)
+
+    def get_confidence_interval_(self):
+        if self.confidence_interval_ is None:
+            self.count_confidence_interval()
+        return self.confidence_interval_
 
     def survival_function_at_times(self, times):
         place_bin = np.digitize(times, self.timeline)
