@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit
 
 from scipy import stats
-
+from .stratified_model import KaplanMeier
 
 """ Auxiliary functions """
 
@@ -205,12 +205,15 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     num_r = dur_notna.shape[0]
     num_l = 0
 
-    if weights is None:
+    if criterion == "confident":
+        kmf = KaplanMeier()
+        kmf.fit(dur, cens)
+        ci = kmf.get_confidence_interval_()
+        weights_hist = 1 / (ci[1:, 1] - ci[1:, 0] + 1e-5)
+        criterion = "weights"
+    elif weights is None:
         weights_hist = None
     else:
-        # print(weights.shape)
-        # print(arr.shape)
-        # print(weights)
         weights_hist = np.bincount(dur, weights=weights,  # /sum(weights),
                                    minlength=max_bin + 1)
         weights_hist = np.cumsum(weights_hist[::-1])[::-1]  # np.sqrt()
