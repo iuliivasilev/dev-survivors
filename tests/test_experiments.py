@@ -50,7 +50,7 @@ DATASETS_LOAD = {
 
 cox_param_grid = {
     'alpha': [100, 10, 1, 0.1, 0.01, 0.001],
-    'ties': ["breslow", "efron"]
+    'ties': ["breslow"]
 }
 RSF_param_grid = {
     'n_estimators': [30, 50, 100],
@@ -98,7 +98,7 @@ def get_best_by_full_name(df_full, by_metric="IAUC", choose="max"):
 def plot_boxplot_results(df_full, dir_path=None, metrics=[],
                          dataset_name="", all_best=False,
                          by_metric="IAUC", choose="max"):
-    if not (all_best):
+    if not(all_best):
         df_ = get_best_by_full_name(df_full, by_metric, choose)
     for m in metrics:
         if all_best:
@@ -127,7 +127,7 @@ def import_tables(dirs):
 
 
 def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
-        with_external=True, except_stop="all", dir_path=None):
+        with_external=True, except_stop="all", mode="CV", dir_path=None):
     """
     Conduct experiments for defined dataset and methods (self and external)
 
@@ -171,19 +171,16 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
     if not (dataset in DATASETS_LOAD):
         print("DATASET %s IS NOT DEFINED" % (dataset))
     X, y, features, categ, sch_nan = DATASETS_LOAD[dataset]()
-    experim = exp.Experiments(folds=5, except_stop=except_stop, dataset_name=dataset)
+    experim = exp.Experiments(folds=5, except_stop=except_stop, dataset_name=dataset, mode=mode)
     experim.set_metrics(lst_metrics)
     if with_external:
-        experim.add_method(LEAF_MODEL_DICT["base"], {})
-        experim.add_method(LEAF_MODEL_DICT["base_fast"], {})
-        # experim.add_method(CoxPHSurvivalAnalysis, cox_param_grid)
-        # experim.add_method(SurvivalTree, ST_param_grid)
-        # experim.add_method(RandomSurvivalForest, RSF_param_grid)
-        # experim.add_method(GradientBoostingSurvivalAnalysis, GBSA_param_grid)
+        experim.add_method(CoxPHSurvivalAnalysis, cox_param_grid)
+        experim.add_method(SurvivalTree, ST_param_grid)
+        experim.add_method(RandomSurvivalForest, RSF_param_grid)
+        experim.add_method(GradientBoostingSurvivalAnalysis, GBSA_param_grid)
     if len(with_self) > 0:
         for alg in with_self:
             PARAMS_[dataset][alg]["categ"] = [categ]
-            PARAMS_[dataset][alg]["leaf_model"] = ["base", "base_fast", LEAF_MODEL_DICT["base"], LEAF_MODEL_DICT["base_fast"]]
             experim.add_method(SELF_ALGS[alg], PARAMS_[dataset][alg])
     experim.run(X, y, dir_path=dir_path, verbose=1)
     return experim
@@ -196,16 +193,23 @@ def dir_path():
 
 # @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    "dataset", ["PBC"]  # ["GBSG", "PBC", "WUHAN"]
+    "dataset", ["COVID"]  # ["COVID", "GBSG", "PBC", "WUHAN", "ONK"]
 )
 def test_dataset_exp(dir_path, dataset):
-    res_exp = run(dataset, with_self=["TREE"], with_external=True, dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]
+    res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode="TIME-CV",
+                  dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]
     df_full = res_exp.get_result()
-    df_best_by_metric = get_best_by_full_name(df_full, by_metric="IBS", choose="min")
-    df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
+    df_time_cv_criterion = res_exp.get_time_cv_result(stratify="criterion")  # get_hold_out_result()
+    df_time_cv_mode_wei = res_exp.get_time_cv_result(stratify="mode_wei")
 
-    df_full.to_excel(os.path.join(dir_path, f"test_leaf_models_{dataset}_full.xlsx"), index=False)
-    df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"test_leaf_models_{dataset}_best.xlsx"), index=False)
-    plot_boxplot_results(df_full, dir_path=dir_path,
-                         metrics=["IBS", "IAUC", "CI"],
-                         dataset_name=dataset)
+    # df_best_by_metric = get_best_by_full_name(df_full, by_metric="IBS", choose="min")
+    # df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
+
+    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"strat_criterion_{dataset}_TIME-CV_best.xlsx"), index=False)
+    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"strat_mode_wei_{dataset}_TIME-CV_best.xlsx"), index=False)
+
+    df_full.to_excel(os.path.join(dir_path, f"{dataset}_TIME-CV_full.xlsx"), index=False)
+    # df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"part_weights_{dataset}_best.xlsx"), index=False)
+    # plot_boxplot_results(df_full, dir_path=dir_path,
+    #                      metrics=["IBS", "IAUC", "CI"],
+    #                      dataset_name=dataset)
