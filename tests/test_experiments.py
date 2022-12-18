@@ -193,7 +193,7 @@ def dir_path():
 
 # @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    "dataset", ["COVID"]  # ["COVID", "GBSG", "PBC", "WUHAN", "ONK"]
+    "dataset", ["WUHAN"]  # ["COVID", "GBSG", "PBC", "WUHAN", "ONK"]
 )
 def test_dataset_exp(dir_path, dataset):
     res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode="TIME-CV",
