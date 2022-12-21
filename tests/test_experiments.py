@@ -193,22 +193,21 @@ def dir_path():
 
 # @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    "dataset", ["WUHAN"]  # ["COVID", "GBSG", "PBC", "WUHAN", "ONK"]
+    "dataset", ["GBSG", "PBC"]  # ["COVID", "GBSG", "PBC", "WUHAN", "ONK"]
 )
 def test_dataset_exp(dir_path, dataset):
-    res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode="TIME-CV",
+    res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode="HOLD-OUT",
                   dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]
     df_full = res_exp.get_result()
-    df_time_cv_criterion = res_exp.get_time_cv_result(stratify="criterion")  # get_hold_out_result()
-    df_time_cv_mode_wei = res_exp.get_time_cv_result(stratify="mode_wei")
+    df_time_cv_criterion = res_exp.get_best_by_mode(stratify="criterion")  # get_hold_out_result()
+    df_time_cv_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
 
-    # df_best_by_metric = get_best_by_full_name(df_full, by_metric="IBS", choose="min")
     # df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
 
-    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"strat_criterion_{dataset}_TIME-CV_best.xlsx"), index=False)
-    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"strat_mode_wei_{dataset}_TIME-CV_best.xlsx"), index=False)
+    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"strat_criterion_{dataset}_HOLD-OUT_best.xlsx"), index=False)
+    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"strat_mode_wei_{dataset}_HOLD-OUT_best.xlsx"), index=False)
 
-    df_full.to_excel(os.path.join(dir_path, f"{dataset}_TIME-CV_full.xlsx"), index=False)
+    df_full.to_excel(os.path.join(dir_path, f"{dataset}_HOLD-OUT_full.xlsx"), index=False)
     # df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"part_weights_{dataset}_best.xlsx"), index=False)
     # plot_boxplot_results(df_full, dir_path=dir_path,
     #                      metrics=["IBS", "IAUC", "CI"],
