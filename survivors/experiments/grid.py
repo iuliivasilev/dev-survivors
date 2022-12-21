@@ -68,6 +68,13 @@ def generate_sample(X, y, folds, mode="CV"):
                 X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index_)
                 yield X_train, y_train, X_test, y_test, bins
             train_index = np.hstack([train_index, test_index_])
+    elif mode == "HOLD-OUT":
+            X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME], test_size=0.33, random_state=42)
+            X, y, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
+            for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
+                X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
+                yield X_train, y_train, X_test, y_test, bins
+            yield X, y, X_HO, y_HO, bins_HO
     else:
         for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
             X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
@@ -203,10 +210,6 @@ class Experiments(object):
     
     def run(self, X, y, dir_path=None, verbose=0):
         self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
-        if self.mode == "HOLD-OUT":
-            X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME], test_size=0.33, random_state=42)
-            X, y, X_HO, y_HO, bins = prepare_sample(X, y, X_TR.index, X_HO.index)
-            self.hold_out_data = [X, y, X_HO, y_HO, bins]
 
         for method, grid in zip(self.methods, self.methods_grid):
             cv_method = crossval_param(method, X, y, self.folds, self.metrics, self.mode)
@@ -231,7 +234,7 @@ class Experiments(object):
                 #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
                 #     if self.except_stop == "all":
                 #         break
-        if self.mode == "TIME-CV":
+        if self.mode in ["TIME-CV", "HOLD-OUT"]:
             for m in self.metrics:
                 self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
             for m in self.metrics:
@@ -245,29 +248,32 @@ class Experiments(object):
             # add_time = strftime("%H:%M:%S", gmtime(time.time()))
             self.save(dir_path)
 
+    def get_cv_result(self, stratify="criterion"):
+        df_cv_best = self.get_best_results("IBS_mean", choose="min", stratify=stratify)
+        return df_cv_best
+
     def get_time_cv_result(self, stratify="criterion"):
         df_time_cv_best = self.get_best_results("IBS_pred_mean", choose="min", stratify=stratify)
         return df_time_cv_best
 
-    def get_hold_out_result(self):
-        df_HO_best = self.get_best_results("IBS_mean", choose="min")
-        X, y, X_HO, y_HO, bins = self.hold_out_data
-        str_all_methods = [m.__name__ for m in self.methods]
-        for i, (str_method, str_p) in enumerate(zip(df_HO_best["METHOD"], df_HO_best["PARAMS"])):
-            ind_method = str_all_methods.index(str_method)
-            est = self.methods[ind_method](**eval(str_p))
-            est.fit(X, y)
-            pred_surv = est.predict_at_times(X_HO, bins=bins, mode="surv")
-            pred_time = est.predict(X_HO, target=cnt.TIME_NAME)
-            pred_haz = est.predict_at_times(X_HO, bins=bins, mode="hazard")
-            res_metr = count_metric(y, y_HO, pred_time, pred_surv, pred_haz, bins, self.metrics)
-            for name, metr in zip(self.metrics, res_metr):
-                df_HO_best.loc[i, name + "_HO"] = metr
-        return df_HO_best
+    def get_hold_out_result(self, stratify="criterion"):
+        df_hold_out_best = self.get_best_results("IBS_pred_mean", choose="min", stratify=stratify)
+        rename_d = {metr + "_pred_mean": metr + "_CV_mean" for metr in self.metrics}
+        rename_d.update({metr + "_last": metr + "_HO" for metr in self.metrics})
+        return df_hold_out_best.rename(rename_d, axis=1)
 
     def get_result(self):
         return self.result_table
-    
+
+    def get_best_by_mode(self, stratify="criterion"):
+        if self.mode == "CV":
+            return self.get_best_results("IBS_pred", choose="min", stratify=stratify)
+        elif self.mode == "TIME-CV":
+            return self.get_time_cv_result(stratify=stratify)
+        elif self.mode == "HOLD-OUT":
+            return self.get_hold_out_result(stratify=stratify)
+        return None
+
     def get_best_results(self, by_metric, choose="max", stratify="criterion"):
         if not(by_metric in self.result_table.columns):
             return None
