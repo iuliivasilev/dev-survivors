@@ -205,9 +205,12 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     num_r = dur_notna.shape[0]
     num_l = 0
 
-    if criterion == "confident":
+    if criterion == "confident" or criterion == "confident_weights":
         kmf = KaplanMeier()
-        kmf.fit(dur, cens)
+        if criterion == "confident_weights":
+            kmf.fit(dur, cens, weights=weights)
+        else:
+            kmf.fit(dur, cens)
         ci = kmf.get_confidence_interval_()
         weights_hist = 1 / (ci[1:, 1] - ci[1:, 0] + 1e-5)
         criterion = "weights"
