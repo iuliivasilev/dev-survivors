@@ -212,7 +212,7 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         else:
             kmf.fit(dur, cens)
         ci = kmf.get_confidence_interval_()
-        weights_hist = 1 / (ci[1:, 1] - ci[1:, 0] + 1e-5)
+        weights_hist = 1 / (ci[1:, 1] - ci[1:, 0] + 1e-5)  # (ci[1:, 1] + ci[1:, 0] + 1e-5)
         criterion = "weights"
     elif weights is None:
         weights_hist = None
