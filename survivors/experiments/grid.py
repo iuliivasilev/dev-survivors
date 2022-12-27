@@ -267,7 +267,7 @@ class Experiments(object):
 
     def get_best_by_mode(self, stratify="criterion"):
         if self.mode == "CV":
-            return self.get_best_results("IBS_pred", choose="min", stratify=stratify)
+            return self.get_cv_result(stratify=stratify)
         elif self.mode == "TIME-CV":
             return self.get_time_cv_result(stratify=stratify)
         elif self.mode == "HOLD-OUT":
