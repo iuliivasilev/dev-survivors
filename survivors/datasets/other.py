@@ -69,7 +69,7 @@ def load_wuhan_dataset(invert_death=False):
     df_f = df_f.reset_index(drop=True)
     
     categ_covid = []
-    sign_covid = list(set(df_f) - {CENS_NAME, TIME_NAME})
+    sign_covid = sorted(list(set(df_f) - {CENS_NAME, TIME_NAME}))
     
     if invert_death:
         df_f[CENS_NAME] = 1 - df_f[CENS_NAME]
