@@ -54,7 +54,9 @@ def test_tree(pbs_samples, params, n_obser, l_expected):
 @pytest.mark.parametrize(
     ("params", "n_obser", "l_expected", "boost_bettas"),
     [({"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3},
-     12, [0.13312, 1908.035, 1.0, 0.74072, 0.87483], [0.06726, 0.08173, 0.04871])
+     12, [0.13312, 1908.035, 1.0, 0.74072, 0.87483], [0.06726, 0.08173, 0.04871]),
+     ({"criterion": "weights", "depth": 5, "min_samples_leaf": 5, "n_estimators": 4},
+     12, [0.09159, 2044.468, 1.0, 0.58778, 0.87519], [0.06362, 0.03501, 0.05259, 0.08943])
     ]
 )
 def test_boosting(pbs_samples, params, n_obser, l_expected, boost_bettas):
@@ -73,6 +75,7 @@ def test_boosting(pbs_samples, params, n_obser, l_expected, boost_bettas):
     assert round(pred_surv[n_obser].mean(), 5) == l_expected[4]
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
     ("params", "mode", "size_expected"),
     [({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}, "hist", 191784),
@@ -92,7 +95,7 @@ def test_tree_visualize(pbs_samples, params, mode, size_expected):
         stat_result = os.stat(os.path.join(tmp_dir, os.listdir(tmp_dir)[0]))
         assert stat_result.st_size == size_expected
 
-
+@pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
     ("params", "depth_hist", "numb_hist"),
     [({"criterion": "peto", "depth": 5, "min_samples_leaf": 3, "signif": 0.05},
@@ -112,6 +115,7 @@ def test_tree_predict_attr(pbs_samples, params, depth_hist, numb_hist):
     assert (np.histogram(pred_numb, bins=5)[0] == numb_hist).all()
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_tree_rules(pbs_samples):
     params = {"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}
     X_train, y_train, X_test, y_test, bins = pbs_samples
@@ -126,6 +130,7 @@ def test_tree_rules(pbs_samples):
     assert (a[3] == np.array(['(bili < 2.25) & (age < 62.905)', 55], dtype=object)).all()
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_tree_scheme(pbs_samples):
     params = {"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}
     X_train, y_train, X_test, y_test, bins = pbs_samples
