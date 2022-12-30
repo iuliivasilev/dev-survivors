@@ -193,3 +193,17 @@ class BoostingCRAID(FastBaseEnsemble):
             wei = inv_wei/sum(inv_wei)
             return np.sum((x.T*wei).T, axis=0)
         return np.mean(x, axis=0)
+
+
+class SumBoostingCRAID(BoostingCRAID):
+    def __init__(self, learning_rate=0.1, **kwargs):
+        self.name = "SumBoostingCRAID"
+        self.learning_rate = learning_rate
+        super().__init__(**kwargs)
+
+    def update_weight(self, index, wei_i):
+        if self.all_weight:
+            self.weights = self.weights + self.learning_rate*wei_i
+        else:
+            self.weights[index] = (self.weights[index] + self.learning_rate*wei_i)
+        self.weights = self.weights/self.weights.sum()

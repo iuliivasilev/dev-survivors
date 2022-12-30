@@ -1,2 +1,2 @@
 from .bootstrap import BootstrapCRAID
-from .boosting import BoostingCRAID
+from .boosting import BoostingCRAID, SumBoostingCRAID
