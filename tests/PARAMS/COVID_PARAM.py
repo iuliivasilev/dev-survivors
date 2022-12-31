@@ -25,22 +25,26 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.5] if short else [0.5],  # , 0.7],
-    "n_estimators": [15],
-    "ens_metric_name": ["ibs"] if short else ["conc", "ibs"],
-    "depth": [15],
-    "mode_wei": ['exp'] if short else ['square'],  # ,'exp'],
+    "n_estimators": [20],
+    "ens_metric_name": ["ibs"] if short else ["roc", "ibs"],  # "conc",
+    "depth": [10],
+    "mode_wei": ['exp'] if short else ['square', "exp", "sigmoid", "softmax"],
     # "woe" : [],
-    "criterion": ["logrank"] if short else ["weights", "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "criterion": ["logrank"] if short else ["confident", "confident_weights", "weights",
+                                            "peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [10] if short else [100],  # [500, 1000, 2000],
     "max_features": [0.3],  # ["sqrt"],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
-    "leaf_model": ["base"] if short else ["base_fast", "wei_survive"],
-    "all_weight": [True, False],
-    "n_jobs": [2]
+    "leaf_model": ["base"] if short else ["base_fast"],
+    "all_weight": [False],  # , False],
+    "n_jobs": [5],
+    # ONLY SUM BOOSTING
+    "learning_rate": [1.0, 0.2]
 }
 
 COVID_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
-    "BOOST": BOOST_param_grid
+    "BOOST": BOOST_param_grid,
+    "SUMBOOST": BOOST_param_grid
 }

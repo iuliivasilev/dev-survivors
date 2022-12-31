@@ -37,20 +37,21 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
-    "criterion": ["weights"] if short else ["weights", "logrank", "peto", "tarone-ware", "wilcoxon"],
+    "criterion": ["weights"] if short else ["confident", "confident_weights", "weights",
+                                            "logrank", "peto", "tarone-ware", "wilcoxon"],
     "depth": [10],  # 25],
     "ens_metric_name": ["roc"] if short else ["ibs", "roc"],
     "max_features": ["sqrt"] if short else ["sqrt"],  # 0.3
     "min_samples_leaf": [1] if short else [1, 10],  # 15],
-    "mode_wei": ['square', 'exp'] if short else ['square', 'exp'],
+    "mode_wei": ['square', 'exp'] if short else ['exp', 'square', "sigmoid", "softmax"],
     "n_estimators": [15] if short else [25],  # [10, 15, 25],
     "size_sample": [0.5] if short else [0.5, 0.7],
-    "all_weight": [True, False],
-    "leaf_model": ["wei_survive", "base_fast"],
+    "all_weight": [False],
+    "leaf_model": ["base_fast"] if short else ["wei_survive", "base_fast"],
     # "leaf_model": ["base"] if short else ["base_fast", "wei_survive"],
-    "weighted_tree": [True],
-    "n_jobs": [2]
-    # "woe" : [],
+    "n_jobs": [2],
+    # ONLY SUM BOOSTING
+    "learning_rate": [1.0, 0.2]
 }
 
 # BOOST_param_grid_error = {'aggreg_func': ['wei'],
@@ -64,5 +65,6 @@ BOOST_param_grid = {
 PBC_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
-    "BOOST": BOOST_param_grid
+    "BOOST": BOOST_param_grid,
+    "SUMBOOST": BOOST_param_grid
 }
