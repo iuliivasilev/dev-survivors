@@ -10,7 +10,7 @@ from sksurv.ensemble import GradientBoostingSurvivalAnalysis
 
 from survivors.tree import CRAID
 from survivors.ensemble import BootstrapCRAID
-from survivors.ensemble import BoostingCRAID
+from survivors.ensemble import BoostingCRAID, SumBoostingCRAID
 from survivors.experiments import grid as exp
 from survivors import datasets as ds
 
@@ -29,7 +29,8 @@ sns.set()
 SELF_ALGS = {
     "TREE": CRAID,
     "BSTR": BootstrapCRAID,
-    "BOOST": BoostingCRAID
+    "BOOST": BoostingCRAID,
+    "SUMBOOST": SumBoostingCRAID
 }
 
 PARAMS_ = {
@@ -193,21 +194,21 @@ def dir_path():
 
 # @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    "dataset", ["GBSG", "PBC"]  # ["COVID", "GBSG", "PBC", "WUHAN", "ONK"]
+    "dataset", ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]
+    # ["CV", "HOLD-OUT", "TIME-CV"]
 )
-def test_dataset_exp(dir_path, dataset):
-    res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode="HOLD-OUT",
+def test_dataset_exp(dir_path, dataset, mode="HOLD-OUT"):
+    res_exp = run(dataset, with_self=["SUMBOOST"], with_external=False, mode=mode,
                   dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]
     df_full = res_exp.get_result()
     df_time_cv_criterion = res_exp.get_best_by_mode(stratify="criterion")  # get_hold_out_result()
     df_time_cv_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
 
+    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"SUMBOOST_strat_criterion_{dataset}_{mode}_best.xlsx"), index=False)
+    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"SUMBOOST_strat_mode_wei_{dataset}_{mode}_best.xlsx"), index=False)
+    df_full.to_excel(os.path.join(dir_path, f"SUMBOOST_{dataset}_{mode}_full.xlsx"), index=False)
+
     # df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
-
-    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"strat_criterion_{dataset}_HOLD-OUT_best.xlsx"), index=False)
-    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"strat_mode_wei_{dataset}_HOLD-OUT_best.xlsx"), index=False)
-
-    df_full.to_excel(os.path.join(dir_path, f"{dataset}_HOLD-OUT_full.xlsx"), index=False)
     # df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"part_weights_{dataset}_best.xlsx"), index=False)
     # plot_boxplot_results(df_full, dir_path=dir_path,
     #                      metrics=["IBS", "IAUC", "CI"],
