@@ -146,9 +146,10 @@ class BoostingCRAID(FastBaseEnsemble):
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
         losses = metr.ibs(self.y_train, y_sub, pred_sf, self.bins, axis=0)
 
-        pred_wei = None
-        if self.all_weight:
-            pred_wei = self.weights
+        pred_wei = self.weights[X_sub['ind_start']]
+        # pred_wei = None
+        # if self.all_weight:
+        #     pred_wei = self.weights
         wei, betta = count_weight(losses, mode=self.mode_wei, pred_wei=pred_wei)
         return wei, betta
     
