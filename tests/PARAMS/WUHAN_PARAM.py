@@ -50,15 +50,15 @@ BOOST_param_grid = {
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "leaf_model": ["base_fast"] if short else ["base_fast", "wei_survive"],
     "all_weight": [False],
-    "n_jobs": [2],
-    # ONLY SUM BOOSTING
-    "learning_rate": [1.0, 0.2]
+    "n_jobs": [2]
 }
 
+SUMBOOST_param_grid = BOOST_param_grid.copy()
+SUMBOOST_param_grid["learning_rate"] = [1.0, 0.2]
 
 WUHAN_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
-    "SUMBOOST": BOOST_param_grid
+    "SUMBOOST": SUMBOOST_param_grid
 }

@@ -29,7 +29,6 @@ BOOST_param_grid = {
     "ens_metric_name": ["ibs"] if short else ["roc", "ibs"],  # "conc",
     "depth": [10],
     "mode_wei": ['exp'] if short else ['square', "exp", "sigmoid", "softmax"],
-    # "woe" : [],
     "criterion": ["logrank"] if short else ["confident", "confident_weights", "weights",
                                             "peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [10] if short else [100],  # [500, 1000, 2000],
@@ -37,14 +36,15 @@ BOOST_param_grid = {
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "leaf_model": ["base"] if short else ["base_fast"],
     "all_weight": [False],  # , False],
-    "n_jobs": [5],
-    # ONLY SUM BOOSTING
-    "learning_rate": [1.0, 0.2]
+    "n_jobs": [5]
 }
+
+SUMBOOST_param_grid = BOOST_param_grid.copy()
+SUMBOOST_param_grid["learning_rate"] = [1.0, 0.2]
 
 COVID_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
-    "SUMBOOST": BOOST_param_grid
+    "SUMBOOST": SUMBOOST_param_grid
 }

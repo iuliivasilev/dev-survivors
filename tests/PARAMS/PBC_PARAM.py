@@ -49,10 +49,11 @@ BOOST_param_grid = {
     "all_weight": [False],
     "leaf_model": ["base_fast"] if short else ["wei_survive", "base_fast"],
     # "leaf_model": ["base"] if short else ["base_fast", "wei_survive"],
-    "n_jobs": [2],
-    # ONLY SUM BOOSTING
-    "learning_rate": [1.0, 0.2]
+    "n_jobs": [2]
 }
+
+SUMBOOST_param_grid = BOOST_param_grid.copy()
+SUMBOOST_param_grid["learning_rate"] = [1.0, 0.2]
 
 # BOOST_param_grid_error = {'aggreg_func': ['wei'],
 #                     'criterion': ['weights'],
@@ -66,5 +67,5 @@ PBC_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
-    "SUMBOOST": BOOST_param_grid
+    "SUMBOOST": SUMBOOST_param_grid
 }
