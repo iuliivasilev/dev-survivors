@@ -14,7 +14,9 @@ METRIC_DICT = {
     "IBS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         ibs(y_tr, y_tst, pr_surv, bins),
     "IAUC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        iauc(y_tr, y_tst, pr_haz, bins)
+        iauc(y_tr, y_tst, pr_haz, bins),
+    "LOGLIKELIHOOD": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        loglikelihood(y_tst[TIME_NAME], y_tst[CENS_NAME], pr_surv, pr_haz, bins)
 }
 """ dict: Available metrics in library and its realization """
 
@@ -268,6 +270,14 @@ def ipa(survival_train, survival_test, estimate, times, axis=-1):
     ibs_kmf_model = ibs(survival_train, survival_test, kmf_estimate, times, axis)
     return 1 - (ibs_model + 1e-8) / (ibs_kmf_model + 1e-8)
 
+
+def loglikelihood(time, cens, sf, cumhf, bins):
+    index_times = np.digitize(time, bins, right=True) - 1
+    hf = np.hstack((cumhf[:, 0][np.newaxis].T, np.diff(cumhf)))
+    sf_by_times = np.take_along_axis(sf, index_times[:, np.newaxis], axis=1)[:, 0] + 1e-10
+    hf_by_times = (np.take_along_axis(hf, index_times[:, np.newaxis], axis=1)[:, 0] + 1e-10)**cens
+    likelihood = np.sum(np.log(sf_by_times) + np.log(hf_by_times))
+    return likelihood
 
 """ESTIMATE FUNCTION"""
 
