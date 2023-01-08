@@ -20,7 +20,7 @@ METRIC_DICT = {
 }
 """ dict: Available metrics in library and its realization """
 
-DESCEND_METRICS = ['ibs', 'IBS']
+DESCEND_METRICS = ['ibs', 'IBS', 'aic', "AIC", "bic", "BIC"]
 """ list: Metrics with decreasing quality improvement """
 
 
@@ -278,6 +278,14 @@ def loglikelihood(time, cens, sf, cumhf, bins):
     hf_by_times = (np.take_along_axis(hf, index_times[:, np.newaxis], axis=1)[:, 0] + 1e-10)**cens
     likelihood = np.sum(np.log(sf_by_times) + np.log(hf_by_times))
     return likelihood
+
+
+def aic(num_params, time, cens, sf, cumhf, bins):
+    return 2*num_params - 2*loglikelihood(time, cens, sf, cumhf, bins)
+
+
+def bic(k, n, time, cens, sf, cumhf, bins):
+    return k*np.log(n) - 2*loglikelihood(time, cens, sf, cumhf, bins)
 
 """ESTIMATE FUNCTION"""
 
