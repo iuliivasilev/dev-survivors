@@ -194,7 +194,7 @@ def dir_path():
 
 # @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    "dataset", ["GBSG"]  # , "PBC", "WUHAN", "ONK", "COVID"]
+    "dataset", ["COVID"]  # "GBSG", "PBC", "WUHAN", "ONK", "COVID"]
     # ["CV", "HOLD-OUT", "TIME-CV"]
 )
 def test_dataset_exp(dir_path, dataset, mode="HOLD-OUT"):
