@@ -226,7 +226,7 @@ class Experiments(object):
                 self.result_table = self.result_table.append(curr_dict, ignore_index=True)
                 if verbose > 0:
                     print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
-                              {k: np.mean(v) for k, v in cv_metr.items()})
+                              {k: [np.mean(v[:-1]), v[-1]] for k, v in cv_metr.items()})  # np.mean(v)
                 # except KeyboardInterrupt:
                 #     print("HANDELED KeyboardInterrupt")
                 #     break
