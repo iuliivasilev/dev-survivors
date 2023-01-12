@@ -194,7 +194,7 @@ def dir_path():
 
 # @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    "dataset", ["COVID"]  # "GBSG", "PBC", "WUHAN", "ONK", "COVID"]
+    "dataset", ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]  # "GBSG", "PBC", "WUHAN", "ONK", "COVID"]
     # ["CV", "HOLD-OUT", "TIME-CV"]
 )
 def test_dataset_exp(dir_path, dataset, mode="HOLD-OUT"):
@@ -204,9 +204,9 @@ def test_dataset_exp(dir_path, dataset, mode="HOLD-OUT"):
     df_time_cv_criterion = res_exp.get_best_by_mode(stratify="criterion")  # get_hold_out_result()
     df_time_cv_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
 
-    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"bic_strat_criterion_{dataset}_{mode}_best.xlsx"), index=False)
-    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"bic_strat_mode_wei_{dataset}_{mode}_best.xlsx"), index=False)
-    df_full.to_excel(os.path.join(dir_path, f"bic_{dataset}_{mode}_full.xlsx"), index=False)
+    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"low_long_strat_criterion_{dataset}_{mode}_best.xlsx"), index=False)
+    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"low_long_strat_mode_wei_{dataset}_{mode}_best.xlsx"), index=False)
+    df_full.to_excel(os.path.join(dir_path, f"low_long_{dataset}_{mode}_full.xlsx"), index=False)
 
     # df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
     # df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"part_weights_{dataset}_best.xlsx"), index=False)
