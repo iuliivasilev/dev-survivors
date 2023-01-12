@@ -39,12 +39,12 @@ BOOST_param_grid = {
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "criterion": ["weights"] if short else ["confident", "confident_weights", "weights",
                                             "logrank", "peto", "tarone-ware", "wilcoxon"],
-    "depth": [10],  # 25],
-    "ens_metric_name": ["roc"] if short else ["ibs", "roc"],
+    "depth": [5],  # old 10,
+    "ens_metric_name": ["roc"] if short else ["bic", "ibs", "roc"],  # ["ibs", "roc"],
     "max_features": ["sqrt"] if short else ["sqrt"],  # 0.3
-    "min_samples_leaf": [1] if short else [1, 10],  # 15],
+    "min_samples_leaf": [1] if short else [10],  # old [1, 10]
     "mode_wei": ['square', 'exp'] if short else ['exp', 'square', "sigmoid", "softmax"],
-    "n_estimators": [15] if short else [25],  # [10, 15, 25],
+    "n_estimators": [15] if short else [50],  # old 30 -> [10, 15, 25],
     "size_sample": [0.5] if short else [0.5, 0.7],
     "all_weight": [False],
     "leaf_model": ["base_fast"] if short else ["wei_survive", "base_fast"],

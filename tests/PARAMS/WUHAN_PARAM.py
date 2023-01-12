@@ -38,8 +38,8 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.7] if short else [0.7],
-    "n_estimators": [20] if short else [20],  # 20
-    "ens_metric_name": ["conc"] if short else ["conc", "ibs"],
+    "n_estimators": [20] if short else [50],  # old 20
+    "ens_metric_name": ["conc"] if short else ["bic", "conc", "ibs"],  # ["conc", "ibs"],
     "depth": [5],  # 15
     "mode_wei": ['square'] if short else ['linear', 'exp', 'square', "sigmoid", "softmax"],
     # "woe" : [],

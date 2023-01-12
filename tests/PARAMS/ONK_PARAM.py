@@ -25,9 +25,9 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.9],  # [0.5, 0.7],
-    "n_estimators": [30],
-    "ens_metric_name": ["ibs"] if short else ["roc", "ibs"],  # ["conc", "ibs"]
-    "depth": [10] if short else [5, 10],
+    "n_estimators": [50],  # old [30]
+    "ens_metric_name": ["ibs"] if short else ["bic", "roc", "ibs"],  # ["roc", "ibs"],  # ["conc", "ibs"]
+    "depth": [10] if short else [5],  # old [5, 10]
     "mode_wei": ['exp'] if short else ['exp', 'square', "sigmoid", "softmax"],
     "criterion": ["logrank"] if short else ["confident", "confident_weights", "weights",
                                             "peto", "tarone-ware", "wilcoxon", "logrank"],

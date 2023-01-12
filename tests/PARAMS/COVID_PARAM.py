@@ -25,13 +25,13 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.5] if short else [0.5],  # , 0.7],
-    "n_estimators": [20],
-    "ens_metric_name": ["ibs"] if short else ["roc", "ibs"],  # "conc",
-    "depth": [10],
+    "n_estimators": [50],  # old 30
+    "ens_metric_name": ["ibs"] if short else ["bic", "roc", "ibs"],  # ["roc", "ibs"],  # "conc",
+    "depth": [5],  # old 10
     "mode_wei": ['exp'] if short else ['square', "exp", "sigmoid", "softmax"],
     "criterion": ["logrank"] if short else ["confident", "confident_weights", "weights",
                                             "peto", "tarone-ware", "wilcoxon", "logrank"],
-    "min_samples_leaf": [10] if short else [100],  # [500, 1000, 2000],
+    "min_samples_leaf": [10] if short else [1000],  # old 100
     "max_features": [0.3],  # ["sqrt"],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "leaf_model": ["base"] if short else ["base_fast"],
