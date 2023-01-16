@@ -149,7 +149,7 @@ def create_none_ft(fill_df, sign_f, fill_none=False):
     DataFrame
     """
     for i in sign_f:
-        #fill_df['none_'+i] = fill_df[i].apply(lambda x: int(x != x))
+        # fill_df['none_'+i] = fill_df[i].apply(lambda x: int(x != x))
         if i in set(def_categ.keys()):
             # categorical features
             fill_df[i] = fill_df[i].map(def_categ[i])
