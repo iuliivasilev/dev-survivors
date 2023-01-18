@@ -10,7 +10,7 @@ from sksurv.ensemble import GradientBoostingSurvivalAnalysis
 
 from survivors.tree import CRAID
 from survivors.ensemble import BootstrapCRAID
-from survivors.ensemble import BoostingCRAID, SumBoostingCRAID
+from survivors.ensemble import BoostingCRAID  #, SumBoostingCRAID
 from survivors.experiments import grid as exp
 from survivors import datasets as ds
 
@@ -30,7 +30,7 @@ SELF_ALGS = {
     "TREE": CRAID,
     "BSTR": BootstrapCRAID,
     "BOOST": BoostingCRAID,
-    "SUMBOOST": SumBoostingCRAID
+    # "SUMBOOST": SumBoostingCRAID
 }
 
 PARAMS_ = {
@@ -204,9 +204,9 @@ def test_dataset_exp(dir_path, dataset, mode="HOLD-OUT"):
     df_time_cv_criterion = res_exp.get_best_by_mode(stratify="criterion")  # get_hold_out_result()
     df_time_cv_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
 
-    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"low_long_strat_criterion_{dataset}_{mode}_best.xlsx"), index=False)
-    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"low_long_strat_mode_wei_{dataset}_{mode}_best.xlsx"), index=False)
-    df_full.to_excel(os.path.join(dir_path, f"low_long_{dataset}_{mode}_full.xlsx"), index=False)
+    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"arc_x4_strat_criterion_{dataset}_{mode}_best.xlsx"), index=False)
+    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"arc_x4_strat_mode_wei_{dataset}_{mode}_best.xlsx"), index=False)
+    df_full.to_excel(os.path.join(dir_path, f"arc_x4_{dataset}_{mode}_full.xlsx"), index=False)
 
     # df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
     # df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"part_weights_{dataset}_best.xlsx"), index=False)
