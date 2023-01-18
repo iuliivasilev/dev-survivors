@@ -40,6 +40,9 @@ def count_weight(losses, mode='linear', pred_wei=None):
     new_wei = betta ** (1 - li)
     return new_wei, betta
 
+def arc_x4(weights):
+    scaled = 1 + weights**4
+    return scaled/sum(scaled)
 
 class BoostingCRAID(FastBaseEnsemble):
     """
@@ -97,14 +100,15 @@ class BoostingCRAID(FastBaseEnsemble):
         self.update_params()
         
         for i in range(self.n_estimators):
-            x_sub = self.X_train.sample(n=self.size_sample, weights=self.weights,
+            prob_weights = arc_x4(self.weights)
+            x_sub = self.X_train.sample(n=self.size_sample, weights=prob_weights,  # self.weights
                                         replace=self.bootstrap, random_state=i)
             x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index), :]
 
             x_sub = x_sub.reset_index(drop=True)
             X_sub_tr, y_sub_tr = cnt.pd_to_xy(x_sub)
             if self.weighted_tree:
-                X_sub_tr["weights_obs"] = self.weights[x_sub['ind_start']]
+                X_sub_tr["weights_obs"] = prob_weights[x_sub['ind_start']]  # self.weights
 
             model = CRAID(features=self.features, random_state=i, **self.tree_kwargs)
             model.fit(X_sub_tr, y_sub_tr)
