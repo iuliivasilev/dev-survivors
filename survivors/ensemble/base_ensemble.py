@@ -198,13 +198,13 @@ class FastBaseEnsemble(BaseEnsemble):
         self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
                                  cens=self.y_train[cnt.CENS_NAME])
 
-        if self.ens_metric_name in ["ibs", "iauc", "likelihood"]:
+        if self.ens_metric_name in ["ibs", "iauc", "likelihood", "bic"]:
             dim = (self.X_train.shape[0], self.bins.shape[0])
         else:
             dim = (self.X_train.shape[0])
         self.oob_prediction = np.zeros(dim, dtype=np.float)
 
-        if self.ens_metric_name == "likelihood":
+        if self.ens_metric_name in ["likelihood", "bic"]:
             self.oob_prediction_hf = np.zeros(dim, dtype=np.float)
         self.oob_count = np.zeros((self.X_train.shape[0]), dtype=np.int)
 
@@ -219,7 +219,7 @@ class FastBaseEnsemble(BaseEnsemble):
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.TIME_NAME)
         elif self.ens_metric_name == "roc":
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.CENS_NAME)
-        elif self.ens_metric_name == "likelihood":
+        elif self.ens_metric_name in ["likelihood", "bic"]:
             self.oob_count = np.ones((self.X_train.shape[0]), dtype=np.int)
             self.oob_prediction_hf += model.predict_at_times(self.X_train, bins=self.bins, mode="hazard")
             self.oob_prediction += model.predict_at_times(self.X_train, bins=self.bins, mode="surv")
@@ -233,7 +233,7 @@ class FastBaseEnsemble(BaseEnsemble):
         index_join_oob = np.where(self.oob_count != 0)
         if self.ens_metric_name == "ibs":
             pred = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob][:, None]
-        elif self.ens_metric_name == "likelihood":
+        elif self.ens_metric_name in ["likelihood", "bic"]:
             pred_hf = self.oob_prediction_hf[index_join_oob]  # / self.oob_count[index_join_oob][:, None]
             pred_sf = self.oob_prediction[index_join_oob]  # / self.oob_count[index_join_oob][:, None]
         else:
@@ -252,4 +252,6 @@ class FastBaseEnsemble(BaseEnsemble):
             return metr.ibs(self.y_train, y_true, pred, self.bins)
         elif self.ens_metric_name == "likelihood":
             return metr.loglikelihood(target_time, target_cens, pred_sf, pred_hf, self.bins)
+        elif self.ens_metric_name == "bic":
+            return metr.bic(len(self.models), self.size_sample, target_time, target_cens, pred_sf, pred_hf, self.bins)
         return None
