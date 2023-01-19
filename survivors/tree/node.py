@@ -184,7 +184,7 @@ class Node(object):
         # args = self.get_comb(selected_feats)
         args = self.get_comb_fast(selected_feats)
 
-        # ml = np.vectorize(lambda x: best_attr_split(**x))(args)
+        # ml = np.vectorize(lambda x: hist_best_attr_split(**x))(args)
 
         with Parallel(n_jobs=n_jobs, verbose=0, batch_size=10) as parallel:  # prefer="threads"
             ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
