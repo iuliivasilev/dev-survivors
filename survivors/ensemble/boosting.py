@@ -40,9 +40,11 @@ def count_weight(losses, mode='linear', pred_wei=None):
     new_wei = betta ** (1 - li)
     return new_wei, betta
 
+
 def arc_x4(weights):
     scaled = 1 + weights**4
     return scaled/sum(scaled)
+
 
 class BoostingCRAID(FastBaseEnsemble):
     """
