@@ -181,7 +181,7 @@ class Experiments(object):
     add_method : append method and its grid
     set_metrics : check and set list of metric name 
     run : start experiments with data X, y
-    get_best_results : choose for each method best params by metric and aggreg 
+    get_agg_results : choose for each method aggregated params by metric and aggreg
     save : export table as xlsx
     
     """
@@ -248,16 +248,39 @@ class Experiments(object):
             # add_time = strftime("%H:%M:%S", gmtime(time.time()))
             self.save(dir_path)
 
+    @staticmethod
+    def get_agg_results(result_table, by_metric, choose="median", stratify="criterion"):
+        if not (by_metric in result_table.columns):
+            return None
+        df = result_table.copy()
+        stratify_name = f"Stratify({stratify})"
+        df[stratify_name] = df["PARAMS"].apply(lambda x: to_str_from_dict_list(eval(x), stratify))
+        df["METHOD_FULL"] = df.apply(lambda x: x["METHOD"].replace("CRAID", f"Tree({x[stratify_name]})"), axis=1)
+
+        best_table = pd.DataFrame([], columns=df.columns)
+        for method in df['METHOD_FULL'].unique():
+            sub_table = df[df["METHOD_FULL"] == method]
+            if sub_table.shape[0] == 0:
+                continue
+            if choose == "max":
+                best_row = sub_table.loc[sub_table[by_metric].idxmax()]
+            elif choose == "min":
+                best_row = sub_table.loc[sub_table[by_metric].idxmin()]
+            else:
+                best_row = sub_table.sort_values(by=by_metric).iloc[sub_table.shape[0] // 2]
+            best_table = best_table.append(dict(best_row), ignore_index=True)
+        return best_table
+
     def get_cv_result(self, stratify="criterion"):
-        df_cv_best = self.get_best_results("IBS_mean", choose="min", stratify=stratify)
+        df_cv_best = self.get_agg_results(self.result_table, "IBS_mean", choose="median", stratify=stratify)
         return df_cv_best
 
     def get_time_cv_result(self, stratify="criterion"):
-        df_time_cv_best = self.get_best_results("IBS_pred_mean", choose="min", stratify=stratify)
+        df_time_cv_best = self.get_agg_results(self.result_table, "IBS_pred_mean", choose="median", stratify=stratify)
         return df_time_cv_best
 
     def get_hold_out_result(self, stratify="criterion"):
-        df_hold_out_best = self.get_best_results("IBS_pred_mean", choose="min", stratify=stratify)
+        df_hold_out_best = self.get_agg_results(self.result_table, "IBS_pred_mean", choose="median", stratify=stratify)
         rename_d = {metr + "_pred_mean": metr + "_CV_mean" for metr in self.metrics}
         rename_d.update({metr + "_last": metr + "_HO" for metr in self.metrics})
         return df_hold_out_best.rename(rename_d, axis=1)
@@ -273,26 +296,6 @@ class Experiments(object):
         elif self.mode == "HOLD-OUT":
             return self.get_hold_out_result(stratify=stratify)
         return None
-
-    def get_best_results(self, by_metric, choose="max", stratify="criterion"):
-        if not(by_metric in self.result_table.columns):
-            return None
-        df = self.result_table.copy()
-        stratify_name = f"Stratify({stratify})"
-        df[stratify_name] = df["PARAMS"].apply(lambda x: to_str_from_dict_list(eval(x), stratify))
-        df["METHOD_FULL"] = df.apply(lambda x: x["METHOD"].replace("CRAID", f"Tree({x[stratify_name]})"), axis=1)
-
-        best_table = pd.DataFrame([], columns=df.columns)
-        for method in df['METHOD_FULL'].unique():
-            sub_table = df[df["METHOD_FULL"] == method]
-            if sub_table.shape[0] == 0:
-                continue
-            if choose == "max":
-                best_row = sub_table.loc[sub_table[by_metric].idxmax()]
-            else:
-                best_row = sub_table.loc[sub_table[by_metric].idxmin()]
-            best_table = best_table.append(dict(best_row), ignore_index=True)
-        return best_table
     
     def save(self, dir_path):
         self.result_table.to_excel(f"{dir_path + self.dataset_name}_FULL_TABLE.xlsx", index=False)
