@@ -214,7 +214,10 @@ class Experiments(object):
         for method, grid in zip(self.methods, self.methods_grid):
             cv_method = crossval_param(method, X, y, self.folds, self.metrics, self.mode)
             print(method, grid)
-            for p in ParameterGrid(grid):
+
+            grid_params = ParameterGrid(grid)
+            p_size = len(grid_params)
+            for i_p, p in enumerate(grid_params):
                 # try:
                 start_time = time.time()
                 cv_metr = cv_method(**p)
@@ -225,6 +228,7 @@ class Experiments(object):
                 curr_dict.update(cv_metr)  # dict(zip(self.metrics, cv_metr))
                 self.result_table = self.result_table.append(curr_dict, ignore_index=True)
                 if verbose > 0:
+                    print(f"Iteration: {i_p + 1}/{p_size}")
                     print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
                               {k: [np.mean(v[:-1]), v[-1]] for k, v in cv_metr.items()})  # np.mean(v)
                 # except KeyboardInterrupt:
@@ -272,15 +276,15 @@ class Experiments(object):
         return best_table
 
     def get_cv_result(self, stratify="criterion"):
-        df_cv_best = self.get_agg_results(self.result_table, "IBS_mean", choose="median", stratify=stratify)
+        df_cv_best = self.get_agg_results(self.result_table, "IBS_mean", choose="min", stratify=stratify)
         return df_cv_best
 
     def get_time_cv_result(self, stratify="criterion"):
-        df_time_cv_best = self.get_agg_results(self.result_table, "IBS_pred_mean", choose="median", stratify=stratify)
+        df_time_cv_best = self.get_agg_results(self.result_table, "IBS_pred_mean", choose="min", stratify=stratify)
         return df_time_cv_best
 
     def get_hold_out_result(self, stratify="criterion"):
-        df_hold_out_best = self.get_agg_results(self.result_table, "IBS_pred_mean", choose="median", stratify=stratify)
+        df_hold_out_best = self.get_agg_results(self.result_table, "IBS_pred_mean", choose="min", stratify=stratify)
         rename_d = {metr + "_pred_mean": metr + "_CV_mean" for metr in self.metrics}
         rename_d.update({metr + "_last": metr + "_HO" for metr in self.metrics})
         return df_hold_out_best.rename(rename_d, axis=1)
