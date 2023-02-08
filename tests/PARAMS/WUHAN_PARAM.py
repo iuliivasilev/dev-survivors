@@ -38,7 +38,7 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.7] if short else [0.7],
-    "n_estimators": [20] if short else [50],  # old 20
+    "n_estimators": [20] if short else [20],  # new 50
     "ens_metric_name": ["conc"] if short else ["bic", "conc", "ibs"],  # ["conc", "ibs"],
     "depth": [5],  # 15
     "mode_wei": ['square'] if short else ['linear', 'exp', 'square', "sigmoid", "softmax"],
@@ -56,9 +56,13 @@ BOOST_param_grid = {
 SUMBOOST_param_grid = BOOST_param_grid.copy()
 SUMBOOST_param_grid["learning_rate"] = [1.0, 0.2]
 
+PROBOOST_param_grid = BOOST_param_grid.copy()
+del PROBOOST_param_grid["mode_wei"]
+
 WUHAN_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
-    "SUMBOOST": SUMBOOST_param_grid
+    "SUMBOOST": SUMBOOST_param_grid,
+    "PROBOOST": PROBOOST_param_grid
 }

@@ -25,9 +25,9 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.9],  # [0.5, 0.7],
-    "n_estimators": [50],  # old [30]
+    "n_estimators": [30],  # new [50]
     "ens_metric_name": ["ibs"] if short else ["bic", "roc", "ibs"],  # ["roc", "ibs"],  # ["conc", "ibs"]
-    "depth": [10] if short else [5],  # old [5, 10]
+    "depth": [10] if short else [5, 10],  # new [5]
     "mode_wei": ['exp'] if short else ['exp', 'square', "sigmoid", "softmax"],
     "criterion": ["logrank"] if short else ["confident", "confident_weights", "weights",
                                             "peto", "tarone-ware", "wilcoxon", "logrank"],
@@ -42,9 +42,13 @@ BOOST_param_grid = {
 SUMBOOST_param_grid = BOOST_param_grid.copy()
 SUMBOOST_param_grid["learning_rate"] = [1.0, 0.2]
 
+PROBOOST_param_grid = BOOST_param_grid.copy()
+del PROBOOST_param_grid["mode_wei"]
+
 ONK_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
-    "SUMBOOST": SUMBOOST_param_grid
+    "SUMBOOST": SUMBOOST_param_grid,
+    "PROBOOST": PROBOOST_param_grid
 }

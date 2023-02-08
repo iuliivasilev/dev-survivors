@@ -23,13 +23,13 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.5] if short else [0.5],  # [0.5, 0.7]
-    "n_estimators": [15] if short else [50],  # old 30
+    "n_estimators": [15] if short else [30],  # new 50
     "ens_metric_name": ["ibs"] if short else ["bic", "roc", "conc", "ibs"],  # ["roc", "conc", "ibs"],
-    "depth": [5],  # old 10
+    "depth": [10],  # new 5
     "mode_wei": ['exp'] if short else ['linear', 'square', "exp", "sigmoid", "softmax"],  # 'square', 'exp'],
     "criterion": ['logrank'] if short else ["confident", "confident_weights", "weights",
                                             "logrank", "peto", "tarone-ware", "wilcoxon"],
-    "min_samples_leaf": [25] if short else [20],  # old [5, 20]
+    "min_samples_leaf": [25] if short else [5, 20],  # new [20]
     "max_features": [0.7] if short else ["sqrt", 0.3, 0.5],  # "sqrt"
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "leaf_model": ["base"] if short else ["base_fast", "wei_survive"],  # "only_hazard", "base"],
@@ -40,9 +40,13 @@ BOOST_param_grid = {
 SUMBOOST_param_grid = BOOST_param_grid.copy()
 SUMBOOST_param_grid["learning_rate"] = [1.0, 0.2]
 
+PROBOOST_param_grid = BOOST_param_grid.copy()
+del PROBOOST_param_grid["mode_wei"]
+
 GBSG_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
-    "SUMBOOST": SUMBOOST_param_grid
+    "SUMBOOST": SUMBOOST_param_grid,
+    "PROBOOST": PROBOOST_param_grid
 }

@@ -42,9 +42,9 @@ BOOST_param_grid = {
     "depth": [5],  # old 10,
     "ens_metric_name": ["roc"] if short else ["bic", "ibs", "roc"],  # ["ibs", "roc"],
     "max_features": ["sqrt"] if short else ["sqrt"],  # 0.3
-    "min_samples_leaf": [1] if short else [10],  # old [1, 10]
+    "min_samples_leaf": [1] if short else [1, 10],  # new [10]
     "mode_wei": ['square', 'exp'] if short else ['exp', 'square', "sigmoid", "softmax"],
-    "n_estimators": [15] if short else [50],  # old 30 -> [10, 15, 25],
+    "n_estimators": [15] if short else [30],  # new 50 -> [10, 15, 25],
     "size_sample": [0.5] if short else [0.5, 0.7],
     "all_weight": [False],
     "leaf_model": ["base_fast"] if short else ["wei_survive", "base_fast"],
@@ -54,6 +54,9 @@ BOOST_param_grid = {
 
 SUMBOOST_param_grid = BOOST_param_grid.copy()
 SUMBOOST_param_grid["learning_rate"] = [1.0, 0.2]
+
+PROBOOST_param_grid = BOOST_param_grid.copy()
+del PROBOOST_param_grid["mode_wei"]
 
 # BOOST_param_grid_error = {'aggreg_func': ['wei'],
 #                     'criterion': ['weights'],
@@ -67,5 +70,6 @@ PBC_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
-    "SUMBOOST": SUMBOOST_param_grid
+    "SUMBOOST": SUMBOOST_param_grid,
+    "PROBOOST": PROBOOST_param_grid
 }

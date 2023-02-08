@@ -25,13 +25,13 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "size_sample": [0.5] if short else [0.5],  # , 0.7],
-    "n_estimators": [50],  # old 30
+    "n_estimators": [30],  # new 50
     "ens_metric_name": ["ibs"] if short else ["bic", "roc", "ibs"],  # ["roc", "ibs"],  # "conc",
-    "depth": [5],  # old 10
+    "depth": [10],  # new 5
     "mode_wei": ['exp'] if short else ['square', "exp", "sigmoid", "softmax"],
     "criterion": ["logrank"] if short else ["confident", "confident_weights", "weights",
                                             "peto", "tarone-ware", "wilcoxon", "logrank"],
-    "min_samples_leaf": [10] if short else [1000],  # old 100
+    "min_samples_leaf": [10] if short else [100],  # new 1000
     "max_features": [0.3],  # ["sqrt"],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "leaf_model": ["base"] if short else ["base_fast"],
@@ -42,9 +42,13 @@ BOOST_param_grid = {
 SUMBOOST_param_grid = BOOST_param_grid.copy()
 SUMBOOST_param_grid["learning_rate"] = [1.0, 0.2]
 
+PROBOOST_param_grid = BOOST_param_grid.copy()
+del PROBOOST_param_grid["mode_wei"]
+
 COVID_PARAMS = {
     "TREE": CRAID_param_grid,
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
-    "SUMBOOST": SUMBOOST_param_grid
+    "SUMBOOST": SUMBOOST_param_grid,
+    "PROBOOST": PROBOOST_param_grid
 }
