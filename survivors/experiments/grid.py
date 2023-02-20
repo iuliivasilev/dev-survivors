@@ -56,10 +56,6 @@ def generate_sample(X, y, folds, mode="CV"):
 
     """
 
-    # tscv = TimeSeriesSplit()
-    # for train_index, test_index in tscv.split(X):
-    #     print("TRAIN:", train_index, "TEST:", test_index)
-
     skf = StratifiedKFold(n_splits=folds)
     if mode == "TIME-CV":
         train_index = np.array([], dtype=int)
@@ -68,14 +64,18 @@ def generate_sample(X, y, folds, mode="CV"):
                 X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index_)
                 yield X_train, y_train, X_test, y_test, bins
             train_index = np.hstack([train_index, test_index_])
+    elif mode == "CV+HOLD-OUT":
+        X, y, X_HO, y_HO, bins_HO = generate_sample(X, y, folds=1, mode="HOLD-OUT")
+        for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds=folds, mode="CV"):
+            yield X_train, y_train, X_test, y_test, bins
+        yield X, y, X_HO, y_HO, bins_HO
     elif mode == "HOLD-OUT":
-            X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME], test_size=0.33, random_state=42)
+        for i_fold in range(folds):
+            X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME],
+                                          test_size=0.33, random_state=42 + i_fold)
             X, y, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
-            for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
-                X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
-                yield X_train, y_train, X_test, y_test, bins
             yield X, y, X_HO, y_HO, bins_HO
-    else:
+    elif mode == "CV":
         for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
             X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
             yield X_train, y_train, X_test, y_test, bins
@@ -238,7 +238,7 @@ class Experiments(object):
                 #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
                 #     if self.except_stop == "all":
                 #         break
-        if self.mode in ["TIME-CV", "HOLD-OUT"]:
+        if self.mode in ["TIME-CV", "CV+HOLD-OUT"]:
             for m in self.metrics:
                 self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
             for m in self.metrics:
@@ -297,7 +297,7 @@ class Experiments(object):
             return self.get_cv_result(stratify=stratify)
         elif self.mode == "TIME-CV":
             return self.get_time_cv_result(stratify=stratify)
-        elif self.mode == "HOLD-OUT":
+        elif self.mode == "CV+HOLD-OUT":
             return self.get_hold_out_result(stratify=stratify)
         return None
     
