@@ -27,7 +27,7 @@ BOOST_param_grid = {
     "ens_metric_name": ["ibs"] if short else ["bic", "roc", "conc", "ibs"],  # ["roc", "conc", "ibs"],
     "depth": [10],  # new 5
     "mode_wei": ['exp'] if short else ['linear', 'square', "exp", "sigmoid", "softmax"],  # 'square', 'exp'],
-    "criterion": ['logrank'] if short else ["confident", "confident_weights", "weights",
+    "criterion": ["confident", 'logrank'] if short else ["confident", "confident_weights", "weights",
                                             "logrank", "peto", "tarone-ware", "wilcoxon"],
     "min_samples_leaf": [25] if short else [5, 20],  # new [20]
     "max_features": [0.7] if short else ["sqrt", 0.3, 0.5],  # "sqrt"

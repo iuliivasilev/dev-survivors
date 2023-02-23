@@ -37,7 +37,7 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
-    "criterion": ["weights"] if short else ["confident", "confident_weights", "weights",
+    "criterion": ["confident", "weights"] if short else ["confident", "confident_weights", "weights",
                                             "logrank", "peto", "tarone-ware", "wilcoxon"],
     "depth": [5],  # old 10,
     "ens_metric_name": ["roc"] if short else ["bic", "ibs", "roc"],  # ["ibs", "roc"],
