@@ -73,8 +73,8 @@ def generate_sample(X, y, folds, mode="CV"):
         for i_fold in range(folds):
             X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME],
                                           test_size=0.33, random_state=42 + i_fold)
-            X, y, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
-            yield X, y, X_HO, y_HO, bins_HO
+            X_tr, y_tr, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
+            yield X_tr, y_tr, X_HO, y_HO, bins_HO
     elif mode == "CV":
         for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
             X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
@@ -87,7 +87,7 @@ def count_metric(y_train, y_test, pred_time, pred_surv, pred_haz, bins, metrics_
                      for metr_name in metrics_names])
 
 
-def crossval_param(method, X, y, folds, metrics_names=['CI'], mode="CV"):
+def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV"):
     """
     Return function, which on sample X, y apply cross-validation and calculate 
     metrics on each folds. 
@@ -212,7 +212,7 @@ class Experiments(object):
         self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
 
         for method, grid in zip(self.methods, self.methods_grid):
-            cv_method = crossval_param(method, X, y, self.folds, self.metrics, self.mode)
+            fit_eval_func = get_fit_eval_func(method, X, y, self.folds, self.metrics, self.mode)
             print(method, grid)
 
             grid_params = ParameterGrid(grid)
@@ -220,17 +220,17 @@ class Experiments(object):
             for i_p, p in enumerate(grid_params):
                 # try:
                 start_time = time.time()
-                cv_metr = cv_method(**p)
+                eval_metr = fit_eval_func(**p)
                 full_time = time.time() - start_time
                 curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
                              "PARAMS": str(p), "TIME": full_time}
-                cv_metr = {m: cv_metr[:, i] for i, m in enumerate(self.metrics)}
-                curr_dict.update(cv_metr)  # dict(zip(self.metrics, cv_metr))
+                eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
+                curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
                 self.result_table = self.result_table.append(curr_dict, ignore_index=True)
                 if verbose > 0:
                     print(f"Iteration: {i_p + 1}/{p_size}")
                     print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
-                              {k: [np.mean(v[:-1]), v[-1]] for k, v in cv_metr.items()})  # np.mean(v)
+                              {k: [np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
                 # except KeyboardInterrupt:
                 #     print("HANDELED KeyboardInterrupt")
                 #     break
@@ -251,6 +251,39 @@ class Experiments(object):
         if not(dir_path is None):
             # add_time = strftime("%H:%M:%S", gmtime(time.time()))
             self.save(dir_path)
+
+    def run_effective(self, X, y, dir_path=None, verbose=0):
+        if not(self.mode in ["CV+HOLD-OUT", "CV+SAMPLE"]):
+            self.run(X, y, dir_path=dir_path, verbose=verbose)
+            return None
+
+        folds = 20 if self.mode == "CV+SAMPLE" else 1
+
+        X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME],
+                                      test_size=0.33, random_state=42)
+        X_tr, y_tr, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
+        self.mode = "CV"
+        self.run(X_tr, y_tr, dir_path=dir_path, verbose=verbose)
+        self.HO_sample_table = self.eval_on_sample_by_best_params(X, y, folds=folds,
+                                                                  stratify="criterion")
+
+    def eval_on_sample_by_best_params(self, X, y, folds=20, stratify="criterion"):
+        best_table = self.get_best_by_mode(stratify=stratify)
+        d = best_table.loc[:, ["METHOD", "PARAMS"]].to_dict(orient="tight")
+        map_method_by_name = {m.__name__: m for m in self.methods}
+
+        ho_exp = Experiments(folds=folds, dataset_name=self.dataset_name, mode="HOLD-OUT")
+        ho_exp.set_metrics(self.metrics)
+        for method_params in d["data"]:
+            method = map_method_by_name[method_params[0]]
+            params = eval(method_params[1])
+            params = {k: [v] for k, v in params.items()}
+            ho_exp.add_method(method, params)
+        ho_exp.run(X, y, verbose=1)
+        res_table = ho_exp.result_table
+        for m in self.metrics:
+            res_table[f"{m}_CV_mean"] = best_table[f"{m}_mean"]
+        return res_table
 
     @staticmethod
     def get_agg_results(result_table, by_metric, choose="median", stratify="criterion"):
@@ -292,15 +325,18 @@ class Experiments(object):
     def get_result(self):
         return self.result_table
 
+    def get_sample_result(self):
+        return self.HO_sample_table
+
     def get_best_by_mode(self, stratify="criterion"):
         if self.mode == "CV":
             return self.get_cv_result(stratify=stratify)
         elif self.mode == "TIME-CV":
             return self.get_time_cv_result(stratify=stratify)
-        elif self.mode == "CV+HOLD-OUT":
+        elif self.mode in ["CV+HOLD-OUT", "CV+SAMPLE"]:
             return self.get_hold_out_result(stratify=stratify)
         return None
-    
+
     def save(self, dir_path):
         self.result_table.to_excel(f"{dir_path + self.dataset_name}_FULL_TABLE.xlsx", index=False)
             
