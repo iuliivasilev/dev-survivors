@@ -1,5 +1,6 @@
 import cProfile
 import pstats
+from scalene import scalene_profiler
 
 import survivors.datasets as ds
 from survivors.experiments.grid import generate_sample
@@ -26,7 +27,7 @@ TREE_PARAMS = {
     # Baseline time: 108,19 -> 10.4
     "ONK": {'categ': ['Диагноз'], 'criterion': 'peto', 'cut': True,
             'depth': 10, 'max_features': 1.0, 'min_samples_leaf': 100,
-            'signif': 0.05, 'woe': False}
+            'signif': 0.05, 'woe': False, "n_jobs": 1}
 }
 
 BOOST_PARAMS = {
@@ -37,7 +38,7 @@ BOOST_PARAMS = {
     # Baseline time: 350,59 -> 77.4
     "ONK": {'aggreg_func': 'wei', 'categ': ['Диагноз'], 'criterion': 'peto',
             'depth': 15, 'ens_metric_name': 'conc', 'max_features': 'sqrt',
-            'min_samples_leaf': 100, 'mode_wei': 'square', 'n_estimators': 30, 'size_sample': 0.5}
+            'min_samples_leaf': 100, 'mode_wei': 'square', 'n_estimators': 30, 'size_sample': 0.5, "n_jobs": 1}
 }
 
 def get_samples(dataset="PBC"):
@@ -54,8 +55,10 @@ def profile_tree(dataset="PBC", n_jobs=1):
     X_train, y_train, X_test, y_test, bins = get_samples(dataset=dataset)
 
     bins = get_bins(time=y_train[TIME_NAME], cens=y_train[CENS_NAME])
-    profiler = cProfile.Profile()
-    profiler.enable()
+    # profiler = cProfile.Profile()
+    # profiler.enable()
+    scalene_profiler.start()
+
     for i in range(5):
         craid_tree = CRAID(**params)
         craid_tree.fit(X_train, y_train)
@@ -63,10 +66,11 @@ def profile_tree(dataset="PBC", n_jobs=1):
         craid_tree.predict(X_test, target=TIME_NAME)
         craid_tree.predict_at_times(X_test, bins=bins, mode="hazard")
 
-    profiler.disable()
-    stats = pstats.Stats(profiler).sort_stats('cumtime')
-    stats.print_stats()
-    stats.dump_stats(f'profile_reports/{dataset}/tree_output_numba_{n_jobs}.pstats')
+    scalene_profiler.stop()
+    # profiler.disable()
+    # stats = pstats.Stats(profiler).sort_stats('cumtime')
+    # stats.print_stats()
+    # stats.dump_stats(f'profile_reports/{dataset}/tree_output_numba_{n_jobs}.pstats')
 
 
 def profile_boost(dataset="PBC", n_jobs=1):
@@ -90,14 +94,17 @@ def profile_boost(dataset="PBC", n_jobs=1):
 
 
 def profile_exp(dataset="ONK"):
-    profiler = cProfile.Profile()
-    profiler.enable()
+    # profiler = cProfile.Profile()
+    # profiler.enable()
+    from scalene import scalene_profiler
+    scalene_profiler.start()
     res_exp = run(dataset, with_self=["BOOST"], with_external=False)
-    profiler.disable()
-    stats = pstats.Stats(profiler).sort_stats('cumtime')
-    stats.print_stats()
-    stats.dump_stats(f"profile_reports/{dataset}_after_optimize.pstats")
+    scalene_profiler.stop()
 
+    # profiler.disable()
+    # stats = pstats.Stats(profiler).sort_stats('cumtime')
+    # stats.print_stats()
+    # stats.dump_stats(f"profile_reports/{dataset}_after_optimize.pstats")
 
 if __name__ == '__main__':
     # Visualize in browser html with command prompt "snakeviz file.pstats"
@@ -106,4 +113,4 @@ if __name__ == '__main__':
     #     profile_tree(dataset="ONK", n_jobs=n)
     #     profile_boost(dataset="PBC", n_jobs=n)
     #     profile_boost(dataset="ONK", n_jobs=n)
-    profile_exp("ONK")
+    profile_tree("PBC")
