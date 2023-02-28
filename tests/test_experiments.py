@@ -184,7 +184,7 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
         for alg in with_self:
             PARAMS_[dataset][alg]["categ"] = [categ]
             experim.add_method(SELF_ALGS[alg], PARAMS_[dataset][alg])
-    experim.run(X, y, dir_path=dir_path, verbose=1)
+    experim.run_effective(X, y, dir_path=dir_path, verbose=1)
     return experim
 
 
@@ -196,18 +196,22 @@ def dir_path():
 # @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
     "dataset", ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]  # "GBSG", "PBC", "WUHAN", "ONK", "COVID"]
-    # ["CV", "HOLD-OUT", "TIME-CV"]
+    # ["CV", "CV+HOLD-OUT", "TIME-CV"]
 )
-def test_dataset_exp(dir_path, dataset, mode="HOLD-OUT"):
+def test_dataset_exp(dir_path, dataset, mode="CV+SAMPLE"):
+    prefix = "full_sample_prob"
     res_exp = run(dataset, with_self=["PROBOOST"], with_external=False, mode=mode,  # BOOST
                   dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]
     df_full = res_exp.get_result()
-    df_time_cv_criterion = res_exp.get_best_by_mode(stratify="criterion")  # get_hold_out_result()
-    df_time_cv_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
+    df_criterion = res_exp.get_best_by_mode(stratify="criterion")  # get_hold_out_result()
+    # df_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
+    # df_sample = res_exp.get_sample_result()
 
-    df_time_cv_criterion.to_excel(os.path.join(dir_path, f"prob_strat_criterion_{dataset}_{mode}_best.xlsx"), index=False)
-    df_time_cv_mode_wei.to_excel(os.path.join(dir_path, f"prob_strat_mode_wei_{dataset}_{mode}_best.xlsx"), index=False)
-    df_full.to_excel(os.path.join(dir_path, f"prob_{dataset}_{mode}_full.xlsx"), index=False)
+    df_criterion.to_excel(os.path.join(dir_path, f"{prefix}_{dataset}_{mode}_best.xlsx"), index=False)
+    df_full.to_excel(os.path.join(dir_path, f"{prefix}_{dataset}_{mode}_full.xlsx"), index=False)
+
+    # df_mode_wei.to_excel(os.path.join(dir_path, f"{prefix}_strat_mode_wei_{dataset}_{mode}_best.xlsx"), index=False)
+    # df_sample.to_excel(os.path.join(dir_path, f"{prefix}_{dataset}_{mode}_sample.xlsx"), index=False)
 
     # df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
     # df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"part_weights_{dataset}_best.xlsx"), index=False)
