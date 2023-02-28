@@ -248,12 +248,12 @@ class Experiments(object):
             self.result_table[f"{m}_mean"] = self.result_table[m].apply(np.mean)
 
         self.is_table = True
-        if not(dir_path is None):
-            # add_time = strftime("%H:%M:%S", gmtime(time.time()))
-            self.save(dir_path)
+        # if not(dir_path is None):
+        #     # add_time = strftime("%H:%M:%S", gmtime(time.time()))
+        #     self.save(dir_path)
 
     def run_effective(self, X, y, dir_path=None, verbose=0):
-        if not(self.mode in ["CV+HOLD-OUT", "CV+SAMPLE"]):
+        if not(self.mode in ["CV+SAMPLE"]):
             self.run(X, y, dir_path=dir_path, verbose=verbose)
             return None
 
@@ -262,10 +262,12 @@ class Experiments(object):
         X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME],
                                       test_size=0.33, random_state=42)
         X_tr, y_tr, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
+        old_mode = self.mode
         self.mode = "CV"
         self.run(X_tr, y_tr, dir_path=dir_path, verbose=verbose)
-        self.HO_sample_table = self.eval_on_sample_by_best_params(X, y, folds=folds,
-                                                                  stratify="criterion")
+        self.sample_table = self.eval_on_sample_by_best_params(X, y, folds=folds,
+                                                               stratify="criterion")
+        self.mode = old_mode
 
     def eval_on_sample_by_best_params(self, X, y, folds=20, stratify="criterion"):
         best_table = self.get_best_by_mode(stratify=stratify)
@@ -282,6 +284,7 @@ class Experiments(object):
         ho_exp.run(X, y, verbose=1)
         res_table = ho_exp.result_table
         for m in self.metrics:
+            res_table[f"{m}_CV"] = best_table[m]
             res_table[f"{m}_CV_mean"] = best_table[f"{m}_mean"]
         return res_table
 
@@ -326,15 +329,17 @@ class Experiments(object):
         return self.result_table
 
     def get_sample_result(self):
-        return self.HO_sample_table
+        return self.sample_table
 
     def get_best_by_mode(self, stratify="criterion"):
         if self.mode == "CV":
             return self.get_cv_result(stratify=stratify)
         elif self.mode == "TIME-CV":
             return self.get_time_cv_result(stratify=stratify)
-        elif self.mode in ["CV+HOLD-OUT", "CV+SAMPLE"]:
+        elif self.mode in ["CV+HOLD-OUT"]:
             return self.get_hold_out_result(stratify=stratify)
+        elif self.mode in ["CV+SAMPLE"]:
+            return self.get_sample_result()
         return None
 
     def save(self, dir_path):
