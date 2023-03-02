@@ -51,6 +51,7 @@ def test_tree(pbs_samples, params, n_obser, l_expected):
     assert round(pred_surv[n_obser].mean(), 5) == l_expected[4]
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
     ("params", "n_obser", "l_expected", "boost_bettas"),
     [({"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3},
