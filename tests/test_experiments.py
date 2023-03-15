@@ -199,9 +199,11 @@ def dir_path():
     # ["CV", "CV+HOLD-OUT", "TIME-CV"]
 )
 def test_dataset_exp(dir_path, dataset, mode="CV+SAMPLE"):
-    prefix = "full_sample_prob"
-    res_exp = run(dataset, with_self=["PROBOOST"], with_external=False, mode=mode,  # BOOST
-                  dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]
+    prefix = "scsurv_models" # "full_sample_prob"
+    res_exp = run(dataset, with_self=[], with_external=True, mode=mode,  # BOOST
+                  dir_path=dir_path+"\\")  # Only scikit-survival
+    # res_exp = run(dataset, with_self=["PROBOOST"], with_external=False, mode=mode,  # BOOST
+    #               dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]
     df_full = res_exp.get_result()
     df_criterion = res_exp.get_best_by_mode(stratify="criterion")  # get_hold_out_result()
     # df_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
