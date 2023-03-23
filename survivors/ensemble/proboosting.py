@@ -11,12 +11,12 @@ def loglikelihood_i(time, cens, sf, cumhf, bins):
     return np.log(sf_by_times) + np.log(hf_by_times)
 
 
-def values_to_freq(values):
+def values_to_hist(values):
     unq, idx = np.unique(values, return_inverse=True)
     # calculate the weighted frequencies of these indices
     freqs_idx = np.bincount(idx)
     # reconstruct the array of frequencies of the elements
-    return freqs_idx[idx] / values.shape
+    return freqs_idx[idx]
 
 
 class ProbBoostingCRAID(BoostingCRAID):
@@ -28,13 +28,16 @@ class ProbBoostingCRAID(BoostingCRAID):
         if self.all_weight:
             X_sub = self.X_train
             y_sub = self.y_train
+
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
         pred_hf = model.predict_at_times(X_sub, bins=self.bins, mode="hazard")
 
-        lp_ti = np.log(values_to_freq(y_sub[cnt.TIME_NAME]))
-        likel = loglikelihood_i(y_sub[cnt.TIME_NAME], y_sub[cnt.CENS_NAME], pred_sf, pred_hf, self.bins)
+        time_hist = values_to_hist(y_sub["time"])
+        lp_ti = np.log(time_hist / y_sub["time"].shape)
+        lp_xi_ti = np.log(1 / time_hist)
+        likel = loglikelihood_i(y_sub["time"], y_sub["cens"], pred_sf, pred_hf, self.bins)
 
-        lp_xi = lp_ti - likel
+        lp_xi = lp_ti + lp_xi_ti - likel
         wei = - np.exp(-lp_xi)
         betta = np.sum(likel)
         return wei, betta
