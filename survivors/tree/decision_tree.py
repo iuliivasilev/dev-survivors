@@ -14,6 +14,8 @@ from ..scheme import FilledSchemeStrategy
 from .. import constants as cnt
 
 import matplotlib.pyplot as plt
+from imblearn.over_sampling import RandomOverSampler
+
 # import seaborn as sns
 # sns.set()
 
@@ -27,6 +29,11 @@ def format_to_pandas(X, columns):
         return pd.DataFrame(X, columns=columns)
     return None
 
+
+def get_oversample(df, target=cnt.CENS_NAME):
+    oversample = RandomOverSampler(sampling_strategy='minority')
+    df_over, _ = oversample.fit_resample(df, df[target])
+    return df_over
 
 """ Functions of prunning """
 
@@ -91,6 +98,8 @@ class CRAID(object):
         Dictionary of all tree's nodes (numbers from hierarchy)
     cut : boolean
         Flag of pruning
+    balance : boolean
+        Flag of source data balancing
     depth : int
         Maximal depth of nodes
     features : list
@@ -133,9 +142,11 @@ class CRAID(object):
                  features=[],
                  categ=[],
                  cut=False,
+                 balance=False,
                  **info):
         self.info = info
         self.cut = cut
+        self.balance = balance
         self.nodes = dict()
         self.depth = depth
         self.features = features
@@ -158,6 +169,9 @@ class CRAID(object):
         if not ("min_samples_leaf" in self.info):
             self.info["min_samples_leaf"] = 0.01 * X_tr.shape[0]
         cnt.set_seed(self.random_state)
+
+        if self.balance:
+            X_tr = get_oversample(X_tr, target=cnt.CENS_NAME)
 
         if self.cut:
             X_val = X_tr.sample(n=int(0.2 * X_tr.shape[0]), random_state=self.random_state)
