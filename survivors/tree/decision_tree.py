@@ -142,7 +142,7 @@ class CRAID(object):
                  features=[],
                  categ=[],
                  cut=False,
-                 balance=False,
+                 balance=None,
                  **info):
         self.info = info
         self.cut = cut
@@ -170,7 +170,10 @@ class CRAID(object):
             self.info["min_samples_leaf"] = 0.01 * X_tr.shape[0]
         cnt.set_seed(self.random_state)
 
-        if self.balance:
+        if not(self.balance is None):
+            freq = X_tr[cnt.CENS_NAME].value_counts()
+            self.correct_proba = freq[1] / (freq[0])
+
             X_tr = get_oversample(X_tr, target=cnt.CENS_NAME)
 
         if self.cut:
@@ -293,7 +296,13 @@ class CRAID(object):
         X = format_to_pandas(X, self.features)
         # if mode == "cox-hazard":
         #     return self.predict_cox_hazard(X, bins)
-        return self.predict(X, target=mode, bins=bins)
+        pred = self.predict(X, target=mode, bins=bins)  # Reverse correction
+        if self.balance == "balance+correct":
+            if mode == "hazard":
+                pred = pred * self.correct_proba
+            elif mode == "surv":
+                pred = pred ** self.correct_proba
+        return pred
 
     def predict_schemes(self, X, scheme_feats):
         X = format_to_pandas(X, self.features)
