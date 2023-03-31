@@ -170,11 +170,16 @@ class CRAID(object):
             self.info["min_samples_leaf"] = 0.01 * X_tr.shape[0]
         cnt.set_seed(self.random_state)
 
-        if not(self.balance is None):
+        if self.balance in ["balance", "balance+correct"]:
             freq = X_tr[cnt.CENS_NAME].value_counts()
-            self.correct_proba = freq[1] / (freq[0])
+            self.correct_proba = freq[1] / (freq[1] + freq[0])  # or freq[1] / (freq[0])
 
             X_tr = get_oversample(X_tr, target=cnt.CENS_NAME)
+        elif self.balance in ["balance+weights"]:
+            freq = X_tr[cnt.CENS_NAME].value_counts()
+
+            X_tr["weights_obs"] = np.where(X_tr[cnt.CENS_NAME], freq[0] / freq[1], 1)
+            self.info["weights_feature"] = "weights_obs"
 
         if self.cut:
             X_val = X_tr.sample(n=int(0.2 * X_tr.shape[0]), random_state=self.random_state)
