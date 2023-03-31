@@ -3,10 +3,10 @@ import numpy as np
 
 from ..tree import CRAID
 from .. import constants as cnt
-from .base_ensemble import BaseEnsemble
+from .base_ensemble import BaseEnsemble, FastBaseEnsemble
 
 
-class BootstrapCRAID(BaseEnsemble):
+class BootstrapCRAID(FastBaseEnsemble):
     """
     Bootstrap aggregation (Bagging) ensemble of survival decision tree.
     On each iteration probabilities of observations change by scheme.
