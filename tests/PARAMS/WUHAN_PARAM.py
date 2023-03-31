@@ -2,7 +2,8 @@ short = False
 
 CRAID_param_grid = {
     "depth": [15],
-    "criterion": ["peto"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"],
+    "balance": [None, "balance", "balance+correct", "balance+weights"],
+    "criterion": ["peto"] if short else ["confident_weights"],  # ["weights"],  # ["peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [5] if short else [5, 10, 20],
     'cut': [True, False],
     "woe": [False],  # if short else [True, False],
@@ -48,8 +49,10 @@ BOOST_param_grid = {
     "min_samples_leaf": [10] if short else [10, 25],
     "max_features": [0.7] if short else [0.7, "sqrt"],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
-    "leaf_model": ["base_fast"] if short else ["base_fast", "wei_survive"],
+    "leaf_model": ["base_fast"] if short else ["base_fast"],  # , "wei_survive"
     "all_weight": [False],
+    "balance": [None, "balance", "balance+weights"],
+    "with_arc": [True, False],
     "n_jobs": [2]
 }
 

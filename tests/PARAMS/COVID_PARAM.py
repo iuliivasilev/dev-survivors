@@ -2,7 +2,8 @@ short = False
 
 CRAID_param_grid = {
     "depth": [10],
-    "criterion": ["peto"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"],
+    "balance": [None, "balance", "balance+correct", "balance+weights"],
+    "criterion": ["peto"] if short else ["confident_weights"],  # ["weights"],  # ["peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [10] if short else [500, 1000, 2000],
     'cut': [False],
     "woe": [False],  # if short else [True, False],
@@ -16,8 +17,8 @@ BSTR_param_grid = {
     "n_estimators": [10] if short else [10, 30], 
     "depth": [10],
     "ens_metric_name": ["conc", "ibs"],
-    # "woe" : [], 
-    "criterion": ["peto"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"], 
+    # "woe" : [],
+    "criterion": ["peto"] if short else ["confident_weights", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [500, 1000, 2000],
     "max_features": [0.7] if short else ["sqrt"],
     "n_jobs": [40]
@@ -36,6 +37,8 @@ BOOST_param_grid = {
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "leaf_model": ["base"] if short else ["base_fast"],
     "all_weight": [False],  # , False],
+    "balance": [None, "balance", "balance+weights"],
+    "with_arc": [True, False],
     "n_jobs": [5]
 }
 
