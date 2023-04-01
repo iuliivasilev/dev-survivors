@@ -55,8 +55,9 @@ def generate_sample(X, y, folds, mode="CV"):
         Points of timeline.
 
     """
+    if mode != "HOLD-OUT":
+        skf = StratifiedKFold(n_splits=folds)
 
-    skf = StratifiedKFold(n_splits=folds)
     if mode == "TIME-CV":
         train_index = np.array([], dtype=int)
         for train_index_, test_index_ in skf.split(X, y[cnt.CENS_NAME]):
@@ -65,7 +66,7 @@ def generate_sample(X, y, folds, mode="CV"):
                 yield X_train, y_train, X_test, y_test, bins
             train_index = np.hstack([train_index, test_index_])
     elif mode == "CV+HOLD-OUT":
-        X, y, X_HO, y_HO, bins_HO = generate_sample(X, y, folds=1, mode="HOLD-OUT")
+        X, y, X_HO, y_HO, bins_HO = next(generate_sample(X, y, folds=1, mode="HOLD-OUT"))
         for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds=folds, mode="CV"):
             yield X_train, y_train, X_test, y_test, bins
         yield X, y, X_HO, y_HO, bins_HO
@@ -218,26 +219,26 @@ class Experiments(object):
             grid_params = ParameterGrid(grid)
             p_size = len(grid_params)
             for i_p, p in enumerate(grid_params):
-                try:
-                    start_time = time.time()
-                    eval_metr = fit_eval_func(**p)
-                    full_time = time.time() - start_time
-                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                                 "PARAMS": str(p), "TIME": full_time}
-                    eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
-                    curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
-                    self.result_table = self.result_table.append(curr_dict, ignore_index=True)
-                    if verbose > 0:
-                        print(f"Iteration: {i_p + 1}/{p_size}")
-                        print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
-                                  {k: [np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
-                except KeyboardInterrupt:
-                    print("HANDELED KeyboardInterrupt")
-                    break
-                except Exception as e:
-                    print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                    if self.except_stop == "all":
-                        break
+                # try:
+                start_time = time.time()
+                eval_metr = fit_eval_func(**p)
+                full_time = time.time() - start_time
+                curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
+                             "PARAMS": str(p), "TIME": full_time}
+                eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
+                curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
+                self.result_table = self.result_table.append(curr_dict, ignore_index=True)
+                if verbose > 0:
+                    print(f"Iteration: {i_p + 1}/{p_size}")
+                    print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
+                              {k: [np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
+                # except KeyboardInterrupt:
+                #     print("HANDELED KeyboardInterrupt")
+                #     break
+                # except Exception as e:
+                #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
+                #     if self.except_stop == "all":
+                #         break
         if self.mode in ["TIME-CV", "CV+HOLD-OUT"]:
             for m in self.metrics:
                 self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
@@ -266,7 +267,7 @@ class Experiments(object):
         self.mode = "CV"
         self.run(X_tr, y_tr, dir_path=dir_path, verbose=verbose)
         self.sample_table = self.eval_on_sample_by_best_params(X, y, folds=folds,
-                                                               stratify="criterion")
+                                                               stratify="criterion")  # balance
         self.mode = old_mode
 
     def eval_on_sample_by_best_params(self, X, y, folds=20, stratify="criterion"):
