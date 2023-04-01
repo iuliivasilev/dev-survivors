@@ -76,9 +76,10 @@ class BoostingCRAID(FastBaseEnsemble):
     .. [1] Drucker H. Improving regressors using boosting techniques 
             //ICML. – 1997. – Т. 97. – С. 107-115.
     """
-    def __init__(self, mode_wei="linear", weighted_tree=True, all_weight=False, **kwargs):
+    def __init__(self, mode_wei="linear", with_arc=True, weighted_tree=True, all_weight=False, **kwargs):
         self.name = "BoostingCRAID"
         self.mode_wei = mode_wei
+        self.with_arc = with_arc
         self.weights = None
         self.weighted_tree = weighted_tree
         self.all_weight = all_weight
@@ -102,7 +103,10 @@ class BoostingCRAID(FastBaseEnsemble):
         self.update_params()
         
         for i in range(self.n_estimators):
-            prob_weights = arc_x4(self.weights)
+            if self.with_arc:
+                prob_weights = arc_x4(self.weights)
+            else:
+                prob_weights = self.weights
             x_sub = self.X_train.sample(n=self.size_sample, weights=prob_weights,  # self.weights
                                         replace=self.bootstrap, random_state=i)
             x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index), :]
