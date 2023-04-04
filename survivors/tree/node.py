@@ -186,7 +186,7 @@ class Node(object):
 
         # ml = np.vectorize(lambda x: hist_best_attr_split(**x))(args)
 
-        with Parallel(n_jobs=n_jobs, verbose=0, batch_size=10) as parallel:  # prefer="threads"
+        with Parallel(n_jobs=n_jobs, verbose=self.verbose, batch_size=10) as parallel:  # prefer="threads"
             ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
 
