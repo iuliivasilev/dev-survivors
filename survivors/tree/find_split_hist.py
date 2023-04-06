@@ -38,7 +38,7 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
     elif weightings == 5:
         res[:, 0] = obs_weights[ind]
     stat_val = np.power((res[:, 0] * res[:, 1]).sum(), 2) / ((res[:, 0] * res[:, 0] * res[:, 2]).sum())
-    return stat_val
+    return stat_val  # It must be square of value (without sqrt)
 
 
 def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=None, weights_hist=None, weightings=""):
@@ -66,9 +66,19 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
 
 def optimal_criter_split_hist(left_time_hist, left_cens_hist,
                               right_time_hist, right_cens_hist,
-                              na_time_hist, na_cens_hist, weights_hist, criterion):
+                              na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef):
     none_to = 0
     max_stat_val = 1.0
+
+    if dis_coef > 1:
+        left_time_hist = left_time_hist + (dis_coef - 1) * left_cens_hist
+        right_time_hist = right_time_hist + (dis_coef - 1) * right_cens_hist
+        na_time_hist = na_time_hist + (dis_coef - 1) * na_cens_hist
+
+        left_cens_hist = left_cens_hist * dis_coef
+        right_cens_hist = right_cens_hist * dis_coef
+        na_cens_hist = na_cens_hist * dis_coef
+
     if na_time_hist.shape[0] > 0:
         a = weight_hist_stat(left_time_hist + na_time_hist, right_time_hist,
                              left_cens_hist + na_cens_hist, right_cens_hist,
@@ -159,7 +169,7 @@ def select_best_split_info(attr_dicts, type_attr, bonf=True, descr_woe=None):
 
 
 def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=None, thres_cont_bin_max=100,
-                         signif=1.0, signif_stat=0.0, min_samples_leaf=10, bonf=True, verbose=0, **kwargs):
+                         signif=1.0, signif_stat=0.0, min_samples_leaf=10, bonf=True, verbose=0, balance=False, **kwargs):
     best_attr = {"stat_val": signif_stat, "p_value": signif,
                  "sign_split": 0, "values": [], "pos_nan": [1, 0]}
     if arr.shape[1] < 2 * min_samples_leaf:
@@ -177,6 +187,10 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     dur_notna = dur[~ind]
     cens_notna = cens[~ind]
     vals_notna = vals[~ind]
+
+    dis_coef = 1
+    if balance:
+        dis_coef = max(1, (cens.shape[0] - np.sum(cens)) // np.sum(cens))
 
     if dur_notna.shape[0] < min_samples_leaf:
         return best_attr
@@ -241,7 +255,7 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
             continue
         max_stat_val, none_to = optimal_criter_split_hist(
             l_time_hist, l_cens_hist, r_time_hist, r_cens_hist,
-            na_time_hist, na_cens_hist, weights_hist, criterion)
+            na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef)
 
         if max_stat_val >= signif_stat:
             attr_loc = get_attrs(max_stat_val, uniq_set[u], none_to, num_l, num_r, num_nan)
