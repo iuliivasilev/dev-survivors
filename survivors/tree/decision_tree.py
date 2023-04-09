@@ -180,6 +180,8 @@ class CRAID(object):
 
             X_tr["weights_obs"] = np.where(X_tr[cnt.CENS_NAME], freq[0] / freq[1], 1)
             self.info["weights_feature"] = "weights_obs"
+        elif self.balance in ["only_log_rank"]:
+            self.info["balance"] = True
 
         if self.cut:
             X_val = X_tr.sample(n=int(0.2 * X_tr.shape[0]), random_state=self.random_state)
