@@ -47,7 +47,8 @@ class ProbBoostingCRAID(BoostingCRAID):
             self.weights = self.weights + wei_i
         else:
             self.weights[index] = (self.weights[index] + wei_i)
-        self.weights = (self.weights - self.weights.min()) / (self.weights.max() - self.weights.min())
+        self.weights = (self.weights - self.weights.min())
+        # self.weights = (self.weights - self.weights.min()) / (self.weights.max() - self.weights.min())
 
     def get_aggreg(self, x):
         if self.aggreg_func == 'median':
