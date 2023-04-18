@@ -125,7 +125,7 @@ def load_pickle(path):
 
 def load_onk_dataset(diag={'C20', 'C50.4', 'C61'},
                      save_name="",
-                     invert_death=False,
+                     invert_death=False,  # TODO return to FALSE
                      descript=True):
     dir_env = join(dirname(__file__), "data", "ONK")
     STAD_MAP = pd.read_excel(join(dir_env, 'STAD_MAP.xlsx'))
