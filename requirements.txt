@@ -1,6 +1,6 @@
 joblib
 pickle-mixin
-numpy
+numpy == 1.22
 numba
 matplotlib
 seaborn
