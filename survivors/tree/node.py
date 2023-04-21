@@ -191,6 +191,8 @@ class Node(object):
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
 
         attr = min(attrs, key=lambda x: attrs[x]["p_value"])
+        # attr = max(attrs, key=lambda x: attrs[x]["stat_val"])
+
         if attrs[attr]["sign_split"] > 0 and self.info["bonf"]:
             attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
         return (attr, attrs[attr])
