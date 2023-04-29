@@ -13,6 +13,8 @@ METRIC_DICT = {
         concordance_index(y_tst[TIME_NAME], pr_time, y_tst[CENS_NAME]),
     "IBS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         ibs(y_tr, y_tst, pr_surv, bins),
+    "BAL_IBS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        bal_ibs(y_tr, y_tst, pr_surv, bins),
     "IAUC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         iauc(y_tr, y_tst, pr_haz, bins),
     "LOGLIKELIHOOD": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
@@ -105,6 +107,14 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
     elif axis == 1:  # bs in time (for graphics)
         return np.mean(brier_scores, axis=1)
     return None
+
+
+def bal_ibs(survival_train, survival_test, estimate, times, axis=-1):
+    ibs_event = ibs(survival_train, survival_test[survival_test["cens"]],
+                    estimate[survival_test["cens"]], times, axis=axis)
+    ibs_cens = ibs(survival_train, survival_test[~survival_test["cens"]],
+                   estimate[~survival_test["cens"]], times, axis=axis)
+    return ibs_event + ibs_cens
 
 
 def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8):
