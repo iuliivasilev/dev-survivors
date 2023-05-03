@@ -348,9 +348,9 @@ class Node(object):
         m_cens = round(self.leaf_model.predict_feature(X=None, feature_name=cnt.CENS_NAME), 2)
         m_time = round(self.leaf_model.predict_feature(X=None, feature_name=cnt.TIME_NAME), 2)
         label = "\n".join([f"size = {self.leaf_model.get_shape()[0]}",
-                           f"cens/size = {m_cens}",
+                           f"events/size = {m_cens}",
                            f"depth = {self.depth}",
-                           f"death = {m_time}"])
+                           f"time of death = {m_time}"])
         return label
 
     def set_dot_node(self, dot, path_dir="", depth=None, **args):
