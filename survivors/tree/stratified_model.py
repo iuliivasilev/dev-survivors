@@ -122,6 +122,28 @@ class KaplanMeier:
         return self.survival_function[np.clip(place_bin, 0, None)]
 
 
+class FullProbKM(KaplanMeier):
+    def fit(self, durations, right_censor, weights=None):
+        durations = np.array(durations)
+        right_censor = np.array(right_censor)
+        if weights is None:
+            weights = np.ones(right_censor.shape)
+
+        self.timeline = np.unique(durations)
+        right_censor = right_censor.astype("bool")
+        dur_ = np.searchsorted(self.timeline, durations)
+
+        self.hist_cens = np.bincount(dur_, weights=right_censor * weights)
+        self.cumul_hist_dur = np.cumsum(self.hist_cens[::-1])[::-1]
+        self.cumul_hist_dur[self.cumul_hist_dur == 0] = 1e-3  # Any cnt (in sf it becomes zero)
+
+        self.survival_function = np.hstack([1.0, np.cumprod((1.0 - self.hist_cens / (self.cumul_hist_dur)))])
+
+        N = right_censor.shape[0]
+        Ncens = right_censor[~right_censor].shape[0]
+        self.survival_function = Ncens / N + (1 - Ncens / N) * self.survival_function
+
+
 class NelsonAalen:
     def __init__(self, smoothing=True):
         self.timeline = None
@@ -194,10 +216,26 @@ class BaseFastSurviveModel(WeightSurviveModel):
         super().__init__(weights_name=None)
 
 
+class FullProbSurviveModel(BaseFastSurviveModel):
+    def predict_survival_at_times(self, X=None, bins=None):
+        if bins is None:
+            bins = self.default_bins
+        if self.survival is None:
+            self.survival = FullProbKM()
+            self.survival.fit(self.lists[cnt.TIME_NAME],
+                              self.lists[cnt.CENS_NAME],
+                              self.weights)
+        sf = self.survival.survival_function_at_times(bins)
+        if X is None:
+            return sf
+        return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
+
+
 LEAF_MODEL_DICT = {
     "base": LeafSurviveAndHazard,
     "only_hazard": LeafOnlyHazardModel,
     "only_survive": LeafOnlySurviveModel,
     "wei_survive": WeightSurviveModel,
-    "base_fast": BaseFastSurviveModel
+    "base_fast": BaseFastSurviveModel,
+    "fullprob_fast": FullProbSurviveModel
 }
