@@ -15,14 +15,20 @@ METRIC_DICT = {
         ibs(y_tr, y_tst, pr_surv, bins),
     "BAL_IBS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         bal_ibs(y_tr, y_tst, pr_surv, bins),
+    "IBS_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        ibs_WW(y_tr, y_tst, pr_surv, bins),
+    "BAL_IBS_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        bal_ibs_WW(y_tr, y_tst, pr_surv, bins),
     "IAUC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         iauc(y_tr, y_tst, pr_haz, bins),
     "LOGLIKELIHOOD": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        loglikelihood(y_tst[TIME_NAME], y_tst[CENS_NAME], pr_surv, pr_haz, bins)
+        loglikelihood(y_tst[TIME_NAME], y_tst[CENS_NAME], pr_surv, pr_haz, bins),
+    "KL": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        kl(y_tst[TIME_NAME], y_tst[CENS_NAME], pr_surv, pr_haz, bins)
 }
 """ dict: Available metrics in library and its realization """
 
-DESCEND_METRICS = ['ibs', 'IBS', 'aic', "AIC", "bic", "BIC"]
+DESCEND_METRICS = ['ibs', 'IBS', 'aic', "AIC", "bic", "BIC", "KL", "BAL_IBS", "IBS_WW", "BAL_IBS_WW"]
 """ list: Metrics with decreasing quality improvement """
 
 
@@ -93,7 +99,7 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
     prob_cens_y[prob_cens_y == 0] = np.inf
     wei = test_event / prob_cens_y
     
-    estim_before = get_before(estimate, wei[np.newaxis,:].T)
+    estim_before = get_before(estimate, wei[np.newaxis, :].T)
     estim_after = get_after(estimate, prob_cens_t)
     brier_scores = np.array([np.where(test_time <= t, 
                                       estim_before[:, i], 
@@ -114,6 +120,38 @@ def bal_ibs(survival_train, survival_test, estimate, times, axis=-1):
                     estimate[survival_test["cens"]], times, axis=axis)
     ibs_cens = ibs(survival_train, survival_test[~survival_test["cens"]],
                    estimate[~survival_test["cens"]], times, axis=axis)
+    return ibs_event + ibs_cens
+
+
+def ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
+    test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored=True)
+    estimate = np.array(estimate)
+    if estimate.ndim == 1 and times.shape[0] == 1:
+        estimate = estimate.reshape(-1, 1)
+    estimate[estimate == -np.inf] = 0
+    estimate[estimate == np.inf] = 0
+
+    estim_before = np.square(estimate) * test_event[np.newaxis, :].T
+    estim_after = np.square(1 - estimate)
+    brier_scores = np.array([np.where(test_time <= t,
+                                      estim_before[:, i],
+                                      estim_after[:, i])
+                             for i, t in enumerate(times)])
+    if axis == -1:  # mean ibs for each time and observation
+        brier_scores = np.mean(brier_scores, axis=1)
+        return np.trapz(brier_scores, times) / (times[-1] - times[0])
+    elif axis == 0:  # ibs for each observation
+        return np.trapz(brier_scores, times, axis=0) / (times[-1] - times[0])
+    elif axis == 1:  # bs in time (for graphics)
+        return np.mean(brier_scores, axis=1)
+    return None
+
+
+def bal_ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
+    ibs_event = ibs_WW(survival_train, survival_test[survival_test["cens"]],
+                       estimate[survival_test["cens"]], times, axis=axis)
+    ibs_cens = ibs_WW(survival_train, survival_test[~survival_test["cens"]],
+                      estimate[~survival_test["cens"]], times, axis=axis)
     return ibs_event + ibs_cens
 
 
@@ -279,6 +317,14 @@ def ipa(survival_train, survival_test, estimate, times, axis=-1):
     ibs_model = ibs(survival_train, survival_test, estimate, times, axis)
     ibs_kmf_model = ibs(survival_train, survival_test, kmf_estimate, times, axis)
     return 1 - (ibs_model + 1e-8) / (ibs_kmf_model + 1e-8)
+
+
+def kl(time, cens, sf, cumhf, bins):
+    eq_sf = np.array([np.where(time > t, 1, 0)
+                      for i, t in enumerate(bins)]).T
+
+    kl_v = np.sum(sf * np.log((sf + 1e-10) / (eq_sf + 1e-10)) + np.abs(sf - eq_sf), axis=0)
+    return np.trapz(kl_v, bins, axis=0) / (bins[-1] - bins[0])
 
 
 def loglikelihood(time, cens, sf, cumhf, bins):
