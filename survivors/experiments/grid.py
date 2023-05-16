@@ -147,6 +147,22 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV"):
     return f
 
 
+def bins_scheme(val, scheme=""):
+    if scheme == "rank":
+        u = np.unique(val)
+        ind = np.digitize(val, u)
+        return (ind * val.max() / ind.max()).astype("int")
+    if scheme == "quantile":
+        u = np.unique(np.quantile(val, np.linspace(0, 1, 100)))
+        ind = np.digitize(val, u)
+        return (ind * val.max() / ind.max()).astype("int")
+    if scheme == "log+scale":
+        a = np.log(val+1)
+        v = (val.max() - val.min())*(a - a.min())/(a.max() - a.min()) + val.min()
+        return v.astype("int")
+    return val
+
+
 class Experiments(object):
     """
     Class receives methods, metrics and grids,
@@ -186,20 +202,25 @@ class Experiments(object):
     save : export table as xlsx
     
     """
-    def __init__(self, folds=5, except_stop="all", dataset_name="NONE_NAME", mode="CV"):
+    def __init__(self, folds=5, except_stop="all", dataset_name="NONE_NAME", mode="CV", bins_sch=""):
         self.methods = []
         self.methods_grid = []
         self.metrics = ["CI"]
+        self.metric_best_p = "IBS"
+
         self.is_table = False
         self.folds = folds
         self.except_stop = except_stop
         self.dataset_name = dataset_name
         self.result_table = None
         self.mode = mode
+        self.bins_sch = bins_sch
         
     def add_method(self, method, grid):
         self.methods.append(method)
         self.methods_grid.append(grid)
+        if "IBS_WW" in self.methods:
+            self.metric_best_p = "IBS_WW"
         
     def set_metrics(self, lst_metric):
         self.metrics = []
@@ -210,6 +231,7 @@ class Experiments(object):
                 print(f"METRIC {metr_name} IS NOT DEFINED")
     
     def run(self, X, y, dir_path=None, verbose=0):
+        y["time"] = bins_scheme(y["time"], scheme=self.bins_sch)
         self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
 
         for method, grid in zip(self.methods, self.methods_grid):
@@ -257,6 +279,9 @@ class Experiments(object):
         if not(self.mode in ["CV+SAMPLE"]):
             self.run(X, y, dir_path=dir_path, verbose=verbose)
             return None
+
+        y["time"] = bins_scheme(y["time"], scheme=self.bins_sch)
+        self.bins_sch = ""
 
         folds = 20 if self.mode == "CV+SAMPLE" else 1
 
@@ -313,15 +338,15 @@ class Experiments(object):
         return best_table
 
     def get_cv_result(self, stratify="criterion"):
-        df_cv_best = self.get_agg_results(self.result_table, "IBS_mean", choose="min", stratify=stratify)
+        df_cv_best = self.get_agg_results(self.result_table, self.metric_best_p + "_mean", choose="min", stratify=stratify)
         return df_cv_best
 
     def get_time_cv_result(self, stratify="criterion"):
-        df_time_cv_best = self.get_agg_results(self.result_table, "IBS_pred_mean", choose="min", stratify=stratify)
+        df_time_cv_best = self.get_agg_results(self.result_table, self.metric_best_p + "_pred_mean", choose="min", stratify=stratify)
         return df_time_cv_best
 
     def get_hold_out_result(self, stratify="criterion"):
-        df_hold_out_best = self.get_agg_results(self.result_table, "IBS_pred_mean", choose="min", stratify=stratify)
+        df_hold_out_best = self.get_agg_results(self.result_table, self.metric_best_p + "_pred_mean", choose="min", stratify=stratify)
         rename_d = {metr + "_pred_mean": metr + "_CV_mean" for metr in self.metrics}
         rename_d.update({metr + "_last": metr + "_HO" for metr in self.metrics})
         return df_hold_out_best.rename(rename_d, axis=1)
