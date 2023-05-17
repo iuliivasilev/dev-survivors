@@ -10,7 +10,8 @@ from sksurv.ensemble import GradientBoostingSurvivalAnalysis
 
 from survivors.tree import CRAID
 from survivors.ensemble import BootstrapCRAID
-from survivors.ensemble import BoostingCRAID, ProbBoostingCRAID  # SumBoostingCRAID
+from survivors.ensemble import BoostingCRAID, ProbBoostingCRAID
+from survivors.ensemble import IBSBoostingCRAID, IBSProbBoostingCRAID  # SumBoostingCRAID
 from survivors.experiments import grid as exp
 from survivors import datasets as ds
 
@@ -31,6 +32,8 @@ SELF_ALGS = {
     "BSTR": BootstrapCRAID,
     "BOOST": BoostingCRAID,
     "PROBOOST": ProbBoostingCRAID,
+    "IBSBOOST": IBSBoostingCRAID,
+    "IBSPROBOOST": IBSProbBoostingCRAID
     # "SUMBOOST": SumBoostingCRAID
 }
 
@@ -54,6 +57,7 @@ cox_param_grid = {
     'alpha': [100, 10, 1, 0.1, 0.01, 0.001],
     'ties': ["breslow"]
 }
+
 RSF_param_grid = {
     'n_estimators': [30, 50, 100],
     'max_depth': [None, 20],
@@ -129,7 +133,7 @@ def import_tables(dirs):
 
 
 def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
-        with_external=True, except_stop="all", mode="CV", dir_path=None):
+        with_external=True, except_stop="all", mode="CV", dir_path=None, bins_sch=""):
     """
     Conduct experiments for defined dataset and methods (self and external)
 
@@ -169,11 +173,12 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
     """
     if dir_path is None:
         dir_path = os.getcwd() + "\\"
-    lst_metrics = ["CI", "CI_CENS", "IBS", "IAUC"]
+    lst_metrics = ["CI", "CI_CENS", "IBS", "BAL_IBS", "IBS_WW", "BAL_IBS_WW", "IAUC",
+                   "KL", "LOGLIKELIHOOD"]
     if not (dataset in DATASETS_LOAD):
         print("DATASET %s IS NOT DEFINED" % (dataset))
     X, y, features, categ, sch_nan = DATASETS_LOAD[dataset]()
-    experim = exp.Experiments(folds=5, except_stop=except_stop, dataset_name=dataset, mode=mode)
+    experim = exp.Experiments(folds=5, except_stop=except_stop, dataset_name=dataset, mode=mode, bins_sch=bins_sch)
     experim.set_metrics(lst_metrics)
     if with_external:
         experim.add_method(CoxPHSurvivalAnalysis, cox_param_grid)
@@ -190,23 +195,26 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
 
 @pytest.fixture(scope="module")
 def dir_path():
-    return os.path.join(os.getcwd(), "experiment_results")
+    return os.path.join(os.getcwd(), "experiment_results", "complex_experim")
 
 
 # @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    "dataset", ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]
+    "dataset", ["GBSG", "PBC", "ONK", "WUHAN"]  # ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]
     # ["CV", "CV+HOLD-OUT", "TIME-CV"]
 )
-def test_dataset_exp(dir_path, dataset, mode="CV+HOLD-OUT"):
-    prefix = "ABS_BSTR_BALANCE_HONEST"  # "scsurv_models"  # "full_sample_prob"
-    # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,  # BOOST
-    #               dir_path=dir_path+"\\")  # Only scikit-survival
-    res_exp = run(dataset, with_self=["BSTR"], with_external=False, mode=mode,  # BOOST
+@pytest.mark.parametrize(
+    "bins_sch", ["origin", "rank", "quantile", "log+scale"]
+)
+def test_dataset_exp(dir_path, dataset, bins_sch, mode="CV+SAMPLE"):
+    prefix = f"tree_bstr_{bins_sch}"  # "IBSPROBOOST"  # "scsurv_models"  # "full_sample_prob"
+    # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
+    #               dir_path=dir_path+"\\", bins_sch=bins_sch)  # Only scikit-survival
+    res_exp = run(dataset, with_self=["TREE", "BSTR"], with_external=False, mode=mode,  # BOOST
                   dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]BOOST
 
     df_full = res_exp.get_result()
-    df_criterion = res_exp.get_best_by_mode(stratify="balance")  # criterion # get_hold_out_result()
+    df_criterion = res_exp.get_best_by_mode(stratify="criterion")  # balance # get_hold_out_result()
     # df_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
     # df_sample = res_exp.get_sample_result()
 
