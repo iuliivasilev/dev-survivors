@@ -2,26 +2,29 @@ short = False
 
 CRAID_param_grid = {
     "depth": [10],
-    "balance": [None, "balance", "balance+correct", "balance+weights"],
-    "criterion": ["peto"] if short else ["confident_weights"],  # ["weights"],  # ["peto", "tarone-ware", "wilcoxon", "logrank"],
-    "min_samples_leaf": [10] if short else [500, 1000, 2000],
-    'cut': [False],
-    "woe": [False],  # if short else [True, False],
-    "signif": [0.05] if short else [0.05, 0.1, 0.15],
+    "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
+    "criterion": ["peto"] if short else ["confident", "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "min_samples_leaf": [10] if short else [100, 500, 1000],
+    "leaf_model": ["base_fast"] if short else ["base_fast"],
+    'cut': [False, True],
+    "woe": [True],  # if short else [True, False],
+    "signif": [0.05] if short else [0.05, 1.0],
     "max_features": [1.0],
-    "n_jobs": [40]
+    "n_jobs": [10]
 }
 
 BSTR_param_grid = {
-    "size_sample": [0.7], 
-    "n_estimators": [10] if short else [10, 30], 
+    "size_sample": [0.5],
+    "n_estimators": [10] if short else [30],
     "depth": [10],
-    "ens_metric_name": ["conc", "ibs"],
-    # "woe" : [],
-    "criterion": ["peto"] if short else ["confident_weights", "peto", "tarone-ware", "wilcoxon", "logrank"],
-    "min_samples_leaf": [500, 1000, 2000],
-    "max_features": [0.7] if short else ["sqrt"],
-    "n_jobs": [40]
+    "ens_metric_name": ["bic", "roc", "ibs"],
+    "criterion": ["peto"] if short else ["confident",
+                                         "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "leaf_model": ["base_fast"] if short else ["base_fast"],
+    "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
+    "min_samples_leaf": [100],
+    "max_features": [0.7] if short else [0.3],
+    "n_jobs": [10]
 }
 
 BOOST_param_grid = {
@@ -30,15 +33,15 @@ BOOST_param_grid = {
     "ens_metric_name": ["ibs"] if short else ["bic", "roc", "ibs"],  # ["roc", "ibs"],  # "conc",
     "depth": [10],  # new 5
     "mode_wei": ['exp'] if short else ['square', "exp", "sigmoid", "softmax"],
-    "criterion": ["confident", "logrank"] if short else ["confident", "confident_weights", "weights",
+    "criterion": ["confident", "logrank"] if short else ["confident", "weights",
                                             "peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [10] if short else [100],  # new 1000
     "max_features": [0.3],  # ["sqrt"],
     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
     "leaf_model": ["base"] if short else ["base_fast"],
     "all_weight": [False],  # , False],
-    "balance": [None, "balance", "balance+weights"],
-    "with_arc": [True, False],
+    "balance": [None, "balance", "only_log_rank"],
+    "with_arc": [False],
     "n_jobs": [5]
 }
 
@@ -53,5 +56,7 @@ COVID_PARAMS = {
     "BSTR": BSTR_param_grid,
     "BOOST": BOOST_param_grid,
     "SUMBOOST": SUMBOOST_param_grid,
-    "PROBOOST": PROBOOST_param_grid
+    "PROBOOST": PROBOOST_param_grid,
+    "IBSBOOST": PROBOOST_param_grid,
+    "IBSPROBOOST": PROBOOST_param_grid
 }
