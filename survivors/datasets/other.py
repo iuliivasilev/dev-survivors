@@ -24,6 +24,38 @@ def load_pickle(path):
     return pickle.load(open(path, 'rb'))
 
 
+def load_scheme_dataset(name):
+    dir_env = join(dirname(__file__), "data")
+    df = pd.read_csv(join(dir_env, f'{name}.csv'))
+    df = df.rename({"time": TIME_NAME, "event": CENS_NAME}, axis=1)
+
+    sign_c = [c for c in df.columns if c.startswith("num_") or c.startswith("fac_")]
+    categ_c = [c for c in df.columns if c.startswith("fac_")]
+
+    y = get_y(df[CENS_NAME], df[TIME_NAME])
+    X = df.loc[:, sign_c]
+    return X, y, sign_c, categ_c, []
+
+
+def load_support2_dataset():
+    return load_scheme_dataset('support2')
+
+def load_rott2_dataset():
+    return load_scheme_dataset('rott2')
+
+def load_Framingham_dataset():
+    return load_scheme_dataset('Framingham')
+
+def load_flchain_dataset():
+    return load_scheme_dataset('flchain')
+
+def load_smarto_dataset():
+    return load_scheme_dataset('smarto')
+
+def load_actg_dataset():
+    return load_scheme_dataset("actg")
+
+
 def load_gbsg_dataset():
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, 'GBSG.csv'))
