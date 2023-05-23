@@ -5,6 +5,8 @@ import pickle
 import random
 from os.path import dirname, join
 from ..constants import TIME_NAME, CENS_NAME, get_y
+from sklearn import preprocessing
+
 random.seed(10)
 
 sign_gbsg = ['htreat', 'age', 'menostat', 'tumsize', 'tumgrad', 'posnodal', 'prm', 'esm']
@@ -32,8 +34,12 @@ def load_scheme_dataset(name):
     sign_c = [c for c in df.columns if c.startswith("num_") or c.startswith("fac_")]
     categ_c = [c for c in df.columns if c.startswith("fac_")]
 
-    y = get_y(df[CENS_NAME], df[TIME_NAME])
+    y = get_y(df[CENS_NAME], df[TIME_NAME].astype("int"))
     X = df.loc[:, sign_c]
+
+    for c in categ_c:
+        le = preprocessing.LabelEncoder()
+        X[c] = le.fit_transform(X[c])
     return X, y, sign_c, categ_c, []
 
 
