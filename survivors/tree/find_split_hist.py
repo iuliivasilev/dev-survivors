@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit
 
 from scipy import stats
-from .stratified_model import KaplanMeier
+from .stratified_model import KaplanMeier, FullProbKM
 
 """ Auxiliary functions """
 
@@ -25,7 +25,7 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
     O_j = O_1_j + O_2_j
     E_1_j = N_1_j * O_j / N_j
     res = np.zeros((N_j.shape[0], 3), dtype=np.float32)
-    res[:, 1] = O_1_j - E_1_j
+    res[:, 1] = O_1_j - E_1_j  # np.abs(O_1_j - E_1_j)
     res[:, 2] = E_1_j * (N_j - O_j) * N_2_j / (N_j * (N_j - 1))
     res[:, 0] = 1.0
 
@@ -231,6 +231,11 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
             kmf.fit(dur, cens)
         ci = kmf.get_confidence_interval_()
         weights_hist = 1 / (ci[1:, 1] - ci[1:, 0] + 1e-5)  # (ci[1:, 1] + ci[1:, 0] + 1e-5)
+        criterion = "weights"
+    elif criterion == "fullprob":
+        kmf = FullProbKM()
+        kmf.fit(dur, cens)
+        weights_hist = kmf.survival_function_at_times(np.unique(dur))
         criterion = "weights"
     elif weights is None:
         weights_hist = None
