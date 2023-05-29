@@ -39,8 +39,15 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
         res[:, 0] = obs_weights[ind]
     elif weightings == 6:
         res[:, 0] = O_j/N_j
+    elif weightings == 7:
+        res[:, 0] = np.cumprod((1.0 - O_j / (N_j + 1)))
         #res[:, 0] = np.cumprod((1.0 - O_1_j / (N_1_j + 1))) - np.cumprod((1.0 - O_2_j / (N_2_j + 1)))
     stat_val = np.power((res[:, 0] * res[:, 1]).sum(), 2) / ((res[:, 0] * res[:, 0] * res[:, 2]).sum())
+
+    if weightings == 7:
+        res[:, 0] = 1 - res[:, 0]
+        stat_val2 = np.power((res[:, 0] * res[:, 1]).sum(), 2) / ((res[:, 0] * res[:, 0] * res[:, 2]).sum())
+        stat_val = max(stat_val, stat_val2)
     return stat_val  # It must be square of value (without sqrt)
 
 
@@ -53,7 +60,7 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
         if weights_hist is None:
             weights_hist = np.ones_like(time_hist_1)
         d = {"logrank": 1, "wilcoxon": 2, "tarone-ware": 3, "peto": 4, "weights": 5}
-        d.update({"diff": 6})
+        d.update({"diff": 6, "maxcombo": 7})
         weightings = d.get(weightings, 1)
         logrank = lr_hist_statistic(time_hist_1.astype("uint32"),
                                     time_hist_2.astype("uint32"),
