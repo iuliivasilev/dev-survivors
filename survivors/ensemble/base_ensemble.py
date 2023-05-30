@@ -166,11 +166,12 @@ class BaseEnsemble(object):
         return np.round(np.mean(scores), 4)
 
     def aggregate_score_selfoob(self, bins=None):
-        if self.ens_metric_name in ["conc", "ibs"]:
+        is_ibs = self.ens_metric_name.upper().find("IBS") >= 0
+        if self.ens_metric_name in ["conc"] or is_ibs:
             list_target_time = [oob_[cnt.TIME_NAME].to_frame() for oob_ in self.oob]
             target_time = pd.concat(list_target_time, axis=1).mean(axis=1)
 
-        if self.ens_metric_name in ["roc", "ibs"]:
+        if self.ens_metric_name in ["roc"] or is_ibs:
             list_target_cens = [oob_[cnt.CENS_NAME].to_frame() for oob_ in self.oob]
             target_cens = pd.concat(list_target_cens, axis=1).mean(axis=1)
 
@@ -180,7 +181,7 @@ class BaseEnsemble(object):
                 return concordance_index(target_time, pred)
             return roc_auc_score(target_cens, pred)
 
-        if self.ens_metric_name == "ibs":
+        if is_ibs:
             pred = pd.concat(self.list_pred_oob, axis=1).apply(lambda r: r.mean(axis=0), axis=1)
             pred = np.array(pred.to_list())
             y_true = cnt.get_y(target_cens, target_time)
@@ -198,7 +199,7 @@ class FastBaseEnsemble(BaseEnsemble):
         self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
                                  cens=self.y_train[cnt.CENS_NAME])
 
-        if self.ens_metric_name in ["ibs", "iauc", "likelihood", "bic"]:
+        if self.ens_metric_name in ["iauc", "likelihood", "bic"] or self.ens_metric_name.upper().find("IBS") >= 0:
             dim = (self.X_train.shape[0], self.bins.shape[0])
         else:
             dim = (self.X_train.shape[0])
@@ -231,7 +232,8 @@ class FastBaseEnsemble(BaseEnsemble):
 
     def aggregate_score_selfoob(self):
         index_join_oob = np.where(self.oob_count != 0)
-        if self.ens_metric_name == "ibs":
+        is_ibs = self.ens_metric_name.upper().find("IBS") >= 0
+        if is_ibs:
             pred = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob][:, None]
         elif self.ens_metric_name in ["likelihood", "bic"]:
             pred_hf = self.oob_prediction_hf[index_join_oob]  # / self.oob_count[index_join_oob][:, None]
@@ -247,9 +249,9 @@ class FastBaseEnsemble(BaseEnsemble):
             return concordance_index(target_time, pred)
         elif self.ens_metric_name == "roc":
             return roc_auc_score(target_cens, pred)
-        elif self.ens_metric_name == "ibs":
+        elif is_ibs:
             y_true = cnt.get_y(target_cens, target_time)
-            return metr.ibs(self.y_train, y_true, pred, self.bins)
+            return metr.METRIC_DICT[self.ens_metric_name.upper()](self.y_train, y_true, None, pred, None, self.bins)
         elif self.ens_metric_name == "likelihood":
             return metr.loglikelihood(target_time, target_cens, pred_sf, pred_hf, self.bins)
         elif self.ens_metric_name == "bic":
