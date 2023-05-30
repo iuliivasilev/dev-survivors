@@ -4,6 +4,12 @@ from .. import metrics as metr
 from .. import constants as cnt
 
 
+def epanechnikov_kernel(t, T, bandwidth=1.0):
+    M = 0.75 * (1 - ((t - T) / bandwidth) ** 2)
+    M[abs((t - T)) >= bandwidth] = 0
+    return M
+
+
 class LeafModel(object):
     def __init__(self):
         self.shape = None
@@ -151,6 +157,8 @@ class NelsonAalen:
         self.smoothing = smoothing
 
     def fit(self, durations, right_censor, weights):
+        # The formula Stata: https://stats.stackexchange.com/questions/6670/
+        self.bandwidth = np.std(durations)/(len(durations)**(1/5))
         self.timeline = np.unique(durations)
 
         dur_ = np.searchsorted(self.timeline, durations)
@@ -170,6 +178,21 @@ class NelsonAalen:
     def cumulative_hazard_at_times(self, times):
         place_bin = np.digitize(times, self.timeline)
         return self.hazard_function[np.clip(place_bin, 0, None)]
+
+    def smoothed_hazard_(self, bandwidth):
+        timeline = self.timeline
+        hazard_ = np.diff(self.hazard_function)
+        sh = 1.0 / bandwidth * np.dot(epanechnikov_kernel(timeline[:, None],
+                                                          timeline[None, :],
+                                                          bandwidth), hazard_)
+        return sh + np.max(sh) / self.timeline.shape[0]
+
+    def get_smoothed_hazard_at_times(self, bins):
+        hazard_ = np.hstack([0.0, np.diff(self.cumulative_hazard_at_times(bins))])
+        sh = 1.0 / self.bandwidth * np.dot(epanechnikov_kernel(bins[:, None],
+                                                               bins[None, :],
+                                                               self.bandwidth), hazard_)
+        return sh + np.max(sh) / bins.shape[0]
 
 
 class WeightSurviveModel(LeafModel):
