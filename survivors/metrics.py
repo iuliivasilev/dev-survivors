@@ -32,7 +32,8 @@ METRIC_DICT = {
 }
 """ dict: Available metrics in library and its realization """
 
-DESCEND_METRICS = ['ibs', 'IBS', 'aic', "AIC", "bic", "BIC", "KL", "BAL_IBS", "IBS_WW", "BAL_IBS_WW"]
+DESCEND_METRICS = ['ibs', 'IBS', 'aic', "AIC", "bic", "BIC", "KL",
+                   "BAL_IBS", "IBS_WW", "BAL_IBS_WW", "IBS_REMAIN", "BAL_IBS_REMAIN"]
 """ list: Metrics with decreasing quality improvement """
 
 
@@ -173,13 +174,16 @@ def ibs_remain(survival_train, survival_test, estimate, times, axis=-1):
                                       estim_before[:, i],
                                       estim_after[:, i])
                              for i, t in enumerate(times)])
-
-    ind = np.digitize(test_time, times) - 1
-    n_cens = np.bincount(ind[~test_event], minlength=times.shape[0])
-
-    N = np.ones(times.shape) * np.sum(test_event)
-    if n_cens.shape[0] > 0:
-        N += np.cumsum(n_cens[::-1])[::-1]
+    N = np.sum(np.array([np.where(test_time < t,
+                                      test_event,
+                                      1)
+                             for i, t in enumerate(times)]), axis=1)
+    # ind = np.digitize(test_time, times)
+    # n_cens = np.bincount(ind[~test_event], minlength=times.shape[0])
+    #
+    # N = np.ones(times.shape) * np.sum(test_event)
+    # if n_cens.shape[0] > 0:
+    #     N += np.cumsum(n_cens[::-1])[::-1]
 
     if axis == -1:  # mean ibs for each time and observation
         # brier_scores = np.mean(brier_scores, axis=1)
