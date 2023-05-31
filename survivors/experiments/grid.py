@@ -219,8 +219,8 @@ class Experiments(object):
     def add_method(self, method, grid):
         self.methods.append(method)
         self.methods_grid.append(grid)
-        if "IBS_WW" in self.methods:
-            self.metric_best_p = "IBS_WW"
+        if "IBS_REMAIN" in self.methods:
+            self.metric_best_p = "IBS_REMAIN"
         
     def set_metrics(self, lst_metric):
         self.metrics = []
@@ -292,7 +292,7 @@ class Experiments(object):
         self.mode = "CV"
         self.run(X_tr, y_tr, dir_path=dir_path, verbose=verbose)
         self.sample_table = self.eval_on_sample_by_best_params(X, y, folds=folds,
-                                                               stratify="criterion")  # balance
+                                                               stratify=["criterion", "balance", "ens_metric_name"])
         self.mode = old_mode
 
     def eval_on_sample_by_best_params(self, X, y, folds=20, stratify="criterion"):
