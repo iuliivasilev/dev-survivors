@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit
 
 from scipy import stats
-from .stratified_model import KaplanMeier, FullProbKM
+from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen
 
 """ Auxiliary functions """
 
@@ -243,6 +243,11 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         kmf = FullProbKM()
         kmf.fit(dur, cens)
         weights_hist = kmf.survival_function_at_times(np.unique(dur))
+        criterion = "weights"
+    elif criterion == "kde":
+        na = NelsonAalen()
+        na.fit(dur, cens, np.ones(len(dur)))
+        weights_hist = na.get_smoothed_hazard_at_times(np.unique(dur))
         criterion = "weights"
     elif weights is None:
         weights_hist = None
