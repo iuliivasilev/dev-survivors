@@ -16,10 +16,10 @@ class BaseEnsemble(object):
     size_sample : float
         Size of generated subsample
     n_estimators : int
-        Number of base models 
+        Number of base models
     ens_metric_name : str
         Metric defines quantitative of ensemble
-    descend_metr : boolean 
+    descend_metr : boolean
         Flag of descend for ens_metric_name
     bootstrap : boolean
         Flag for using bootstrap sampling (with return)
@@ -31,8 +31,8 @@ class BaseEnsemble(object):
         Function of aggregating (if aggreg)
     tree_kwargs : dict
         Parameters for building base models
-    
-    models : list 
+
+    models : list
         Base models of ensemble (for example, CRAID)
     oob : list
         Out of bag sample for each model
@@ -48,12 +48,13 @@ class BaseEnsemble(object):
     add_model : updating ensemble with new model and oob
     select_model : remaining fixed models
     tolerance_find_best : iterative method of selecting best sub ensemble
-    
+
     predict : return values of features, rules or schemes (look at CRAID)
     predict_at_times : return survival or hazard function
 
     score_oob : calculate metric "ens_metric_name" for ensemble
     """
+
     def __init__(self, size_sample=0.7,
                  n_estimators=10,
                  aggreg=True,
@@ -65,8 +66,8 @@ class BaseEnsemble(object):
         self.size_sample = size_sample
         self.n_estimators = n_estimators
         self.aggreg = aggreg
-        self.ens_metric_name = ens_metric_name
-        self.descend_metr = self.ens_metric_name in metr.DESCEND_METRICS
+        # self.ens_metric_name = ens_metric_name
+        # self.descend_metr = self.ens_metric_name in metr.DESCEND_METRICS
         self.bootstrap = bootstrap
         self.tolerance = tolerance
         self.tree_kwargs = tree_kwargs
@@ -74,20 +75,20 @@ class BaseEnsemble(object):
         self.X_train = None
         self.y_train = None
         self.features = None
-    
+
     def update_params(self):
         self.models = []
         self.oob = []
         self.ens_metr = np.zeros(self.n_estimators)
         self.list_pred_oob = []
-        
+
         if isinstance(self.size_sample, float):
-            self.size_sample = int(self.size_sample*self.X_train.shape[0])
+            self.size_sample = int(self.size_sample * self.X_train.shape[0])
         self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
                                  cens=self.y_train[cnt.CENS_NAME])
 
         cnt.set_seed(10)
-    
+
     def fit(self):
         pass
 
@@ -107,22 +108,22 @@ class BaseEnsemble(object):
         self.models = self.models[start:end]
         self.oob = self.oob[start:end]
         self.list_pred_oob = self.list_pred_oob[start:end]
-        
+
     def tolerance_find_best(self):
         if self.descend_metr:
             max_index = np.argmin(self.ens_metr)
         else:
             max_index = np.argmax(self.ens_metr)
-        self.select_model(0, max_index+1)
+        self.select_model(0, max_index + 1)
         print(self.ens_metr)
-    
+
     def get_aggreg(self, x):
         if self.aggreg_func == "median":
             return np.median(x, axis=0)
         elif self.aggreg_func == "mean":
             return np.mean(x, axis=0)
         return None
-    
+
     def predict_at_times(self, x_test, bins, aggreg=True, mode="surv"):
         res = []
         for i in range(len(self.models)):
@@ -132,7 +133,7 @@ class BaseEnsemble(object):
         if aggreg:
             res = self.get_aggreg(res)
         return res
-    
+
     def predict(self, x_test, aggreg=True, **kwargs):
         res = []
         for i in range(len(self.models)):
@@ -141,16 +142,16 @@ class BaseEnsemble(object):
         if aggreg:
             res = self.get_aggreg(res)
         return res
-    
+
     """ SCORES """
-    
+
     def score_oob(self):
         if self.aggreg:
             score = self.aggregate_score_selfoob()
         else:
             score = self.separate_score_oob()
         return np.round(score, 4)
-    
+
     def separate_score_oob(self):
         scores = np.array([])
         for i in range(len(self.models)):
@@ -192,13 +193,42 @@ class BaseEnsemble(object):
 class FastBaseEnsemble(BaseEnsemble):
     def update_params(self):
         self.models = []
-        self.ens_metr = np.zeros(self.n_estimators)
+        self.oob_index = []
 
         if isinstance(self.size_sample, float):
             self.size_sample = int(self.size_sample * self.X_train.shape[0])
         self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
                                  cens=self.y_train[cnt.CENS_NAME])
+        cnt.set_seed(10)
 
+    def add_model(self, model, x_oob):
+        self.models.append(model)
+        self.oob_index.append(x_oob.index.values)
+
+    def select_model(self, start, end):
+        self.models = self.models[start:end]
+        self.oob_index = self.oob_index[start:end]
+
+    def tolerance_find_best(self, ens_metric_name="bic"):
+        self.ens_metric_name = ens_metric_name
+        ens_metr_arr = np.zeros(self.n_estimators)
+
+        self.prepare_for_tolerance()
+        for i in range(self.n_estimators):
+            self.tolerance_iter = i
+            self.predict_by_i(i)
+            ens_metr_arr[i] = self.score_oob()
+
+        descend_metr = self.ens_metric_name in metr.DESCEND_METRICS
+        if descend_metr:
+            best_index = np.argmin(ens_metr_arr)
+        else:
+            best_index = np.argmax(ens_metr_arr)
+        self.select_model(0, best_index + 1)
+        print(ens_metr_arr)
+        print(f"fitted: {len(self.models)} models.")
+
+    def prepare_for_tolerance(self):
         if self.ens_metric_name in ["iauc", "likelihood", "bic"] or self.ens_metric_name.upper().find("IBS") >= 0:
             dim = (self.X_train.shape[0], self.bins.shape[0])
         else:
@@ -209,12 +239,11 @@ class FastBaseEnsemble(BaseEnsemble):
             self.oob_prediction_hf = np.zeros(dim, dtype=np.float)
         self.oob_count = np.zeros((self.X_train.shape[0]), dtype=np.int)
 
-        cnt.set_seed(10)
+    def predict_by_i(self, ind_model):
+        model = self.models[ind_model]
+        oob_index = self.oob_index[ind_model]
+        x_oob = self.X_train.iloc[oob_index, :]
 
-    def add_model(self, model, x_oob):
-        self.models.append(model)
-
-        oob_index = x_oob.index.values
         self.oob_count[oob_index] += 1
         if self.ens_metric_name == "conc":
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.TIME_NAME)
@@ -226,9 +255,6 @@ class FastBaseEnsemble(BaseEnsemble):
             self.oob_prediction += model.predict_at_times(self.X_train, bins=self.bins, mode="surv")
         else:
             self.oob_prediction[oob_index] += model.predict_at_times(x_oob, bins=self.bins, mode="surv")
-
-    def select_model(self, start, end):
-        self.models = self.models[start:end]
 
     def aggregate_score_selfoob(self):
         index_join_oob = np.where(self.oob_count != 0)
@@ -255,5 +281,5 @@ class FastBaseEnsemble(BaseEnsemble):
         elif self.ens_metric_name == "likelihood":
             return metr.loglikelihood(target_time, target_cens, pred_sf, pred_hf, self.bins)
         elif self.ens_metric_name == "bic":
-            return metr.bic(len(self.models), self.size_sample, target_time, target_cens, pred_sf, pred_hf, self.bins)
+            return metr.bic(self.tolerance_iter+1, self.size_sample, target_time, target_cens, pred_sf, pred_hf, self.bins)
         return None
