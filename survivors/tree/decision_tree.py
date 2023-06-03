@@ -167,7 +167,10 @@ class CRAID(object):
         X_tr[cnt.TIME_NAME] = y[cnt.TIME_NAME].astype(np.float32)
 
         if not ("min_samples_leaf" in self.info):
-            self.info["min_samples_leaf"] = max(int(0.01 * X_tr.shape[0]), 1)
+            self.info["min_samples_leaf"] = 0.01
+        if isinstance(self.info["min_samples_leaf"], float):
+            self.info["min_samples_leaf"] = max(int(self.info["min_samples_leaf"] * X_tr.shape[0]), 1)
+
         cnt.set_seed(self.random_state)
 
         if self.balance in ["balance", "balance+correct"]:
