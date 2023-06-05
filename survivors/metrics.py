@@ -25,6 +25,12 @@ METRIC_DICT = {
         bal_ibs_remain(y_tr, y_tst, pr_surv, bins),
     "IAUC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         iauc(y_tr, y_tst, pr_haz, bins),
+    "IAUC_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        iauc_WW(y_tr, y_tst, pr_haz, bins),
+    "IAUC_TI": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        iauc_TI(y_tr, y_tst, pr_haz, bins),
+    "IAUC_WW_TI": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        iauc_WW_TI(y_tr, y_tst, pr_haz, bins),
     "LOGLIKELIHOOD": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         loglikelihood(y_tst[TIME_NAME], y_tst[CENS_NAME], pr_surv, pr_haz, bins),
     "KL": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
@@ -205,7 +211,8 @@ def bal_ibs_remain(survival_train, survival_test, estimate, times, axis=-1):
                           estimate[~survival_test["cens"]], times, axis=axis)
     return ibs_event + ibs_cens
 
-def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8):
+
+def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=False, time_int=False):
     """
     Modified integrated AUC (cumulative_dynamic_auc) 
         from scikit-survival (reduce complexity)
@@ -255,15 +262,18 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8):
         estimate = np.broadcast_to(estimate[:, np.newaxis], (n_samples, n_times))
 
     # fit and transform IPCW
-    cens = sksurv.metrics.CensoringDistributionEstimator()
-    cens.fit(survival_train)
-    Ghat = cens.predict_proba(test_time[test_event])
-    ipcw = np.zeros(test_time.shape[0])
-    Ghat[Ghat == 0] = np.inf
-    if not((Ghat == 0.0).any()):
-        ipcw[test_event] = 1.0 / Ghat
-    else:
+    if no_wei:
         ipcw = np.ones(test_time.shape[0])
+    else:
+        cens = sksurv.metrics.CensoringDistributionEstimator()
+        cens.fit(survival_train)
+        Ghat = cens.predict_proba(test_time[test_event])
+        ipcw = np.zeros(test_time.shape[0])
+        Ghat[Ghat == 0] = np.inf
+        if not((Ghat == 0.0).any()):
+            ipcw[test_event] = 1.0 / Ghat
+        else:
+            ipcw = np.ones(test_time.shape[0])
 
     # expand arrays to (n_samples, n_times) shape
     test_time = np.broadcast_to(test_time[:, np.newaxis], (n_samples, n_times))
@@ -307,18 +317,30 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8):
 
     scores[np.isnan(scores)] = 0
     if n_times == 1:
-        mean_auc = scores[0]
+        return scores[0]
     else:
-        surv = KaplanMeierFitter()
-        surv.fit(survival_test[TIME_NAME], survival_test[CENS_NAME]) 
-        s_times = surv.survival_function_at_times(times).to_numpy()
-        
-        # compute integral of AUC over survival function
-        d = -np.diff(np.r_[1.0, s_times])
-        integral = (scores * d).sum()
-        mean_auc = integral / (1.0 - s_times[-1])
+        if time_int:
+            return np.trapz(scores, times, axis=0) / (times[-1] - times[0])
+        else:
+            surv = KaplanMeierFitter()
+            surv.fit(survival_test[TIME_NAME], survival_test[CENS_NAME])
+            s_times = surv.survival_function_at_times(times).to_numpy()
 
-    return mean_auc
+            # compute integral of AUC over survival function
+            d = -np.diff(np.r_[1.0, s_times])
+            integral = (scores * d).sum()
+            return integral / (1.0 - s_times[-1])
+    return None
+
+
+def iauc_WW(s_tr, s_tst, est, times, tied_tol=1e-8):
+    return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=True)
+
+def iauc_TI(s_tr, s_tst, est, times, tied_tol=1e-8):
+    return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=False, time_int=True)
+
+def iauc_WW_TI(s_tr, s_tst, est, times, tied_tol=1e-8):
+    return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=True, time_int=True)
 
 
 def ipa(survival_train, survival_test, estimate, times, axis=-1):
