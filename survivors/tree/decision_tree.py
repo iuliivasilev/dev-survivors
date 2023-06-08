@@ -31,12 +31,12 @@ def format_to_pandas(X, columns):
 
 
 def get_oversample(df, target=cnt.CENS_NAME):
-    oversample = RandomOverSampler(sampling_strategy='minority')
+    oversample = RandomOverSampler(sampling_strategy='minority', random_state=42)
     df_over, _ = oversample.fit_resample(df, df[target])
     return df_over
 
-""" Functions of prunning """
 
+""" Functions of prunning """
 
 def ols(a, b):
     return sum((a - b) ** 2)
