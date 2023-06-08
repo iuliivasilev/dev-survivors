@@ -122,22 +122,21 @@ class BoostingCRAID(FastBaseEnsemble):
             wei_i, betta_i = self.count_model_weights(model, X_sub_tr, y_sub_tr)
             self.add_model(model, x_oob, wei_i, betta_i)
             self.update_weight(x_sub['ind_start'], wei_i)
-            
-            # print(betta_i)
-            self.ens_metr[i] = self.score_oob()
-            
-            if not (self.tolerance) and i > 0:
-                print(f"METRIC: {self.ens_metr[i-1]} -> +1 model METRIC: {self.ens_metr[i]}")
-                if self.descend_metr:
-                    stop = self.ens_metr[i-1] < self.ens_metr[i]
-                else:
-                    stop = self.ens_metr[i-1] > self.ens_metr[i]
-                if stop:
-                    self.select_model(0, len(self.models)-1)
-                    break
+
+            # self.ens_metr[i] = self.score_oob()
+            #
+            # if not (self.tolerance) and i > 0:
+            #     print(f"METRIC: {self.ens_metr[i-1]} -> +1 model METRIC: {self.ens_metr[i]}")
+            #     if self.descend_metr:
+            #         stop = self.ens_metr[i-1] < self.ens_metr[i]
+            #     else:
+            #         stop = self.ens_metr[i-1] > self.ens_metr[i]
+            #     if stop:
+            #         self.select_model(0, len(self.models)-1)
+            #         break
         
-        if self.tolerance:
-            self.tolerance_find_best()
+        # if self.tolerance:
+        #     self.tolerance_find_best()
         print('fitted:', len(self.models), 'models.')
     
     # def count_model_weights(self, model):
