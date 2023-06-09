@@ -322,7 +322,7 @@ class Experiments(object):
         self.mode = "CV"
         self.run(X_tr, y_tr, dir_path=dir_path, verbose=verbose)
         self.sample_table = self.eval_on_sample_by_best_params(X, y, folds=folds,
-                                                               stratify=["criterion", "balance"])
+                                                               stratify=["criterion", "balance", "leaf_model"])
         self.mode = old_mode
 
     def eval_on_sample_by_best_params(self, X, y, folds=20, stratify="criterion"):
