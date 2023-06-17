@@ -231,6 +231,7 @@ class Experiments(object):
         self.methods_grid = []
         self.metrics = ["CI"]
         self.metric_best_p = "IBS"
+        self.way_best_p = "min"
 
         self.is_table = False
         self.folds = folds
@@ -245,8 +246,11 @@ class Experiments(object):
         self.bins_sch = bins_sch
 
     def add_metric_best(self, metric):
+        if metric == "conc":
+            metric = "CI"
         if metric in self.metrics:
             self.metric_best_p = metric
+            self.way_best_p = "min" if metric in metr.DESCEND_METRICS else "max"
 
     def add_method(self, method, grid):
         self.methods.append(method)
@@ -368,15 +372,18 @@ class Experiments(object):
         return best_table
 
     def get_cv_result(self, stratify="criterion"):
-        df_cv_best = self.get_agg_results(self.result_table, self.metric_best_p + "_mean", choose="min", stratify=stratify)
+        df_cv_best = self.get_agg_results(self.result_table, self.metric_best_p + "_mean",
+                                          choose=self.way_best_p, stratify=stratify)
         return df_cv_best
 
     def get_time_cv_result(self, stratify="criterion"):
-        df_time_cv_best = self.get_agg_results(self.result_table, self.metric_best_p + "_pred_mean", choose="min", stratify=stratify)
+        df_time_cv_best = self.get_agg_results(self.result_table, self.metric_best_p + "_pred_mean",
+                                               choose=self.way_best_p, stratify=stratify)
         return df_time_cv_best
 
     def get_hold_out_result(self, stratify="criterion"):
-        df_hold_out_best = self.get_agg_results(self.result_table, self.metric_best_p + "_pred_mean", choose="min", stratify=stratify)
+        df_hold_out_best = self.get_agg_results(self.result_table, self.metric_best_p + "_pred_mean",
+                                                choose=self.way_best_p, stratify=stratify)
         rename_d = {metr + "_pred_mean": metr + "_CV_mean" for metr in self.metrics}
         rename_d.update({metr + "_last": metr + "_HO" for metr in self.metrics})
         return df_hold_out_best.rename(rename_d, axis=1)
