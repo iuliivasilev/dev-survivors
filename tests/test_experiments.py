@@ -7,6 +7,7 @@ from sksurv.linear_model import CoxPHSurvivalAnalysis
 from sksurv.tree import SurvivalTree
 from sksurv.ensemble import RandomSurvivalForest
 from sksurv.ensemble import GradientBoostingSurvivalAnalysis
+from sksurv.ensemble import ComponentwiseGradientBoostingSurvivalAnalysis
 
 from survivors.tree import CRAID
 from survivors.ensemble import BootstrapCRAID
@@ -22,6 +23,7 @@ from PARAMS.PBC_PARAM import PBC_PARAMS
 from PARAMS.ONK_PARAM import ONK_PARAMS
 from PARAMS.WUHAN_PARAM import WUHAN_PARAMS
 from PARAMS.COVID_PARAM import COVID_PARAMS
+from PARAMS.SCHEME_PARAM import SCHEME_PARAMS
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -38,19 +40,33 @@ SELF_ALGS = {
 }
 
 PARAMS_ = {
-    "GBSG": GBSG_PARAMS,
-    "PBC": PBC_PARAMS,
-    "ONK": ONK_PARAMS,
-    "WUHAN": WUHAN_PARAMS,
-    "COVID": COVID_PARAMS
+    "GBSG": SCHEME_PARAMS,
+    "PBC": SCHEME_PARAMS,
+    "WUHAN": SCHEME_PARAMS,
+    # "ONK": ONK_PARAMS,
+    # "COVID": COVID_PARAMS,
+
+    "actg": SCHEME_PARAMS,
+    "flchain": SCHEME_PARAMS,
+    "smarto": SCHEME_PARAMS,
+    "rott2": SCHEME_PARAMS,
+    "support2": SCHEME_PARAMS,
+    "Framingham": SCHEME_PARAMS
 }
 
 DATASETS_LOAD = {
     "GBSG": ds.load_gbsg_dataset,
     "PBC": ds.load_pbc_dataset,
     "WUHAN": ds.load_wuhan_dataset,
-    "ONK": ds.load_onk_dataset,
-    "COVID": ds.load_covid_dataset
+    # "ONK": ds.load_onk_dataset,
+    # "COVID": ds.load_covid_dataset,
+
+    "actg": ds.load_actg_dataset,
+    "flchain": ds.load_flchain_dataset,
+    "smarto": ds.load_smarto_dataset,
+    "rott2": ds.load_rott2_dataset,
+    "support2": ds.load_support2_dataset,
+    # "Framingham": ds.load_Framingham_dataset
 }
 
 cox_param_grid = {
@@ -79,6 +95,14 @@ GBSA_param_grid = {
     'max_depth': [20, 30],
     'min_samples_leaf': [1, 10, 20],
     'max_features': ["sqrt"],
+    "random_state": [123]
+}
+CWGBSA_param_grid = {
+    'loss': ["coxph"],
+    'learning_rate': [0.01, 0.05, 0.1, 0.5],
+    'n_estimators': [30, 50, 100],
+    'subsample': [0.7, 1.0],
+    'dropout_rate': [0.0, 0.1, 0.5],
     "random_state": [123]
 }
 
@@ -133,7 +157,7 @@ def import_tables(dirs):
 
 
 def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
-        with_external=True, except_stop="all", mode="CV", dir_path=None, bins_sch=""):
+        with_external=True, except_stop="all", mode="CV", dir_path=None, bins_sch="", best_metric="IBS"):
     """
     Conduct experiments for defined dataset and methods (self and external)
 
@@ -173,21 +197,27 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
     """
     if dir_path is None:
         dir_path = os.getcwd() + "\\"
-    lst_metrics = ["CI", "CI_CENS", "IBS", "BAL_IBS", "IBS_WW", "BAL_IBS_WW", "IAUC",
+    lst_metrics = ["CI", "CI_CENS",
+                   "IBS", "BAL_IBS", "IBS_WW", "BAL_IBS_WW", "IBS_REMAIN", "BAL_IBS_REMAIN",
+                   "IAUC", "IAUC_WW", "IAUC_TI", "IAUC_WW_TI",
+                   "AUPRC", "EVENT_AUPRC", "CENS_AUPRC", "BAL_AUPRC",
                    "KL", "LOGLIKELIHOOD"]
     if not (dataset in DATASETS_LOAD):
         print("DATASET %s IS NOT DEFINED" % (dataset))
     X, y, features, categ, sch_nan = DATASETS_LOAD[dataset]()
     experim = exp.Experiments(folds=5, except_stop=except_stop, dataset_name=dataset, mode=mode, bins_sch=bins_sch)
     experim.set_metrics(lst_metrics)
+    experim.add_metric_best(best_metric)
     if with_external:
         experim.add_method(CoxPHSurvivalAnalysis, cox_param_grid)
         experim.add_method(SurvivalTree, ST_param_grid)
         experim.add_method(RandomSurvivalForest, RSF_param_grid)
+        experim.add_method(ComponentwiseGradientBoostingSurvivalAnalysis, CWGBSA_param_grid)
         experim.add_method(GradientBoostingSurvivalAnalysis, GBSA_param_grid)
     if len(with_self) > 0:
         for alg in with_self:
             PARAMS_[dataset][alg]["categ"] = [categ]
+            PARAMS_[dataset][alg]["ens_metric_name"] = [best_metric]
             experim.add_method(SELF_ALGS[alg], PARAMS_[dataset][alg])
     experim.run_effective(X, y, dir_path=dir_path, verbose=1)
     return experim
@@ -195,23 +225,29 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
 
 @pytest.fixture(scope="module")
 def dir_path():
-    return os.path.join(os.getcwd(), "experiment_results", "complex_experim")
+    return os.path.join(os.getcwd(), "experiment_results", "many_ds")
 
 
 # @pytest.mark.skip(reason="no way of currently testing this")
+# @pytest.mark.parametrize(
+#     "bins_sch", ["origin", "rank", "quantile", "log+scale"]
+# )
+
 @pytest.mark.parametrize(
-    "dataset", ["GBSG", "PBC", "ONK", "WUHAN"]  # ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]
-    # ["CV", "CV+HOLD-OUT", "TIME-CV"]
+    "best_metric", ["likelihood"]  # ["conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 @pytest.mark.parametrize(
-    "bins_sch", ["origin", "rank", "quantile", "log+scale"]
+    "dataset", ["GBSG", "PBC", "rott2", "smarto", "support2", "actg", "WUHAN", "flchain"]
+    # "dataset", ["GBSG", "PBC", "actg", "WUHAN"]  # "GBSG",
+    # "dataset", list(DATASETS_LOAD.keys())  # ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]
+    # "dataset", ["PBC"]  # ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]
 )
-def test_dataset_exp(dir_path, dataset, bins_sch, mode="CV+SAMPLE"):
-    prefix = f"tree_bstr_{bins_sch}"  # "IBSPROBOOST"  # "scsurv_models"  # "full_sample_prob"
+def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):
+    prefix = f"{best_metric}_bstr_full_WB_{bins_sch}"  # "IBSPROBOOST"  # "scsurv"  # "bstr_full_WB"
     # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
-    #               dir_path=dir_path+"\\", bins_sch=bins_sch)  # Only scikit-survival
-    res_exp = run(dataset, with_self=["TREE", "BSTR"], with_external=False, mode=mode,  # BOOST
-                  dir_path=dir_path+"\\")  # ["TREE", "BSTR", "BOOST"]BOOST
+    #               dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
+    res_exp = run(dataset, with_self=["BSTR"], with_external=False, mode=mode,  # BOOST
+                  dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
     df_criterion = res_exp.get_best_by_mode(stratify="criterion")  # balance # get_hold_out_result()
