@@ -248,6 +248,8 @@ class Experiments(object):
     def add_metric_best(self, metric):
         if metric == "conc":
             metric = "CI"
+        if metric == "likelihood":
+            metric = "LOGLIKELIHOOD"
         if metric in self.metrics:
             self.metric_best_p = metric
             self.way_best_p = "min" if metric in metr.DESCEND_METRICS else "max"
