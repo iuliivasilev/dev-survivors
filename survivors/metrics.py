@@ -11,18 +11,22 @@ METRIC_DICT = {
         concordance_index(y_tst[TIME_NAME], pr_time),
     "CI_CENS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         concordance_index(y_tst[TIME_NAME], pr_time, y_tst[CENS_NAME]),
+
     "IBS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         ibs(y_tr, y_tst, pr_surv, bins),
     "BAL_IBS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         bal_ibs(y_tr, y_tst, pr_surv, bins),
+
     "IBS_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         ibs_WW(y_tr, y_tst, pr_surv, bins),
     "BAL_IBS_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         bal_ibs_WW(y_tr, y_tst, pr_surv, bins),
+
     "IBS_REMAIN": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         ibs_remain(y_tr, y_tst, pr_surv, bins),
     "BAL_IBS_REMAIN": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         bal_ibs_remain(y_tr, y_tst, pr_surv, bins),
+
     "IAUC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         iauc(y_tr, y_tst, pr_haz, bins),
     "IAUC_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
@@ -31,6 +35,18 @@ METRIC_DICT = {
         iauc_TI(y_tr, y_tst, pr_haz, bins),
     "IAUC_WW_TI": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         iauc_WW_TI(y_tr, y_tst, pr_haz, bins),
+
+    "AUPRC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        auprc(y_tr, y_tst, pr_surv, bins),
+    "AUPRC_by_obs": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        auprc(y_tr, y_tst, pr_surv, bins, axis=3),
+    "EVENT_AUPRC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        event_auprc(y_tr, y_tst, pr_surv, bins),
+    "CENS_AUPRC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        cens_auprc(y_tr, y_tst, pr_surv, bins),
+    "BAL_AUPRC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
+        bal_auprc(y_tr, y_tst, pr_surv, bins),
+
     "LOGLIKELIHOOD": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
         loglikelihood(y_tst[TIME_NAME], y_tst[CENS_NAME], pr_surv, pr_haz, bins),
     "KL": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
@@ -41,6 +57,53 @@ METRIC_DICT = {
 DESCEND_METRICS = ['ibs', 'IBS', 'aic', "AIC", "bic", "BIC", "KL",
                    "BAL_IBS", "IBS_WW", "BAL_IBS_WW", "IBS_REMAIN", "BAL_IBS_REMAIN"]
 """ list: Metrics with decreasing quality improvement """
+
+
+def auprc(survival_train, survival_test, estimate, times, axis=-1):
+    time = survival_test["time"]
+    event = survival_test["cens"]
+
+    steps = np.linspace(1e-5, 1 - 1e-5, 100)
+    before_time = np.dot(time[:, np.newaxis], steps[np.newaxis, :])
+    after_time = np.dot(time[:, np.newaxis], 1 / steps[np.newaxis, :])
+    before_ind = np.clip(np.searchsorted(times, before_time), 0, times.shape[0] - 1)
+    after_ind = np.clip(np.searchsorted(times, after_time), 0, times.shape[0] - 1)
+
+    est = np.take_along_axis(estimate, before_ind, axis=1)
+    est[event] -= np.take_along_axis(estimate[event], after_ind[event], axis=1)
+
+    if axis == -1:  # mean for each time and observation
+        est = np.mean(est, axis=0)
+        return np.trapz(est, steps)
+    elif axis == 0:  # for each observation
+        return np.trapz(est, steps)
+    elif axis == 1:  # in time (for graphics)
+        est = est.mean(axis=0)
+        return est
+    elif axis == 2:  # source
+        return est
+    elif axis == 3:  # for each observation with array wrap
+        return np.array([np.trapz(est, steps)])
+    return None
+
+
+def bal_auprc(survival_train, survival_test, estimate, times, axis=-1):
+    auprc_event = auprc(survival_train, survival_test[survival_test["cens"]],
+                        estimate[survival_test["cens"]], times, axis=axis)
+    auprc_cens = auprc(survival_train, survival_test[~survival_test["cens"]],
+                       estimate[~survival_test["cens"]], times, axis=axis)
+    return (auprc_event + auprc_cens) / 2
+
+
+def event_auprc(survival_train, survival_test, estimate, times, axis=-1):
+    auprc_event = auprc(survival_train, survival_test[survival_test["cens"]],
+                        estimate[survival_test["cens"]], times, axis=axis)
+    return auprc_event
+
+def cens_auprc(survival_train, survival_test, estimate, times, axis=-1):
+    auprc_cens = auprc(survival_train, survival_test[~survival_test["cens"]],
+                       estimate[~survival_test["cens"]], times, axis=axis)
+    return auprc_cens
 
 
 @jit
