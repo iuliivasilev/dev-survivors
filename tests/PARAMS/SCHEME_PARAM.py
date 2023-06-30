@@ -1,7 +1,7 @@
 CRAID_param_grid = {
     "depth": [10],
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
-    "criterion": ["confident", "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "criterion": ["maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [5, 10, 25],
     "leaf_model": ["base_fast"],
     'cut': [True, False],
@@ -12,17 +12,17 @@ CRAID_param_grid = {
 }
 
 BSTR_param_grid = {
-    "size_sample": [0.5, 0.7],  # 0.7
-    "n_estimators": [30],
+    "size_sample": [0.7, 1.0],  # 0.7
+    "n_estimators": [50],
     "depth": [10],
-    "ens_metric_name": ["bic", "roc", "ibs"],
-    "criterion": ["confident", "peto", "tarone-ware", "wilcoxon", "logrank"],
-    "leaf_model": ["base_fast"],
-    "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
+    "ens_metric_name": ["IBS"],  # ["bic", "roc", "ibs"], , "IBS_WW", "IBS_REMAIN"
+    "criterion": ["maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "leaf_model": ["base_fast", "base_zero_after"],  # "base_zero_after", "base_fast"
+    "balance": [None],  #, "balance", "only_log_rank"],  # [None, "balance", "balance+correct", "only_log_rank"]
 
-    "min_samples_leaf": [5, 10, 25],
-    "max_features": [0.7, "sqrt"],
-    "n_jobs": [10]
+    "min_samples_leaf": [0.05, 0.001],
+    "max_features": [0.3, "sqrt"],
+    "n_jobs": [5]
 }
 
 SCHEME_PARAMS = {
