@@ -76,13 +76,15 @@ class BoostingCRAID(FastBaseEnsemble):
     .. [1] Drucker H. Improving regressors using boosting techniques 
             //ICML. – 1997. – Т. 97. – С. 107-115.
     """
-    def __init__(self, mode_wei="linear", with_arc=True, weighted_tree=True, all_weight=False, **kwargs):
+    def __init__(self, mode_wei="linear", with_arc=True, weighted_tree=True, all_weight=False,
+                 ens_metric_name="roc", **kwargs):
         self.name = "BoostingCRAID"
         self.mode_wei = mode_wei
         self.with_arc = with_arc
         self.weights = None
         self.weighted_tree = weighted_tree
         self.all_weight = all_weight
+        self.ens_metric_name = ens_metric_name
         if self.weighted_tree:
             kwargs["weights_feature"] = "weights_obs"
         super().__init__(**kwargs)
@@ -153,7 +155,9 @@ class BoostingCRAID(FastBaseEnsemble):
             X_sub = self.X_train
             y_sub = self.y_train
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
-        losses = metr.ibs(self.y_train, y_sub, pred_sf, self.bins, axis=0)
+        m = metr.IBS_DICT.get(self.ens_metric_name.upper(), metr.ibs)
+
+        losses = m(self.y_train, y_sub, pred_sf, self.bins, axis=0)
 
         # pred_wei = self.weights[X_sub['ind_start']]  # weight losses through previous
 
