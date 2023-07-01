@@ -566,3 +566,10 @@ def get_hazard_func(ddeath, cdeath, bins=None):
 #     res = dict(sorted(res.items(), key = lambda x: x[1]))
 #     plt.bar(res.keys(), res.values())
 #     plt.show()
+
+IBS_DICT = {
+    m.__name__.upper(): m
+    for m in [ibs, bal_ibs,
+              ibs_WW, bal_ibs_WW,
+              ibs_remain, bal_ibs_remain]
+}
