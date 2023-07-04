@@ -58,8 +58,10 @@ class IBSProbBoostingCRAID(BoostingCRAID):
             y_sub = self.y_train
 
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
+        m = metr.IBS_DICT.get(self.ens_metric_name.upper(), metr.ibs)
 
-        ibs_vals = metr.ibs(self.y_train, y_sub, pred_sf, self.bins, axis=0)
+        ibs_vals = m(self.y_train, y_sub, pred_sf, self.bins, axis=0)
+
         ibs_scaled = (ibs_vals - np.mean(ibs_vals))  # first scheme
         # ibs_scaled = (ibs_vals - np.mean(ibs_vals)) / np.std(ibs_vals) # second scheme
         wei = 1 / (1 + np.exp(-ibs_scaled))
