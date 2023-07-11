@@ -179,11 +179,12 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
                                       estim_before[:, i], 
                                       estim_after[:, i])
                              for i, t in enumerate(times)])
+    time_diff = times[-1] - times[0] if times[-1] > times[0] else 1
     if axis == -1:  # mean ibs for each time and observation
         brier_scores = np.mean(brier_scores, axis=1)
-        return np.trapz(brier_scores, times) / (times[-1] - times[0])
+        return np.trapz(brier_scores, times) / time_diff
     elif axis == 0:  # ibs for each observation
-        return np.trapz(brier_scores, times, axis=0) / (times[-1] - times[0])
+        return np.trapz(brier_scores, times, axis=0) / time_diff
     elif axis == 1:  # bs in time (for graphics)
         return np.mean(brier_scores, axis=1)
     return None
@@ -211,11 +212,12 @@ def ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
                                       estim_before[:, i],
                                       estim_after[:, i])
                              for i, t in enumerate(times)])
+    time_diff = times[-1] - times[0] if times[-1] > times[0] else 1
     if axis == -1:  # mean ibs for each time and observation
         brier_scores = np.mean(brier_scores, axis=1)
-        return np.trapz(brier_scores, times) / (times[-1] - times[0])
+        return np.trapz(brier_scores, times) / time_diff
     elif axis == 0:  # ibs for each observation
-        return np.trapz(brier_scores, times, axis=0) / (times[-1] - times[0])
+        return np.trapz(brier_scores, times, axis=0) / time_diff
     elif axis == 1:  # bs in time (for graphics)
         return np.mean(brier_scores, axis=1)
     return None
@@ -253,13 +255,13 @@ def ibs_remain(survival_train, survival_test, estimate, times, axis=-1):
     # N = np.ones(times.shape) * np.sum(test_event)
     # if n_cens.shape[0] > 0:
     #     N += np.cumsum(n_cens[::-1])[::-1]
-
+    time_diff = times[-1] - times[0] if times[-1] > times[0] else 1
     if axis == -1:  # mean ibs for each time and observation
         # brier_scores = np.mean(brier_scores, axis=1)
         brier_scores = np.where(N > 0, 1 / N, 0) * np.sum(brier_scores, axis=1)
-        return np.trapz(brier_scores, times) / (times[-1] - times[0])
+        return np.trapz(brier_scores, times) / time_diff
     elif axis == 0:  # ibs for each observation
-        return np.trapz(brier_scores, times, axis=0) / (times[-1] - times[0])
+        return np.trapz(brier_scores, times, axis=0) / time_diff
     elif axis == 1:  # bs in time (for graphics)
         # brier_scores = np.mean(brier_scores, axis=1)
         brier_scores = np.where(N > 0, 1 / N, 0) * np.sum(brier_scores, axis=1)
@@ -383,7 +385,8 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
         return scores[0]
     else:
         if time_int:
-            return np.trapz(scores, times, axis=0) / (times[-1] - times[0])
+            time_diff = times[-1] - times[0] if times[-1] > times[0] else 1
+            return np.trapz(scores, times, axis=0) / time_diff
         else:
             surv = KaplanMeierFitter()
             surv.fit(survival_test[TIME_NAME], survival_test[CENS_NAME])
