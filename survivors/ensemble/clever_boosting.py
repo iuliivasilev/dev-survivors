@@ -19,6 +19,7 @@ class IBSCRAID(CRAID):
         counts = np.bincount(numbs)
         self.ibs_leaf = np.bincount(numbs, weights=ibs_v)
         self.ibs_leaf[counts > 0] /= counts[counts > 0]
+        self.ibs_leaf += 1e-5
 
     def get_ibs_by_leaf(self, X, divide=False):
         numbs = self.predict(X, target="numb").astype("int")
@@ -101,7 +102,7 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
         #         m = metr.IBS_DICT.get(self.ens_metric_name.upper(), metr.ibs)
         m = metr.ibs_WW
-        wei = m(self.y_train, y_sub, pred_sf, self.bins, axis=0) + 1e-15
+        wei = m(self.y_train, y_sub, pred_sf, self.bins, axis=0) + 1e-5
         return wei, np.mean(wei)
 
     def update_weight(self, index, wei_i):
@@ -113,8 +114,8 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
     def get_aggreg(self, x, wei=None):
         if self.aggreg_func == 'median':
             return np.median(x, axis=0)
-        elif self.aggreg_func == "obs_wei":
-            wei = 1 / wei * 1 / np.sum(1 / wei)
+        elif self.aggreg_func == "wei":
+            wei = 1 / wei * (1 / np.sum(1 / wei, axis=1)).reshape(-1, 1)
             return np.sum((x.T * wei).T, axis=0)
         return np.mean(x, axis=0)
 
