@@ -14,14 +14,27 @@ class IBSCRAID(CRAID):
     def set_ibs_by_leaf(self, X, y):
         numbs = self.predict(X, target="numb").astype("int")
         sf = self.predict_at_times(X, self.bins, mode="surv")
-        ibs_v = metr.ibs_WW(y, y, sf, self.bins, axis=0)
+        #         tm = self.predict(X, target="time")
+        tm = np.trapz(sf, self.bins, axis=1)
+        ev = self.predict(X, target="cens")
+
+        y_ = cnt.get_y(time=tm, cens=ev)
+        y_["cens"] = True
+        ibs_ev = metr.ibs_WW(y_, y_, sf, self.bins, axis=0)
+
+        y_["cens"] = False
+        ibs_cn = metr.ibs_WW(y_, y_, sf, self.bins, axis=0)
+
+        ibs_ex = ibs_ev * ev + ibs_cn * (1 - ev)
+        #         print(tm[:5], ev[:5], sf[:5])
+        #         print(ibs_ev[:5], ibs_cn[:5], ibs_ex[:5])
 
         counts = np.bincount(numbs)
-        self.ibs_leaf = np.bincount(numbs, weights=ibs_v)
+        self.ibs_leaf = np.bincount(numbs, weights=ibs_ex)
         self.ibs_leaf[counts > 0] /= counts[counts > 0]
         self.ibs_leaf += 1e-5
 
-    def get_ibs_by_leaf(self, X, divide=False):
+    def get_ibs_by_leaf(self, X):
         numbs = self.predict(X, target="numb").astype("int")
         return self.ibs_leaf[numbs]
 
@@ -55,7 +68,7 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
             x_sub = self.X_train.sample(n=self.size_sample, weights=self.weights,
                                         replace=self.bootstrap, random_state=i)
             x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index), :]
-            #             print("UNIQUE:", np.unique(x_sub.index).shape[0])
+            print("UNIQUE:", np.unique(x_sub.index).shape[0])
             x_sub = x_sub.reset_index(drop=True)
             X_sub_tr, y_sub_tr = cnt.pd_to_xy(x_sub)
             if self.weighted_tree:
