@@ -2,7 +2,9 @@ import numpy as np
 from numba import njit
 
 from scipy import stats
-from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen
+from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
+from ..metrics import ibs_WW
+from ..constants import get_y
 
 """ Auxiliary functions """
 
@@ -243,6 +245,25 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         kmf = FullProbKM()
         kmf.fit(dur, cens)
         weights_hist = kmf.survival_function_at_times(np.unique(dur))
+        criterion = "weights"
+    elif criterion == "ibswei":
+        kmf = KaplanMeierZeroAfter()
+        kmf.fit(dur, cens)
+        y = get_y(cens=cens, time=dur)
+        sf = kmf.survival_function_at_times(np.unique(dur))
+
+        y["cens"] = True
+        ibs_ev = ibs_WW(y, y,
+                              np.repeat(sf[np.newaxis, :], dur.shape[0], axis=0),
+                              np.unique(dur), axis=0)
+        y["cens"] = False
+        ibs_cn = ibs_WW(y, y,
+                              np.repeat(sf[np.newaxis, :], dur.shape[0], axis=0),
+                              np.unique(dur), axis=0)
+        ratio = np.sum(cens)/cens.shape[0]
+        weights_hist = ibs_ev*ratio + ibs_cn*(1-ratio)
+        weights_hist = np.bincount(dur, weights=weights_hist,  # /sum(weights),
+                                   minlength=max_bin + 1)
         criterion = "weights"
     elif criterion == "kde":
         na = NelsonAalen()
