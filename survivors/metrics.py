@@ -73,12 +73,14 @@ def auprc(survival_train, survival_test, estimate, times, axis=-1):
     est[event] -= np.take_along_axis(estimate[event], after_ind[event], axis=1)
 
     if axis == -1:  # mean for each time and observation
-        est = np.mean(est, axis=0)
+        est = np.mean(est, axis=0)  # TODO np.mean
         return np.trapz(est, steps)
+        # return np.median(np.trapz(est, steps))
     elif axis == 0:  # for each observation
         return np.trapz(est, steps)
     elif axis == 1:  # in time (for graphics)
-        est = est.mean(axis=0)
+        # est = est.median(axis=0)
+        est = est.mean(axis=0)  # TODO np.mean
         return est
     elif axis == 2:  # source
         return est
@@ -181,12 +183,14 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
                              for i, t in enumerate(times)])
     time_diff = times[-1] - times[0] if times[-1] > times[0] else 1
     if axis == -1:  # mean ibs for each time and observation
-        brier_scores = np.mean(brier_scores, axis=1)
+        brier_scores = np.mean(brier_scores, axis=1)  # TODO np.mean
         return np.trapz(brier_scores, times) / time_diff
+        # return np.median(np.trapz(brier_scores, times, axis=0)) / time_diff
     elif axis == 0:  # ibs for each observation
         return np.trapz(brier_scores, times, axis=0) / time_diff
     elif axis == 1:  # bs in time (for graphics)
-        return np.mean(brier_scores, axis=1)
+        # return np.median(brier_scores, axis=1)
+        return np.mean(brier_scores, axis=1)  # TODO np.mean
     return None
 
 
@@ -214,12 +218,14 @@ def ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
                              for i, t in enumerate(times)])
     time_diff = times[-1] - times[0] if times[-1] > times[0] else 1
     if axis == -1:  # mean ibs for each time and observation
-        brier_scores = np.mean(brier_scores, axis=1)
+        brier_scores = np.mean(brier_scores, axis=1)  # TODO np.mean
         return np.trapz(brier_scores, times) / time_diff
+        # return np.median(np.trapz(brier_scores, times, axis=0)) / time_diff
     elif axis == 0:  # ibs for each observation
         return np.trapz(brier_scores, times, axis=0) / time_diff
     elif axis == 1:  # bs in time (for graphics)
-        return np.mean(brier_scores, axis=1)
+        # return np.median(brier_scores, axis=1)
+        return np.mean(brier_scores, axis=1)  # TODO np.mean
     return None
 
 
