@@ -252,6 +252,10 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         y = get_y(cens=cens, time=dur)
         sf = kmf.survival_function_at_times(np.unique(dur))
 
+        # ibs_e = ibs_WW(y, y,
+        #                 np.repeat(sf[np.newaxis, :], dur.shape[0], axis=0),
+        #                 np.unique(dur), axis=0)
+
         y["cens"] = True
         ibs_ev = ibs_WW(y, y,
                               np.repeat(sf[np.newaxis, :], dur.shape[0], axis=0),
@@ -262,8 +266,12 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
                               np.unique(dur), axis=0)
         ratio = np.sum(cens)/cens.shape[0]
         weights_hist = ibs_ev*ratio + ibs_cn*(1-ratio)
-        weights_hist = np.bincount(dur, weights=weights_hist,  # /sum(weights),
-                                   minlength=max_bin + 1)
+        weights_hist = np.bincount(dur, weights=weights_hist,  minlength=max_bin + 1)
+        weights_hist /= np.bincount(dur, minlength=max_bin + 1)
+
+        # weights_hist = ibs_ev * ratio + ibs_cn * (1 - ratio)
+        # weights_hist = np.cumsum(np.bincount(dur, weights=weights_hist)[::-1])[::-1]
+        # weights_hist /= np.cumsum(np.bincount(dur)[::-1])[::-1]
         criterion = "weights"
     elif criterion == "kde":
         na = NelsonAalen()
