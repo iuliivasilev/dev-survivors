@@ -65,7 +65,8 @@ def auprc(survival_train, survival_test, estimate, times, axis=-1):
 
     steps = np.linspace(1e-5, 1 - 1e-5, 100)
     before_time = np.dot(time[:, np.newaxis], steps[np.newaxis, :])
-    after_time = np.dot(time[:, np.newaxis], 1 / steps[np.newaxis, :])
+    after_time = np.dot(time[:, np.newaxis], 1 / steps[np.newaxis, :])  # TODO OLD
+    #after_time = time[:, np.newaxis] + np.dot(times[-1] - time[:, np.newaxis], steps[np.newaxis, :])
     before_ind = np.clip(np.searchsorted(times, before_time), 0, times.shape[0] - 1)
     after_ind = np.clip(np.searchsorted(times, after_time), 0, times.shape[0] - 1)
 
