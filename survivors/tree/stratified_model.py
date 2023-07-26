@@ -208,26 +208,26 @@ class WeightSurviveModel(LeafModel):
         super().fit(X_node, need_features)
 
     def predict_survival_at_times(self, X=None, bins=None):
-        if bins is None:
-            bins = self.default_bins
         if self.survival is None:
             self.survival = KaplanMeier()
             self.survival.fit(self.lists[cnt.TIME_NAME],
                               self.lists[cnt.CENS_NAME],
                               self.weights)
+        if bins is None:
+            bins = self.survival.timeline
         sf = self.survival.survival_function_at_times(bins)
         if X is None:
             return sf
         return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
 
     def predict_hazard_at_times(self, X=None, bins=None):
-        if bins is None:
-            bins = self.default_bins
         if self.hazard is None:
             self.hazard = NelsonAalen()
             self.hazard.fit(self.lists[cnt.TIME_NAME],
                             self.lists[cnt.CENS_NAME],
                             self.weights)
+        if bins is None:
+            bins = self.hazard.timeline
         hf = self.hazard.cumulative_hazard_at_times(bins)
         if X is None:
             return hf
