@@ -1,10 +1,10 @@
 CRAID_param_grid = {
     "depth": [15],  # 10
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
-    "criterion": ["maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "min_samples_leaf": [0.05, 0.001],
     "leaf_model": ["base_zero_after"],
-    'cut': [True, False],
+    'cut': [False],  # [True, False]
     "woe": [True],
     "signif": [0.05, 1.0],
     "max_features": [1.0],
@@ -49,7 +49,7 @@ CL_BOOST_param_grid = {
     "n_estimators": [50],
     "depth": [10],
     "ens_metric_name": ["IBS"],
-    "criterion": ["maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "criterion": ["ibswei","maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
     "balance": [None],
 
