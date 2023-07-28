@@ -3,7 +3,7 @@ from numba import njit
 
 from scipy import stats
 from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
-from ..metrics import ibs_WW
+from ..metrics import ibs_WW, auprc
 from ..constants import get_y
 
 """ Auxiliary functions """
@@ -249,29 +249,19 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     elif criterion == "ibswei":
         kmf = KaplanMeierZeroAfter()
         kmf.fit(dur, cens)
-        y = get_y(cens=cens, time=dur)
-        sf = kmf.survival_function_at_times(np.unique(dur))
 
-        # ibs_e = ibs_WW(y, y,
-        #                 np.repeat(sf[np.newaxis, :], dur.shape[0], axis=0),
-        #                 np.unique(dur), axis=0)
+        dd = np.unique(dur)
+        sf = kmf.survival_function_at_times(dd)
+        sf = np.repeat(sf[np.newaxis, :], dd.shape[0], axis=0)
 
-        y["cens"] = True
-        ibs_ev = ibs_WW(y, y,
-                              np.repeat(sf[np.newaxis, :], dur.shape[0], axis=0),
-                              np.unique(dur), axis=0)
-        y["cens"] = False
-        ibs_cn = ibs_WW(y, y,
-                              np.repeat(sf[np.newaxis, :], dur.shape[0], axis=0),
-                              np.unique(dur), axis=0)
+        y_ = get_y(cens=np.ones_like(dd), time=dd)
+        y_["cens"] = True
+        ibs_ev = ibs_WW(y_, y_, sf, dd, axis=0)
+        y_["cens"] = False
+        ibs_cn = ibs_WW(y_, y_, sf, dd, axis=0)
+
         ratio = np.sum(cens)/cens.shape[0]
         weights_hist = ibs_ev*ratio + ibs_cn*(1-ratio)
-        weights_hist = np.bincount(dur, weights=weights_hist,  minlength=max_bin + 1)
-        weights_hist /= np.bincount(dur, minlength=max_bin + 1)
-
-        # weights_hist = ibs_ev * ratio + ibs_cn * (1 - ratio)
-        # weights_hist = np.cumsum(np.bincount(dur, weights=weights_hist)[::-1])[::-1]
-        # weights_hist /= np.cumsum(np.bincount(dur)[::-1])[::-1]
         criterion = "weights"
     elif criterion == "kde":
         na = NelsonAalen()
@@ -283,7 +273,9 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     else:
         weights_hist = np.bincount(dur, weights=weights,  # /sum(weights),
                                    minlength=max_bin + 1)
-        weights_hist = np.cumsum(weights_hist[::-1])[::-1]  # np.sqrt()
+        weights_hist /= np.bincount(dur, minlength=max_bin + 1)  # np.sqrt()
+        # weights_hist = np.cumsum(weights_hist[::-1])[::-1]  # np.sqrt()
+
         # weights_hist = weights_hist / weights_hist.sum()
 
     # for each split values get branches
