@@ -17,10 +17,8 @@ BSTR_param_grid = {
     "size_sample": [0.5, 0.7],  # 0.7
     "n_estimators": [10] if short else [20],
     "depth": [5],
-
-    "ens_metric_name": ["bic", "roc", "ibs"],
-    "criterion": ["peto"] if short else ["confident",
-                                         "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "ens_metric_name": ["IBS_REMAIN"],  # ["bic", "roc", "ibs"],
+    "criterion": ["peto"] if short else ["confident", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "leaf_model": ["base_fast"] if short else ["base_fast"],
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
 
