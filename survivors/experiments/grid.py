@@ -130,18 +130,18 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
         for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds, mode):
             est = method(**kwargs)
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
-                # name = os.path.join(dir_path, get_name_file(method, kwargs, mode, fold) + '.pkl')
-                # if not os.path.exists(name):
-                #     print("Fitted from scratch")
-                #     est.fit(X_train, y_train)
-                #     with open(name, 'wb') as out:
-                #         pickle.dump(est, out, pickle.HIGHEST_PROTOCOL)
-                #
-                # with open(name, 'rb') as inp:
-                #     est = pickle.load(inp)
-                #     est.tolerance_find_best(kwargs["ens_metric_name"])
-                est.fit(X_train, y_train)
-                est.tolerance_find_best(kwargs["ens_metric_name"])  # TODO
+                name = os.path.join(dir_path, get_name_file(method, kwargs, mode, fold) + '.pkl')
+                if not os.path.exists(name):
+                    print("Fitted from scratch")
+                    est.fit(X_train, y_train)
+                    with open(name, 'wb') as out:
+                        pickle.dump(est, out, pickle.HIGHEST_PROTOCOL)
+
+                with open(name, 'rb') as inp:
+                    est = pickle.load(inp)
+                    est.tolerance_find_best(kwargs["ens_metric_name"])
+                # est.fit(X_train, y_train)
+                # est.tolerance_find_best(kwargs["ens_metric_name"])  # TODO
 
                 pred_surv = est.predict_at_times(X_test, bins=bins, mode="surv")
                 pred_time = est.predict(X_test, target=cnt.TIME_NAME)
