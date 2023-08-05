@@ -156,7 +156,9 @@ class NelsonAalen:
         self.survival_function = None
         self.smoothing = smoothing
 
-    def fit(self, durations, right_censor, weights):
+    def fit(self, durations, right_censor, weights=None):
+        if weights is None:
+            weights = np.ones(right_censor.shape)
         # The formula Stata: https://stats.stackexchange.com/questions/6670/
         self.bandwidth = np.std(durations)/(len(durations)**(1/5))
         self.timeline = np.unique(durations)
