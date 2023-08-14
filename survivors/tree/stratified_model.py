@@ -212,6 +212,7 @@ class WeightSurviveModel(LeafModel):
     def predict_survival_at_times(self, X=None, bins=None):
         if self.survival is None:
             self.survival = KaplanMeier()
+            print("WEI[:5] :", self.weights[:5])
             self.survival.fit(self.lists[cnt.TIME_NAME],
                               self.lists[cnt.CENS_NAME],
                               self.weights)
@@ -292,5 +293,6 @@ LEAF_MODEL_DICT = {
     "wei_survive": WeightSurviveModel,
     "base_fast": BaseFastSurviveModel,
     "base_zero_after": BaseFastSurviveModelZeroAfter,
+    "wei_zero_after": WeightSurviveModelZeroAfter,
     "fullprob_fast": FullProbSurviveModel
 }
