@@ -13,6 +13,8 @@ from survivors.tree import CRAID
 from survivors.ensemble import BootstrapCRAID
 from survivors.ensemble import BoostingCRAID, ProbBoostingCRAID
 from survivors.ensemble import IBSBoostingCRAID, IBSProbBoostingCRAID  # SumBoostingCRAID
+from survivors.ensemble import IBSCleverBoostingCRAID
+
 from survivors.experiments import grid as exp
 from survivors import datasets as ds
 
@@ -35,7 +37,8 @@ SELF_ALGS = {
     "BOOST": BoostingCRAID,
     "PROBOOST": ProbBoostingCRAID,
     "IBSBOOST": IBSBoostingCRAID,
-    "IBSPROBOOST": IBSProbBoostingCRAID
+    "IBSPROBOOST": IBSProbBoostingCRAID,
+    "CLEVERBOOST": IBSCleverBoostingCRAID
     # "SUMBOOST": SumBoostingCRAID
 }
 
@@ -234,19 +237,16 @@ def dir_path():
 # )
 
 @pytest.mark.parametrize(
-    "best_metric", ["likelihood"]  # ["conc", "IBS", "IBS_WW", "IBS_REMAIN"]
+    "best_metric", ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 @pytest.mark.parametrize(
-    "dataset", ["GBSG", "PBC", "rott2", "smarto", "support2", "actg", "WUHAN", "flchain"]
-    # "dataset", ["GBSG", "PBC", "actg", "WUHAN"]  # "GBSG",
-    # "dataset", list(DATASETS_LOAD.keys())  # ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]
-    # "dataset", ["PBC"]  # ["GBSG", "PBC", "WUHAN", "ONK", "COVID"]
+    "dataset", ["GBSG", "PBC", "WUHAN", "rott2", "smarto", "support2", "flchain", "actg"]  # "GBSG",
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):
-    prefix = f"{best_metric}_bstr_full_WB_{bins_sch}"  # "IBSPROBOOST"  # "scsurv"  # "bstr_full_WB"
+    prefix = f"{best_metric}_PVAL_BOOST_{bins_sch}"  # "CLEVERBOOST"  # "scsurv"  # "bstr_full_WB"
     # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
     #               dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
-    res_exp = run(dataset, with_self=["BSTR"], with_external=False, mode=mode,  # BOOST
+    res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode=mode,  # CLEVERBOOST
                   dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
