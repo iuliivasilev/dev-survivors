@@ -133,13 +133,14 @@ class Node(object):
         self.info.setdefault("n_jobs", 16)
         self.info.setdefault("max_features", 1.0)
         self.info.setdefault("signif", 1.1)
-        self.info.setdefault("weights_feature", None)
         self.info.setdefault("signif_stat", stats.chi2.isf(min(self.info["signif"], 1.0), df=1))
         self.info.setdefault("thres_cont_bin_max", 100)
         if self.info["max_features"] == "sqrt":
             self.info["max_features"] = int(np.trunc(np.sqrt(len(self.features))+0.5))
         elif isinstance(self.info["max_features"], float):
             self.info["max_features"] = int(self.info["max_features"]*len(self.features))
+
+        self.info.setdefault("weights_feature", None)
         if not(self.info["weights_feature"] is None):
             self.info["weights"] = self.df[self.info["weights_feature"]].to_numpy()
 
@@ -190,8 +191,8 @@ class Node(object):
             ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
 
-        # attr = min(attrs, key=lambda x: attrs[x]["p_value"])
-        attr = max(attrs, key=lambda x: attrs[x]["stat_val"])
+        attr = min(attrs, key=lambda x: attrs[x]["p_value"])
+        # attr = max(attrs, key=lambda x: attrs[x]["stat_val"])
 
         if attrs[attr]["sign_split"] > 0 and self.info["bonf"]:
             attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
