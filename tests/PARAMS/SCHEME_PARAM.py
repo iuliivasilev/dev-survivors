@@ -14,9 +14,9 @@ CRAID_param_grid = {
 BSTR_param_grid = {
     "size_sample": [0.7, 1.0],  # 0.7
     "n_estimators": [50],
-    "depth": [15],  # 10
+    "depth": [10],  # 15
     "ens_metric_name": ["IBS"],  # ["bic", "roc", "ibs"], "IBS_WW", "IBS_REMAIN"
-    "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "criterion": ["maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei",
     "leaf_model": ["base_zero_after"],  # ["base_fast", "base_zero_after"],  # "base_zero_after", "base_fast"
     "balance": [None],  # "balance", "only_log_rank"],  # [None, "balance", "balance+correct", "only_log_rank"]
 
@@ -30,7 +30,7 @@ BOOST_param_grid = {
     "size_sample": [0.7, 1.0],  # 0.7
     "n_estimators": [50],
     "depth": [10],
-    "mode_wei": ['exp', 'square', "sigmoid", "softmax"],
+    "mode_wei": ['exp', 'square'],  # 'exp', 'square', "sigmoid", "softmax"],
     "ens_metric_name": ["IBS"],  # ["bic", "roc", "ibs"], , "IBS_WW", "IBS_REMAIN"
     "criterion": ["maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
@@ -39,7 +39,8 @@ BOOST_param_grid = {
     "min_samples_leaf": [0.05, 0.001],
     "max_features": [0.3, "sqrt"],
     "n_jobs": [5],
-
+    "with_arc": [False],
+    'weighted_tree': [False],
     "all_weight": [False, True]
 }
 
@@ -49,7 +50,7 @@ CL_BOOST_param_grid = {
     "n_estimators": [50],
     "depth": [10],
     "ens_metric_name": ["IBS"],
-    "criterion": ["ibswei","maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
+    "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
     "balance": [None],
 
