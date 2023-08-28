@@ -4,43 +4,7 @@ from .. import metrics as metr
 from ..tree import CRAID
 from .. import constants as cnt
 from .boosting import BoostingCRAID
-
-
-class IBSCRAID(CRAID):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.ibs_leaf = None
-
-    def set_ibs_by_leaf(self, X, y):
-        numbs = self.predict(X, target="numb").astype("int")
-        sf = self.predict_at_times(X, self.bins, mode="surv")
-        #         tm = self.predict(X, target="time")
-        tm = np.trapz(sf, self.bins, axis=1)
-        ev = self.predict(X, target="cens")
-
-        y_ = cnt.get_y(time=tm, cens=ev)
-        y_["cens"] = True
-        ibs_ev = metr.ibs_WW(y_, y_, sf, self.bins, axis=0)
-
-        y_["cens"] = False
-        ibs_cn = metr.ibs_WW(y_, y_, sf, self.bins, axis=0)
-
-        ibs_ex = ibs_ev * ev + ibs_cn * (1 - ev)
-        #         print(tm[:5], ev[:5], sf[:5])
-        #         print(ibs_ev[:5], ibs_cn[:5], ibs_ex[:5])
-
-        counts = np.bincount(numbs)
-        self.ibs_leaf = np.bincount(numbs, weights=ibs_ex)
-        self.ibs_leaf[counts > 0] /= counts[counts > 0]
-        self.ibs_leaf += 1e-5
-
-    def get_ibs_by_leaf(self, X):
-        numbs = self.predict(X, target="numb").astype("int")
-        return self.ibs_leaf[numbs]
-
-    def fit(self, X, y):
-        super().fit(X, y)
-        self.set_ibs_by_leaf(X, y)
+import matplotlib.pyplot as plt
 
 
 class IBSCleverBoostingCRAID(BoostingCRAID):
@@ -65,16 +29,18 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
         self.update_params()
 
         for i in range(self.n_estimators):
-            x_sub = self.X_train.sample(n=self.size_sample, weights=self.weights,
+            x_sub = self.X_train.sample(n=self.size_sample,
+                                        # weights=self.weights,
                                         replace=self.bootstrap, random_state=i)
+
             x_oob = self.X_train.loc[self.X_train.index.difference(x_sub.index), :]
-            print("UNIQUE:", np.unique(x_sub.index).shape[0])
+            # print(f"UNIQUE ({i}):{np.unique(x_sub.index).shape[0]}, DIST:", np.bincount(x_sub["cens"]))
             x_sub = x_sub.reset_index(drop=True)
             X_sub_tr, y_sub_tr = cnt.pd_to_xy(x_sub)
             if self.weighted_tree:
                 X_sub_tr["weights_obs"] = self.weights[x_sub['ind_start']]  # self.weights
 
-            model = IBSCRAID(features=self.features, random_state=i, **self.tree_kwargs)
+            model = CRAID(features=self.features, random_state=i, **self.tree_kwargs)
             model.fit(X_sub_tr, y_sub_tr)
 
             wei_i, betta_i = self.count_model_weights(model, X_sub_tr, y_sub_tr)
@@ -86,10 +52,9 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
         weights = []
         for i in range(len(self.models)):
             res.append(self.models[i].predict(x_test, **kwargs))
-            weights.append(self.models[i].get_ibs_by_leaf(x_test))
 
         res = np.array(res)
-        weights = np.vstack(weights).T
+        weights = None  # np.vstack(weights).T
         if aggreg:
             res = self.get_aggreg(res, weights)
         return res
@@ -100,12 +65,14 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
         for i in range(len(self.models)):
             res.append(self.models[i].predict_at_times(x_test, bins=bins,
                                                        mode=mode))
-            weights.append(self.models[i].get_ibs_by_leaf(x_test))
 
         res = np.array(res)
-        weights = np.vstack(weights).T
+        weights = None  # np.vstack(weights).T
         if aggreg:
             res = self.get_aggreg(res, weights)
+            if mode == "surv":
+                res[:, -1] = 0
+                res[:, 0] = 1
         return res
 
     def count_model_weights(self, model, X_sub, y_sub):
@@ -113,14 +80,26 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
             X_sub = self.X_train
             y_sub = self.y_train
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
-        #         m = metr.IBS_DICT.get(self.ens_metric_name.upper(), metr.ibs)
-        m = metr.ibs_WW
-        wei = m(self.y_train, y_sub, pred_sf, self.bins, axis=0) + 1e-5
-        return wei, np.mean(wei)
+
+        # PRED WEI!!!
+        ibs_sf = metr.ibs_WW(self.y_train, y_sub, pred_sf, self.bins, axis=0)
+
+        if len(self.bettas) > 0:
+            pred_ens = self.predict_at_times(X_sub, bins=self.bins, mode="surv")
+            ibs_ens = metr.ibs_WW(self.y_train, y_sub, pred_ens, self.bins)
+            betta = ibs_ens / np.mean(ibs_sf)
+        else:
+            betta = 1
+
+        wei = ibs_sf
+        return wei, abs(betta)
 
     def update_weight(self, index, wei_i):
+        # PRED WEI!!!
         if len(self.models) > 1:
-            self.weights = 1 / (1 / self.weights + 1 / wei_i)
+            self.weights = self.weights + (self.bettas[-1] ** 2) * wei_i
+            self.weights /= (1 + self.bettas[-1]) ** 2
+            self.bettas = list(np.array(self.bettas) / np.sum(self.bettas))
         else:
             self.weights = wei_i
 
@@ -128,9 +107,34 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
         if self.aggreg_func == 'median':
             return np.median(x, axis=0)
         elif self.aggreg_func == "wei":
-            wei = 1 / wei * (1 / np.sum(1 / wei, axis=1)).reshape(-1, 1)
+            if wei is None:
+                wei = np.array(self.bettas)
+            wei = wei / np.sum(wei)
+            return np.sum((x.T * wei).T, axis=0)
+        elif self.aggreg_func == "argmean":
+            wei = np.where(np.argsort(np.argsort(wei, axis=1), axis=1) > len(self.bettas) // 2, 1, 0)
+            wei = wei / np.sum(wei, axis=1).reshape(-1, 1)
+            return np.sum((x.T * wei).T, axis=0)
+        elif self.aggreg_func == "argwei":
+            wei = np.where(np.argsort(np.argsort(wei, axis=1), axis=1) > len(self.bettas) // 2,
+                           1 / np.array(self.bettas), 0)
+            wei = wei / np.sum(wei, axis=1).reshape(-1, 1)
             return np.sum((x.T * wei).T, axis=0)
         return np.mean(x, axis=0)
 
-    def tolerance_find_best(self, ens_metric_name="bic"):
-        pass
+    def plot_curve(self, X_tmp, y_tmp, bins, label="", metric="ibs"):
+        res = []
+        metr_vals = []
+        for i in range(len(self.models)):
+            res.append(self.models[i].predict_at_times(X_tmp, bins=bins, mode="surv"))
+
+            res_all = np.array(res)
+            res_all = self.get_aggreg(res_all, np.array(self.bettas)[:i + 1])
+            res_all[:, -1] = 0
+            res_all[:, 0] = 1
+            if metric == "ibs":
+                metr_vals.append(metr.ibs_WW(self.y_train, y_tmp, res_all, bins))
+            else:
+                metr_vals.append(metr.auprc(self.y_train, y_tmp, res_all, bins))
+        plt.plot(range(len(self.models)), metr_vals, label=label)
+
