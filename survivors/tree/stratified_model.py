@@ -212,7 +212,7 @@ class WeightSurviveModel(LeafModel):
     def predict_survival_at_times(self, X=None, bins=None):
         if self.survival is None:
             self.survival = KaplanMeier()
-            print("WEI[:5] :", self.weights[:5])
+            # print("WEI[:5] :", self.weights[:5])
             self.survival.fit(self.lists[cnt.TIME_NAME],
                               self.lists[cnt.CENS_NAME],
                               self.weights)
@@ -261,6 +261,15 @@ class WeightSurviveModelZeroAfter(WeightSurviveModel):
         return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
 
 
+class WeightOnlySurviveModelZeroAfter(WeightSurviveModelZeroAfter):
+    def predict_hazard_at_times(self, X=None, bins=None):
+        sf = self.predict_survival_at_times(X, bins)
+        return -1*np.log(sf + 1e-100)
+
+class BaseFastOnlySurviveModelZeroAfter(WeightOnlySurviveModelZeroAfter):
+    def __init__(self):
+        super().__init__(weights_name=None)
+
 class BaseFastSurviveModelZeroAfter(WeightSurviveModelZeroAfter):
     def __init__(self):
         super().__init__(weights_name=None)
@@ -293,6 +302,7 @@ LEAF_MODEL_DICT = {
     "wei_survive": WeightSurviveModel,
     "base_fast": BaseFastSurviveModel,
     "base_zero_after": BaseFastSurviveModelZeroAfter,
+    "base_only_zero_after": BaseFastOnlySurviveModelZeroAfter,
     "wei_zero_after": WeightSurviveModelZeroAfter,
     "fullprob_fast": FullProbSurviveModel
 }
