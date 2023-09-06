@@ -38,7 +38,10 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
             x_sub = x_sub.reset_index(drop=True)
             X_sub_tr, y_sub_tr = cnt.pd_to_xy(x_sub)
             if self.weighted_tree:
-                X_sub_tr["weights_obs"] = self.weights[x_sub['ind_start']]  # self.weights
+                X_sub_tr["weights_obs"] = self.weights[x_sub['ind_start']]
+
+            #             plt.scatter(y_sub_tr["time"], self.weights[x_sub['ind_start']])
+            #             plt.show()
 
             model = CRAID(features=self.features, random_state=i, **self.tree_kwargs)
             model.fit(X_sub_tr, y_sub_tr)
@@ -82,26 +85,40 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
 
         # PRED WEI!!!
-        ibs_sf = metr.ibs_WW(self.y_train, y_sub, pred_sf, self.bins, axis=0)
+        ibs_sf = metr.ibs_remain(self.y_train, y_sub, pred_sf, self.bins, axis=0)
+
+        #         if len(self.bettas) > 0:
+        #             pred_ens = self.predict_at_times(X_sub, bins=self.bins, mode="surv")
+        #             ibs_ens = metr.ibs_WW(self.y_train, y_sub, pred_ens, self.bins)
+        #             betta = ibs_ens / np.mean(ibs_sf)
+        #         else:
+        #             betta = 1
+        #         wei = ibs_sf
 
         if len(self.bettas) > 0:
             pred_ens = self.predict_at_times(X_sub, bins=self.bins, mode="surv")
-            ibs_ens = metr.ibs_WW(self.y_train, y_sub, pred_ens, self.bins)
-            betta = ibs_ens / np.mean(ibs_sf)
+
+            ibs_sf_all = metr.ibs_remain(self.y_train, y_sub, pred_sf, self.bins)
+            ibs_ens = metr.ibs_remain(self.y_train, y_sub, pred_ens, self.bins)
+
+            betta = ibs_ens / ibs_sf_all
+            # betta = ibs_ens / np.mean(ibs_sf)
+            # print(betta)
+            wei = (ibs_ens + (betta ** 2) * ibs_sf) / (1 + betta) ** 2
         else:
             betta = 1
-
-        wei = ibs_sf
+            wei = ibs_sf
         return wei, abs(betta)
 
     def update_weight(self, index, wei_i):
         # PRED WEI!!!
-        if len(self.models) > 1:
-            self.weights = self.weights + (self.bettas[-1] ** 2) * wei_i
-            self.weights /= (1 + self.bettas[-1]) ** 2
-            self.bettas = list(np.array(self.bettas) / np.sum(self.bettas))
-        else:
-            self.weights = wei_i
+        #         if len(self.models) > 1:
+        #             self.weights = self.weights + (self.bettas[-1]**2) * wei_i
+        #             self.weights /= (1 + self.bettas[-1])**2
+        #             self.bettas = list(np.array(self.bettas)/np.sum(self.bettas))
+        #         else:
+        #             self.weights = wei_i
+        self.weights = wei_i
 
     def get_aggreg(self, x, wei=None):
         if self.aggreg_func == 'median':
@@ -137,4 +154,3 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
             else:
                 metr_vals.append(metr.auprc(self.y_train, y_tmp, res_all, bins))
         plt.plot(range(len(self.models)), metr_vals, label=label)
-
