@@ -45,20 +45,21 @@ BOOST_param_grid = {
 }
 
 CL_BOOST_param_grid = {
-    "aggreg_func": ['wei'],
+    "aggreg_func": ['wei', 'mean'],
     "size_sample": [0.7, 1.0],  # 0.7
     "n_estimators": [50],
     "depth": [10],
     "ens_metric_name": ["IBS"],
     "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
-    "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
+    "leaf_model": ["base_zero_after", "base_fast"],  # "base_zero_after", "base_fast"
     "balance": [None],
 
     "min_samples_leaf": [0.05, 0.001],
     "max_features": [0.3, "sqrt"],
     "n_jobs": [5],
 
-    "all_weight": [True]
+    "all_weight": [True],
+    "weighted_tree": [True]
 }
 
 SCHEME_PARAMS = {
