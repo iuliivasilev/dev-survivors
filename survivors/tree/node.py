@@ -191,11 +191,19 @@ class Node(object):
             ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
 
-        # attr = min(attrs, key=lambda x: attrs[x]["p_value"])
-        attr = max(attrs, key=lambda x: attrs[x]["stat_val"])
+        # attr = min(attrs, key=lambda x: attrs[x]["p_value"])  # simple p-value
+        # attr = max(attrs, key=lambda x: attrs[x]["stat_val"])  # simple stat-val
 
-        if attrs[attr]["sign_split"] > 0 and self.info["bonf"]:
-            attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
+        attrs_gr = dict(filter(lambda x: x[1]["sign_split"] > 0, attrs.items()))
+        if len(attrs_gr) == 0:
+            attr = min(attrs, key=lambda x: attrs[x]["p_value"])
+        else:
+            attr = min(attrs_gr, key=lambda x: attrs_gr[x]["p_value"])
+            if self.info["bonf"]:
+                attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
+
+        # if attrs[attr]["sign_split"] > 0 and self.info["bonf"]:  # suffix for simple p-value
+        #     attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
         return (attr, attrs[attr])
 
     def ind_for_nodes(self, X_attr, best_split, is_categ):
