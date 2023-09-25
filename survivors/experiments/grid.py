@@ -287,7 +287,8 @@ class Experiments(object):
                              "PARAMS": str(p), "TIME": full_time}
                 eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
                 curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
-                self.result_table = self.result_table.append(curr_dict, ignore_index=True)
+                # self.result_table = self.result_table.append(curr_dict, ignore_index=True)
+                self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
                 if verbose > 0:
                     print(f"Iteration: {i_p + 1}/{p_size}")
                     print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
@@ -346,7 +347,7 @@ class Experiments(object):
             params = {k: [v] for k, v in params.items()}
             ho_exp.add_method(method, params)
         ho_exp.run(X, y, verbose=1)
-        res_table = ho_exp.result_table
+        res_table = ho_exp.result_table.copy()
         for m in self.metrics:
             res_table[f"{m}_CV"] = best_table[m]
             res_table[f"{m}_CV_mean"] = best_table[f"{m}_mean"]
@@ -372,7 +373,9 @@ class Experiments(object):
                 best_row = sub_table.loc[sub_table[by_metric].idxmin()]
             else:
                 best_row = sub_table.sort_values(by=by_metric).iloc[sub_table.shape[0] // 2]
-            best_table = best_table.append(dict(best_row), ignore_index=True)
+
+            # best_table = best_table.append(dict(best_row), ignore_index=True)
+            best_table = pd.concat([best_table, pd.DataFrame([dict(best_row)])], ignore_index=True)
         return best_table
 
     def get_cv_result(self, stratify="criterion"):
