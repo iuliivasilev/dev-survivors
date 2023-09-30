@@ -24,8 +24,19 @@ def to_str_from_dict_list(d, strat):
 def prepare_sample(X, y, train_index, test_index):
     X_train, X_test = X.iloc[train_index, :], X.iloc[test_index, :]
     y_train, y_test = y[train_index], y[test_index]
+
+    # too_late = np.quantile(y_train[cnt.TIME_NAME], 0.975)
+    # ind_tr = np.where(y_train[cnt.TIME_NAME] > too_late)
+    # y_train[cnt.CENS_NAME][ind_tr] = False
+    # y_train[cnt.TIME_NAME][ind_tr] = too_late
+    #
+    # ind_tst = np.where(y_test[cnt.TIME_NAME] > too_late)
+    # y_test[cnt.CENS_NAME][ind_tst] = False
+    # y_test[cnt.TIME_NAME][ind_tst] = too_late
+
     bins = cnt.get_bins(time=y_train[cnt.TIME_NAME], cens=y_train[cnt.CENS_NAME])
-    y_train[cnt.TIME_NAME] = np.clip(y_train[cnt.TIME_NAME], bins.min() - 1, bins.max() + 1)
+    # y_train[cnt.TIME_NAME] = np.clip(y_train[cnt.TIME_NAME], bins.min() - 1, bins.max() + 1)
+
     y_test[cnt.TIME_NAME] = np.clip(y_test[cnt.TIME_NAME], bins.min(), bins.max())
     return X_train, y_train, X_test, y_test, bins
 
