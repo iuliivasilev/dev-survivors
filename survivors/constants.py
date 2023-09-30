@@ -96,5 +96,8 @@ def get_bins(time, cens=None, mode='a', num_bins=100):
     if mode == 'q':
         bins = np.quantile(time, np.arange(num_bins) / num_bins)
     elif mode == 'a':
-        bins = np.arange(time.min(), time.max()+1)
+        bins = np.arange(time.min(), time.max()+1)  # all bins
+        # bins = np.unique(np.quantile(time, np.arange(2.5, 97.5) / 100))  # stable quantile bins
+        # t_max = np.quantile(time, 0.95)  # NEW
+        # bins = np.arange(time.min(), t_max)  # NEW
     return bins
