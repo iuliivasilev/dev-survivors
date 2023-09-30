@@ -132,9 +132,9 @@ class BaseEnsemble(object):
         res = np.vstack(res)
         if aggreg:
             res = self.get_aggreg(res)
-            if mode == "surv":
-                res[:, -1] = 0
-                res[:, 0] = 1
+            # if mode == "surv":
+            #     res[:, -1] = 0
+            #     res[:, 0] = 1
         return res
 
     def predict(self, x_test, aggreg=True, **kwargs):
