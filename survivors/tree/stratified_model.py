@@ -239,7 +239,8 @@ class WeightSurviveModel(LeafModel):
 
 class KaplanMeierZeroAfter(KaplanMeier):
     def survival_function_at_times(self, times):
-        place_bin = np.digitize(times, self.timeline)
+        place_bin = np.searchsorted(self.timeline, times)
+        # place_bin = np.digitize(times, self.timeline)  # -1
         sf = self.survival_function[np.clip(place_bin, 0, None)]
         sf[times > self.timeline[-1]] = 0
         sf[times < self.timeline[0]] = 1
