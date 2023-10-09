@@ -40,6 +40,9 @@ def load_scheme_dataset(name):
     for c in categ_c:
         le = preprocessing.LabelEncoder()
         X[c] = le.fit_transform(X[c])
+
+    if y[TIME_NAME].min() == 0:
+        y[TIME_NAME] += 1
     return X, y, sign_c, categ_c, []
 
 
@@ -69,6 +72,9 @@ def load_gbsg_dataset():
     
     y = get_y(df[CENS_NAME], df[TIME_NAME])
     X = df.loc[:, sign_gbsg]
+
+    if y[TIME_NAME].min() == 0:
+        y[TIME_NAME] += 1
     return X, y, sign_gbsg, categ_gbsg, []
 
 
@@ -81,6 +87,9 @@ def load_pbc_dataset():
     
     y = get_y(df[CENS_NAME], df[TIME_NAME])
     X = df.loc[:, sign_pbc]
+
+    if y[TIME_NAME].min() == 0:
+        y[TIME_NAME] += 1
     return X, y, sign_pbc, categ_pbc, []
 
 
@@ -108,10 +117,15 @@ def load_wuhan_dataset(invert_death=False):
     
     categ_covid = []
     sign_covid = sorted(list(set(df_f) - {CENS_NAME, TIME_NAME}))
+    sign_covid = list(set(sign_covid) - {"max_2019_nCoV_nucleic_acid_detection",
+                                         "mean_2019_nCoV_nucleic_acid_detection",
+                                         "min_2019_nCoV_nucleic_acid_detection"})
     
     if invert_death:
         df_f[CENS_NAME] = 1 - df_f[CENS_NAME]
     y = get_y(df_f[CENS_NAME], df_f[TIME_NAME])
     X = df_f.loc[:, sign_covid]
-    
+
+    if y[TIME_NAME].min() == 0:
+        y[TIME_NAME] += 1
     return X, y, sign_covid, categ_covid, []
