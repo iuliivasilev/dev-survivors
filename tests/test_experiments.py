@@ -240,7 +240,7 @@ def dir_path():
     "best_metric", ["IBS_REMAIN"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 @pytest.mark.parametrize(
-    "dataset",  ["GBSG", "WUHAN", "PBC", "rott2", "actg"]  # , "smarto", "support2", "flchain"
+    "dataset",  ["flchain"]  # "GBSG", "WUHAN", "PBC", "rott2", "actg", "smarto", "support2"
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):
     prefix = f"{best_metric}_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB"
