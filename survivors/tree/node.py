@@ -116,6 +116,7 @@ class Node(object):
                  verbose=0, **info):
         self.df = df
         self.numb = numb
+        self.size = None
         self.full_rule = full_rule
         self.depth = depth
         self.edges = np.array([], dtype=int)
@@ -153,6 +154,7 @@ class Node(object):
                 self.leaf_model = None
         else:
             self.leaf_model = None
+        self.size = self.df.shape[0]
         self.leaf_model.fit(self.df)
 
     """ GROUP FUNCTIONS: CREATE LEAVES """
