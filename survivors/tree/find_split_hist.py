@@ -80,24 +80,6 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
         d.update({"diff": 6, "maxcombo": 7, "symm_peto": 8})
         weightings = d.get(weightings, 1)
 
-        if weightings == 8:
-            weightings = 4
-            logrank1 = lr_hist_statistic(time_hist_1.astype("float32"),
-                                         time_hist_2.astype("float32"),
-                                         cens_hist_1.astype("float32"),
-                                         cens_hist_2.astype("float32"),
-                                         np.uint32(weightings),
-                                         weights_hist.astype("float32")
-                                         )
-            logrank2 = lr_hist_statistic(time_hist_1[::-1].astype("float32"),
-                                         time_hist_2[::-1].astype("float32"),
-                                         cens_hist_1[::-1].astype("float32"),
-                                         cens_hist_2[::-1].astype("float32"),
-                                         np.uint32(weightings),
-                                         weights_hist.astype("float32")
-                                         )
-            return logrank1 + logrank2
-
         logrank = lr_hist_statistic(time_hist_1.astype("float32"),
                                     time_hist_2.astype("float32"),
                                     cens_hist_1.astype("float32"),
@@ -315,6 +297,7 @@ def stdtest_hist(x, y):
 def count_sf_diff(time, cens):
     c_time = np.cumsum(time[::-1])[::-1]
     sf = np.cumprod((1.0 - cens / (c_time + 1)))
+    sf[c_time == 0] = 0.0
     return np.sum((sf - 0.5)**2) / sf.shape[0]  # max(1, bins[-1] - bins[0])
 
 def cnttest_hist(time_1, cens_1, time_2, cens_2):
@@ -348,18 +331,14 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         # weights = ibs_WW(y, y, sf, dd, axis=0)
     weights_hist = None
 
-    if apr_time is None:
-        dur = split_time_to_bins(dur)
-    else:
-        apr_time_1 = split_time_to_bins(apr_time, dur)
-        dur = split_time_to_bins(dur)
+    dur = split_time_to_bins(dur, apr_time)
 
     if apr_time is None:
         max_bin = dur.max()
         apr_t_distr = np.zeros(max_bin + 1)
         apr_e_distr = np.zeros(max_bin + 1)
     else:
-        # apr_time_1 = split_time_to_bins(apr_time, apr_time)
+        apr_time_1 = split_time_to_bins(apr_time, apr_time)
         max_bin = apr_time_1.max()
         apr_t_distr, apr_e_distr = get_sa_hists(apr_time_1, apr_event, minlength=max_bin + 1)
 
