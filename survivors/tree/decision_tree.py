@@ -157,15 +157,7 @@ class CRAID(object):
         self.ohenc = None
         self.bins = []
 
-    def fit(self, X, y):
-        if len(self.features) == 0:
-            self.features = X.columns
-        self.bins = cnt.get_bins(time=y[cnt.TIME_NAME])  # , cens = y[cnt.CENS_NAME])
-        X = X.reset_index(drop=True)
-        X_tr = X.copy()
-        X_tr[cnt.CENS_NAME] = y[cnt.CENS_NAME].astype(np.int32)
-        X_tr[cnt.TIME_NAME] = y[cnt.TIME_NAME].astype(np.float32)
-
+    def update_params(self, X_tr):
         if not ("min_samples_leaf" in self.info):
             self.info["min_samples_leaf"] = 0.01
         if isinstance(self.info["min_samples_leaf"], float):
@@ -183,8 +175,26 @@ class CRAID(object):
 
             X_tr["weights_obs"] = np.where(X_tr[cnt.CENS_NAME], freq[0] / freq[1], 1)
             self.info["weights_feature"] = "weights_obs"
+        elif self.balance in ["too_late"]:
+            X_tr[cnt.CENS_NAME][X_tr[cnt.TIME_NAME] > np.quantile(X_tr[cnt.TIME_NAME], 0.7)] = False
+
         elif self.balance in ["only_log_rank"]:
             self.info["balance"] = True
+
+        if "l_reg" in self.info:
+            self.info["apr_time"] = X_tr[cnt.TIME_NAME]
+            self.info["apr_event"] = X_tr[cnt.CENS_NAME]
+
+    def fit(self, X, y):
+        if len(self.features) == 0:
+            self.features = X.columns
+        self.bins = cnt.get_bins(time=y[cnt.TIME_NAME])  # , cens = y[cnt.CENS_NAME])
+        X = X.reset_index(drop=True)
+        X_tr = X.copy()
+        X_tr[cnt.CENS_NAME] = y[cnt.CENS_NAME].astype(np.int32)
+        X_tr[cnt.TIME_NAME] = y[cnt.TIME_NAME].astype(np.float32)
+
+        self.update_params(X_tr)
 
         if self.cut:
             X_val = X_tr.sample(n=int(0.2 * X_tr.shape[0]), random_state=self.random_state)
@@ -405,3 +415,6 @@ class CRAID(object):
             for e in self.nodes[i].edges:
                 del self.nodes[e]
             self.nodes[i].set_leaf()
+
+    def tolerance_find_best(self, *args, **kwargs):
+        pass
