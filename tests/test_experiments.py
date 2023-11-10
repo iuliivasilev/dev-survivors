@@ -240,19 +240,19 @@ def dir_path():
     "best_metric", ["IBS_REMAIN"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 @pytest.mark.parametrize(
-    "dataset",  ["GBSG", "WUHAN", "PBC", "rott2"]  # "GBSG", "WUHAN", "PBC", "rott2", "actg", "smarto", "support2", "flchain"
+    "dataset",  ["GBSG", "WUHAN", "PBC", "rott2"]  # , "actg", "smarto", "support2", "flchain"]
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):
-    prefix = f"{best_metric}_FULL_TIME_CNT_DIFF_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB"
+    prefix = f"{best_metric}_SHORT_QUANTILE_TIME_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
     # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
     #               dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
-    res_exp = run(dataset, with_self=["CLEVERBOOST"], with_external=False, mode=mode,
+    res_exp = run(dataset, with_self=["CLEVERBOOST"], with_external=False, mode=mode,  # CLEVERBOOST
                   dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
     df_criterion = res_exp.get_best_by_mode(stratify="criterion")  # balance # get_hold_out_result()
     # df_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
-    # df_sample = res_exp.get_sample_result()
+    # df_sample = res_exp.get_sample_result()s
 
     df_criterion.to_excel(os.path.join(dir_path, f"{prefix}_{dataset}_{mode}_best.xlsx"), index=False)
     df_full.to_excel(os.path.join(dir_path, f"{prefix}_{dataset}_{mode}_full.xlsx"), index=False)
