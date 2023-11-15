@@ -238,6 +238,18 @@ class WeightSurviveModel(LeafModel):
 
 
 class KaplanMeierZeroAfter(KaplanMeier):
+    def fit(self, durations, right_censor, weights=None):
+        # durs = np.random.normal(np.mean(durations), np.std(durations), 100)
+        # events = np.ones_like(durs)
+
+        # durs = np.hstack([durations, np.random.normal(np.mean(durations), np.std(durations), 100)])
+        # events = np.hstack([right_censor, np.random.choice(right_censor, size=100, replace=True)])
+
+        durs = np.random.normal(np.mean(durations), np.std(durations) / np.sqrt(2), 1000)
+        events = np.random.choice(right_censor, size=1000, replace=True)
+
+        super().fit(durs, events)
+
     def survival_function_at_times(self, times):
         place_bin = np.searchsorted(self.timeline, times)
         # place_bin = np.digitize(times, self.timeline)  # -1
