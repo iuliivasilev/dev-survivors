@@ -1,12 +1,13 @@
 CRAID_param_grid = {
     "depth": [15],  # 10
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
-    "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
-    "min_samples_leaf": [0.05, 0.001],
+    "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei", "maxcombo",
+    "min_samples_leaf": [0.05, 0.01, 0.001],
+    "l_reg": [0, 0.01, 0.1, 0.5, 0.9],  # [0, 0.001, 0.01, 0.1, 0.2]
     "leaf_model": ["base_zero_after"],
     'cut': [False],  # [True, False]
     "woe": [True],
-    "signif": [0.05, 1.0],
+    "signif": [0.05, 0.1, 1.0],
     "max_features": [1.0],
     "n_jobs": [10]
 }
@@ -67,10 +68,10 @@ CL_BOOST_param_grid = {
     "size_sample": [0.5, 1.0],  # 0.7
     "n_estimators": [50],
     "depth": [7],  # 10
-    "l_reg": [0, 0.001, 0.01, 0.05, 0.1],
+    "l_reg": [0, 0.01, 0.1, 0.5, 0.9],  # [0, 0.001, 0.01, 0.05, 0.1],
     "ens_metric_name": ["IBS"],
-    "criterion": ["symm_peto", "peto", "tarone-ware", "wilcoxon", "logrank"],  # "maxcombo",
-    "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
+    "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "symm_peto",
+    "leaf_model": ["base_zero_after"],  # "base_fast"
     "balance": [None],
 
     "min_samples_leaf": [0.01, 0.001],  # 0.001,
