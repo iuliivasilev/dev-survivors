@@ -33,6 +33,16 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
     res = np.zeros((N_j.shape[0], 3), dtype=np.float32)
     res[:, 1] = O_1_j - E_1_j  # np.abs(O_1_j - E_1_j)
     res[:, 2] = E_1_j * (N_j - O_j) * N_2_j / (N_j * (N_j))  # N_j - 1
+
+    # sf1 = np.cumprod((1.0 - O_1_j / (N_1_j + 1)))
+    # sf1[N_1_j == 0] = 0.0
+    #
+    # sf2 = np.cumprod((1.0 - O_2_j / (N_2_j + 1)))
+    # sf2[N_2_j == 0] = 0.0
+    #
+    # res[:, 1] = sf1 - sf2
+    # res[:, 2] = 1
+
     # res[:, 2] = E_1_j * (N_j - O_j) * N_2_j / (N_j * (N_j - 1))  # TODO
     # res[:, 2] = E_1_j * (N_j - O_j + 1) * (N_2_j + 1) / ((N_j + 1) * (N_j))
     res[:, 0] = 1.0
@@ -173,15 +183,25 @@ def optimal_criter_split_hist(left_time_hist, left_cens_hist,
     return (max_stat_val, none_to)
 
 
-def split_time_to_bins(time, apr_times=None):
+def split_time_to_bins(time, event=None, apr_times=None, apr_events=None):
 #     if apr_times is None:
 #         return np.searchsorted(np.unique(time), time)
 #     return np.searchsorted(np.unique(apr_times), time)
-#     return np.searchsorted(np.quantile(apr_times, np.arange(6)/5), time)
     if apr_times is None:
         return np.searchsorted(np.arange(int(time.min() - 1), int(time.max() + 1)), time)
     return np.searchsorted(np.arange(int(apr_times.min() - 1), int(apr_times.max() + 1)), time)
 
+    # if apr_times is None:
+    #     n = np.clip(np.sum(event) // 5, 2, 20)
+    #     return np.searchsorted(np.quantile(time[np.where(event)], np.arange(n + 1)/n), time)
+    # n = np.clip(np.sum(apr_events) // 5, 2, 20)
+    # return np.searchsorted(np.quantile(apr_times[np.where(apr_events)], np.arange(n + 1)/n), time)
+
+#     if apr_times is None:
+#         n = np.clip(time.shape[0] // 2, 2, 100)
+#         return np.searchsorted(np.quantile(time, np.arange(n + 1)/n), time)
+#     n = np.clip(apr_times.shape[0] // 2, 2, 100)
+#     return np.searchsorted(np.quantile(apr_times, np.arange(n + 1)/n), time)
 
 def get_attrs(max_stat_val, values, none_to, l_sh, r_sh, nan_sh, stat_diff):
     attrs = dict()
@@ -234,7 +254,7 @@ def get_sa_hists(time, cens, minlength=1, weights=None):
 
 
 def select_best_split_info(attr_dicts, type_attr, bonf=True, descr_woe=None):
-    attr_dicts = sorted(attr_dicts, key=lambda x: abs(x["stat_diff"]), reverse=True)[:max(1, len(attr_dicts)//2)]
+    # attr_dicts = sorted(attr_dicts, key=lambda x: abs(x["stat_diff"]), reverse=True)[:max(1, len(attr_dicts)//2)]
     best_attr = max(attr_dicts, key=lambda x: x["stat_val"])
 
     best_attr["p_value"] = stats.chi2.sf(best_attr["stat_val"], df=1)
@@ -331,14 +351,15 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         # weights = ibs_WW(y, y, sf, dd, axis=0)
     weights_hist = None
 
-    dur = split_time_to_bins(dur, apr_time)
-
     if apr_time is None:
+        dur = split_time_to_bins(dur, cens)
         max_bin = dur.max()
         apr_t_distr = np.zeros(max_bin + 1)
         apr_e_distr = np.zeros(max_bin + 1)
     else:
-        apr_time_1 = split_time_to_bins(apr_time, apr_time)
+        # apr_time_1 = split_time_to_bins(apr_time, apr_time)
+        apr_time_1 = split_time_to_bins(apr_time, apr_event, dur, cens)  # , apr_time)
+        dur = split_time_to_bins(dur, cens)
         max_bin = apr_time_1.max()
         apr_t_distr, apr_e_distr = get_sa_hists(apr_time_1, apr_event, minlength=max_bin + 1)
 
@@ -476,6 +497,7 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         #     na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef)
 
         if max_stat_val > signif_stat:
+            stat_diff = 1
             # if na_time_hist.shape[0] > 0:
             #     stat_diff = stdtest_hist((l_time_hist + (1 - none_to) * na_time_hist),
             #                              (r_time_hist + none_to * na_time_hist))
@@ -483,13 +505,13 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
             #     stat_diff = stdtest_hist(l_time_hist,
             #                              r_time_hist)
 
-            if na_time_hist.shape[0] > 0:
-                stat_diff = cnttest_hist((l_time_hist + (1 - none_to) * na_time_hist),
-                                         (l_cens_hist + (1 - none_to) * na_cens_hist),
-                                         (r_time_hist + none_to * na_time_hist),
-                                         (r_cens_hist + none_to * na_cens_hist))
-            else:
-                stat_diff = cnttest_hist(l_time_hist, l_cens_hist, r_time_hist, r_cens_hist)
+            # if na_time_hist.shape[0] > 0:
+            #     stat_diff = cnttest_hist((l_time_hist + (1 - none_to) * na_time_hist),
+            #                              (l_cens_hist + (1 - none_to) * na_cens_hist),
+            #                              (r_time_hist + none_to * na_time_hist),
+            #                              (r_cens_hist + none_to * na_cens_hist))
+            # else:
+            #     stat_diff = cnttest_hist(l_time_hist, l_cens_hist, r_time_hist, r_cens_hist)
 
             attr_loc = get_attrs(max_stat_val, uniq_set[u], none_to, num_l, num_r, num_nan, stat_diff)
             attr_dicts.append(attr_loc)
