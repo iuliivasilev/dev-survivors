@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from os.path import join, dirname
 from pkg_resources import parse_requirements as _parse_requirements
 
-SELF_DATASETS = []#["datasets/data/ONK/*", "datasets/data/COVID/*"]
+SELF_DATASETS = []  # ["datasets/data/ONK/*", "datasets/data/COVID/*"]
 
 PACKAGE_DATA = {"survivors": ["datasets/data/*"] + SELF_DATASETS}
 
@@ -50,7 +50,7 @@ requirements_list = [
 
 setup(
     name='survivors',
-    version='1.4.4',
+    version='1.4.5',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',
     packages=find_packages(),
