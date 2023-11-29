@@ -3,7 +3,7 @@
 survivors
 ===============
 
-survivors is a Python module for `survival analysis`_. 
+`survivors <https://pypi.org/project/survivors/>`_ is a Python library for **survival analysis**.
 
 It allows for building survival models: Survival Tree, Bagging ensemble, Adaptive Boosting ensemble.
 
@@ -50,11 +50,10 @@ The easiest way to install survivors is to use by running::
 Examples
 ========
 
-The `user guide <https://google.com>`_ provides
-in-depth information on the key concepts of survivors, an overview of available survival models,
+The user guides at *demonstration* directory provides in-depth information on the key concepts of survivors, an overview of available survival models,
 and hands-on examples in the form of `Jupyter notebooks <https://jupyter.org/>`_.
 
-The "demonstration" directory contains examples of using the library as Jupyter Notebook.
+There are examples of using the library with Jupyter Notebook.
 The example is a variant of solving a multi-stage problem:
 
 1. Import the library
@@ -83,38 +82,42 @@ Based on the **survivors**, it is possible to carry out the following work scena
 References
 ==========
 
-Methods from **survivors** are based on following paper.
+Please cite the following paper if you are using **survivors**.
 
-Vasilev I., Petrovskiy M., Mashechkin I. Survival Analysis Algorithms based on Decision Trees with Weighted Log-rank Criteria. - 2022.
+    Vasilev I., Petrovskiy M., Mashechkin I. Survival Analysis Algorithms based on Decision Trees with Weighted Log-rank Criteria. - 2022.
+
+    Vasilev, Iulii, Mikhail Petrovskiy, and Igor Mashechkin. "Sensitivity of Survival Analysis Metrics." Mathematics 11.20 (2023): 4246.
+
+    Vasilev, Iulii, Mikhail Petrovskiy, and Igor Mashechkin. "Adaptive Sampling for Weighted Log-Rank Survival Trees Boosting." International Conference on Pattern Recognition Applications and Methods. Cham: Springer International Publishing, 2021.
 
 .. code::
 
-@inproceedings{vasilev2022survival,
-    title={Survival Analysis Algorithms based on Decision Trees with Weighted Log-rank Criteria.},
-    author={Vasilev, Iulii and Petrovskiy, Mikhail and Mashechkin, Igor V},
-    booktitle={ICPRAM},
-    pages={132--140},
-    year={2022}
-}
+    @inproceedings{vasilev2022survival,
+        title={Survival Analysis Algorithms based on Decision Trees with Weighted Log-rank Criteria.},
+        author={Vasilev, Iulii and Petrovskiy, Mikhail and Mashechkin, Igor V},
+        booktitle={ICPRAM},
+        pages={132--140},
+        year={2022}
+    }
 
-@inproceedings{vasilev2023adaptive,
-    title={Adaptive Sampling for Weighted Log-Rank Survival Trees Boosting},
-    author={Vasilev, Iulii and Petrovskiy, Mikhail and Mashechkin, Igor},
-    booktitle={Pattern Recognition Applications and Methods: 10th International Conference, ICPRAM 2021, and 11th International Conference, ICPRAM 2022, Virtual Event, February 4--6, 2021 and February 3--5, 2022, Revised Selected Papers},
-    pages={98--115},
-    year={2023},
-    organization={Springer}
-}
+    @inproceedings{vasilev2023adaptive,
+        title={Adaptive Sampling for Weighted Log-Rank Survival Trees Boosting},
+        author={Vasilev, Iulii and Petrovskiy, Mikhail and Mashechkin, Igor},
+        booktitle={Pattern Recognition Applications and Methods: 10th International Conference, ICPRAM 2021, and 11th International Conference, ICPRAM 2022, Virtual Event, February 4--6, 2021 and February 3--5, 2022, Revised Selected Papers},
+        pages={98--115},
+        year={2023},
+        organization={Springer}
+    }
 
-@article{vasilev2023sensitivity,
-    title={Sensitivity of Survival Analysis Metrics},
-    author={Vasilev, Iulii and Petrovskiy, Mikhail and Mashechkin, Igor},
-    journal={Mathematics},
-    volume={11},
-    number={20},
-    pages={4246},
-    year={2023},
-    publisher={MDPI}
-}
+    @article{vasilev2023sensitivity,
+        title={Sensitivity of Survival Analysis Metrics},
+        author={Vasilev, Iulii and Petrovskiy, Mikhail and Mashechkin, Igor},
+        journal={Mathematics},
+        volume={11},
+        number={20},
+        pages={4246},
+        year={2023},
+        publisher={MDPI}
+    }
 
 .. _survival analysis: https://en.wikipedia.org/wiki/Survival_analysis
