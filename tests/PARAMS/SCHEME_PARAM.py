@@ -62,7 +62,7 @@ BOOST_param_grid = {
     "n_jobs": [5],
     "with_arc": [False],
     'weighted_tree': [False],
-    "all_weight": [True]  # [False, True]
+    "all_weight": [False]  # [False, True]
 }
 
 # CL_BOOST_param_grid = {
