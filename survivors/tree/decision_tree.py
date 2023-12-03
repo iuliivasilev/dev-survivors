@@ -270,6 +270,8 @@ class CRAID(object):
         shape = (X.shape[0])
         if not (bins is None):
             shape = (X.shape[0], len(bins))
+        if target == "ch":
+            shape = (X.shape[0], 3)
         res = np.full(shape, np.nan, dtype=object)
         for i in sorted(self.nodes.keys()):
             ind = np.where(node_bin[:, num_node_to_key[i]])[0]
