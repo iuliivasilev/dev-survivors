@@ -68,12 +68,18 @@ def generate_sample(X, y, folds, mode="CV"):
         Points of timeline.
 
     """
+
+    # (TIME + CENS) STRATIFICATION
+    qs = np.quantile(y[cnt.TIME_NAME], np.linspace(0.2, 0.8, 4))
+    time_discr = np.searchsorted(qs, y[cnt.TIME_NAME])
+    discr = np.char.add(time_discr.astype(str), y[cnt.CENS_NAME].astype(str))
+
     if mode != "HOLD-OUT":
         skf = StratifiedKFold(n_splits=folds)
 
     if mode == "TIME-CV":
         train_index = np.array([], dtype=int)
-        for train_index_, test_index_ in skf.split(X, y[cnt.CENS_NAME]):
+        for train_index_, test_index_ in skf.split(X, discr):  # y[cnt.CENS_NAME]):
             if train_index.shape[0] > 0:
                 X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index_)
                 yield X_train, y_train, X_test, y_test, bins
@@ -85,12 +91,12 @@ def generate_sample(X, y, folds, mode="CV"):
         yield X, y, X_HO, y_HO, bins_HO
     elif mode == "HOLD-OUT":
         for i_fold in range(folds):
-            X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME],
+            X_TR, X_HO = train_test_split(X, stratify=discr,  # y[cnt.CENS_NAME],
                                           test_size=0.33, random_state=42 + i_fold)
             X_tr, y_tr, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
             yield X_tr, y_tr, X_HO, y_HO, bins_HO
     elif mode == "CV":
-        for train_index, test_index in skf.split(X, y[cnt.CENS_NAME]):
+        for train_index, test_index in skf.split(X, discr):  # y[cnt.CENS_NAME]):
             X_train, y_train, X_test, y_test, bins = prepare_sample(X, y, train_index, test_index)
             yield X_train, y_train, X_test, y_test, bins
     pass
@@ -109,7 +115,7 @@ def get_name_file(method, params, mode, fold):
     return "_".join(map(str, name_lst))
 
 
-def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_path=""):
+def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_path=None):
     """
     Return function, which on sample X, y apply cross-validation and calculate 
     metrics on each folds. 
@@ -141,20 +147,24 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
         for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds, mode):
             est = method(**kwargs)
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
-                name = os.path.join(dir_path, get_name_file(method, kwargs, mode, fold) + '.pkl')
-                if not os.path.exists(name):
-                    print("Fitted from scratch")
+                if dir_path is None:
                     est.fit(X_train, y_train)
-                    with open(name, 'wb') as out:
-                        pickle.dump(est, out, pickle.HIGHEST_PROTOCOL)
-
-                with open(name, 'rb') as inp:
-                    est = pickle.load(inp)
                     est.tolerance_find_best(kwargs["ens_metric_name"])
-                # est.fit(X_train, y_train)
-                # est.tolerance_find_best(kwargs["ens_metric_name"])  # TODO
+                else:
+                    name = os.path.join(dir_path, get_name_file(method, kwargs, mode, fold) + '.pkl')
+                    if not os.path.exists(name):
+                        print("Fitted from scratch")
+                        est.fit(X_train, y_train)
+                        with open(name, 'wb') as out:
+                            pickle.dump(est, out, pickle.HIGHEST_PROTOCOL)
+
+                    with open(name, 'rb') as inp:
+                        est = pickle.load(inp)
+                        est.tolerance_find_best(kwargs["ens_metric_name"])
 
                 pred_surv = est.predict_at_times(X_test, bins=bins, mode="surv")
+                pred_surv[:, -1] = 0
+                pred_surv[:, 0] = 1
                 pred_time = est.predict(X_test, target=cnt.TIME_NAME)
                 pred_haz = est.predict_at_times(X_test, bins=bins, mode="hazard")
             elif isinstance(est, LeafModel):
@@ -250,9 +260,6 @@ class Experiments(object):
         self.folds = folds
         self.except_stop = except_stop
         self.dataset_name = dataset_name
-        self.dir_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset_name)
-        if not os.path.exists(self.dir_path):
-            os.makedirs(self.dir_path)
 
         self.result_table = None
         self.mode = mode
@@ -280,6 +287,7 @@ class Experiments(object):
                 print(f"METRIC {metr_name} IS NOT DEFINED")
     
     def run(self, X, y, dir_path=None, verbose=0):
+        self.dir_path = dir_path
         y["time"] = bins_scheme(y["time"], scheme=self.bins_sch)
         self.result_table = pd.DataFrame([], columns=["METHOD", "PARAMS", "TIME"] + self.metrics)
 
@@ -335,7 +343,12 @@ class Experiments(object):
 
         folds = 20 if self.mode == "CV+SAMPLE" else 1
 
-        X_TR, X_HO = train_test_split(X, stratify=y[cnt.CENS_NAME],
+        # (TIME + CENS) STRATIFICATION
+        qs = np.quantile(y[cnt.TIME_NAME], np.linspace(0.2, 0.8, 4))
+        time_discr = np.searchsorted(qs, y[cnt.TIME_NAME])
+        discr = np.char.add(time_discr.astype(str), y[cnt.CENS_NAME].astype(str))
+
+        X_TR, X_HO = train_test_split(X, stratify=discr,  # y[cnt.CENS_NAME],
                                       test_size=0.33, random_state=42)
         X_tr, y_tr, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
         old_mode = self.mode
