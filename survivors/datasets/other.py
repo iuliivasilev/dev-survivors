@@ -124,7 +124,7 @@ def load_wuhan_dataset(invert_death=False):
     if invert_death:
         df_f[CENS_NAME] = 1 - df_f[CENS_NAME]
     y = get_y(df_f[CENS_NAME], df_f[TIME_NAME])
-    X = df_f.loc[:, sign_covid]
+    X = df_f.loc[:, sorted(sign_covid)]
 
     if y[TIME_NAME].min() == 0:
         y[TIME_NAME] += 1

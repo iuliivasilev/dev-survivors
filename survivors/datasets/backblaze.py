@@ -1,7 +1,7 @@
 import pandas as pd
-# from survivors import constants as cnt
 from ..constants import TIME_NAME, CENS_NAME, get_y
 from os.path import dirname, join
+
 
 ### Функции скачивания датасета
 
