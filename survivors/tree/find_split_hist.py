@@ -10,7 +10,7 @@ import diptest
 """ Auxiliary functions """
 
 
-@njit('f4(f4[:], f4[:], f4[:], f4[:], u4, f4[:])', cache=True)
+# @njit('f4(f4[:], f4[:], f4[:], f4[:], u4, f4[:])', cache=True)
 def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
                       weightings, obs_weights):
     N_1_j = np.cumsum(time_hist_1[::-1])[::-1]
@@ -18,7 +18,6 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
     ind = np.where((cens_hist_1 + cens_hist_2 != 0) & (N_1_j * N_2_j != 0))[0]
     # print(N_1_j[0], N_2_j[0], np.sum(cens_hist_1), np.sum(cens_hist_2))
     # print(N_1_j, N_2_j, cens_hist_1, cens_hist_2)
-    # print(ind)
     if ind.shape[0] == 0:
         return 0.0
 
@@ -99,8 +98,8 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
                                     )
         return logrank
     except Exception as err:
-        # print(err)
-        # print(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2, weights_hist)
+        print(err)
+        print(time_hist_1.shape, time_hist_2.shape, cens_hist_1.shape, cens_hist_2.shape, weights_hist.shape)
         return 0.0
 
 

@@ -109,12 +109,12 @@ def cens_auprc(survival_train, survival_test, estimate, times, axis=-1):
     return auprc_cens
 
 
-@jit
+@njit
 def get_before(estim, wei):
     return np.square(estim) * wei
 
 
-@jit
+@njit
 def get_after(estim, prob_cens):
     return np.square(1 - estim) / prob_cens
 
