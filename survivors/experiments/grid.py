@@ -145,6 +145,7 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
         metr_lst = []
         fold = 0
         for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds, mode):
+            print("X_train.shape:", X_train.shape)
             est = method(**kwargs)
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 if dir_path is None:
@@ -175,8 +176,10 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 pred_time = est.predict_feature(X_test, feature_name=cnt.TIME_NAME)
                 pred_haz = est.predict_hazard_at_times(X_test, bins=bins)
             else:  # Methods from scikit-survival
-                X_train = X_train.fillna(0).replace(np.nan, 0)
-                X_test = X_test.fillna(0).replace(np.nan, 0)
+                s = pd.isna(X_train).sum(axis=0) != X_train.shape[0]
+                valid_feat = s[s].index
+                X_train = X_train[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
+                X_test = X_test[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
 
                 est = est.fit(X_train, y_train)
                 survs = est.predict_survival_function(X_test)
@@ -190,6 +193,7 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
             metr_lst.append(count_metric(y_train, y_test, pred_time,
                                          pred_surv, pred_haz, bins, metrics_names))
             fold += 1
+            del est
         return np.vstack(metr_lst)
     return f
 
@@ -298,27 +302,27 @@ class Experiments(object):
             grid_params = ParameterGrid(grid)
             p_size = len(grid_params)
             for i_p, p in enumerate(grid_params):
-                # try:
-                start_time = time.time()
-                eval_metr = fit_eval_func(**p)
-                full_time = time.time() - start_time
-                curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                             "PARAMS": str(p), "TIME": full_time}
-                eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
-                curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
-                # self.result_table = self.result_table.append(curr_dict, ignore_index=True)
-                self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
-                if verbose > 0:
-                    print(f"Iteration: {i_p + 1}/{p_size}")
-                    print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
-                              {k: [np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
-                # except KeyboardInterrupt:
-                #     print("HANDELED KeyboardInterrupt")
-                #     break
-                # except Exception as e:
-                #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                #     if self.except_stop == "all":
-                #         break
+                try:
+                    start_time = time.time()
+                    eval_metr = fit_eval_func(**p)
+                    full_time = time.time() - start_time
+                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
+                                 "PARAMS": str(p), "TIME": full_time}
+                    eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
+                    curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
+                    # self.result_table = self.result_table.append(curr_dict, ignore_index=True)
+                    self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
+                    if verbose > 0:
+                        print(f"Iteration: {i_p + 1}/{p_size}")
+                        print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
+                                  {k: [np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
+                except KeyboardInterrupt:
+                    print("HANDELED KeyboardInterrupt")
+                    break
+                except Exception as e:
+                    print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
+                    #if self.except_stop == "all":
+                    #    break
         if self.mode in ["TIME-CV", "CV+HOLD-OUT"]:
             for m in self.metrics:
                 self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
