@@ -54,7 +54,8 @@ PARAMS_ = {
     "smarto": SCHEME_PARAMS,
     "rott2": SCHEME_PARAMS,
     "support2": SCHEME_PARAMS,
-    "Framingham": SCHEME_PARAMS
+    "Framingham": SCHEME_PARAMS,
+    "backblaze": SCHEME_PARAMS
 }
 
 DATASETS_LOAD = {
@@ -69,6 +70,7 @@ DATASETS_LOAD = {
     "smarto": ds.load_smarto_dataset,
     "rott2": ds.load_rott2_dataset,
     "support2": ds.load_support2_dataset,
+    "backblaze": ds.load_backblaze_dataset
     # "Framingham": ds.load_Framingham_dataset
 }
 
@@ -240,32 +242,22 @@ def dir_path():
     "best_metric", ["IBS_REMAIN"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 @pytest.mark.parametrize(
-    "dataset",  ["GBSG", "rott2", "actg", "WUHAN", "PBC"]  # ["actg", "rott2", "GBSG", "support2", "flchain", "smarto"]
+    "dataset",  ["backblaze", "support2"]  # ["WUHAN", "PBC", "actg", "rott2", "GBSG", "support2", "flchain", "smarto"]
 )
-def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):
+def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV"):  # CV+SAMPLE
     # NORMAL_SHORT_QUANTILE_TIME_
-    prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST+_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
+    # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST+_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
+    prefix = f"{best_metric}_scsurv_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
     # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
     #               dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
     storage_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset)
     if not os.path.exists(storage_path):
         os.makedirs(storage_path)
-    res_exp = run(dataset, with_self=["CLEVERBOOST"], with_external=False, mode=mode,  # CLEVERBOOST
+    res_exp = run(dataset, with_self=[], with_external=True, mode=mode,  # CLEVERBOOST
                   dir_path=storage_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
-    df_criterion = res_exp.get_best_by_mode(stratify="criterion")  # balance # get_hold_out_result()
-    # df_mode_wei = res_exp.get_best_by_mode(stratify="mode_wei")
-    # df_sample = res_exp.get_sample_result()
+    df_criterion = res_exp.get_best_by_mode(stratify="criterion")
 
     df_criterion.to_excel(os.path.join(dir_path, f"{prefix}_{dataset}_{mode}_best.xlsx"), index=False)
     df_full.to_excel(os.path.join(dir_path, f"{prefix}_{dataset}_{mode}_full.xlsx"), index=False)
-
-    # df_mode_wei.to_excel(os.path.join(dir_path, f"{prefix}_strat_mode_wei_{dataset}_{mode}_best.xlsx"), index=False)
-    # df_sample.to_excel(os.path.join(dir_path, f"{prefix}_{dataset}_{mode}_sample.xlsx"), index=False)
-
-    # df_best_by_metric_fin = df_best_by_metric.loc[:, ["METHOD", "PARAMS", "CI_mean", "IBS_mean", "IAUC_mean"]].round(5)
-    # df_best_by_metric_fin.to_excel(os.path.join(dir_path, f"part_weights_{dataset}_best.xlsx"), index=False)
-    # plot_boxplot_results(df_full, dir_path=dir_path,
-    #                      metrics=["IBS", "IAUC", "CI"],
-    #                      dataset_name=dataset)
