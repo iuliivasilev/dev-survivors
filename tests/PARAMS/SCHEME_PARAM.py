@@ -17,9 +17,9 @@ BSTR_param_grid = {
     "n_estimators": [50],
     "depth": [10],  # 15
     "ens_metric_name": ["IBS"],  # ["bic", "roc", "ibs"], "IBS_WW", "IBS_REMAIN"
-    "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei",
-    "leaf_model": ["base_fast", "base_zero_after"],  # ["base_fast", "base_zero_after"],  # "base_zero_after", "base_fast"
-    "balance": [None, "only_log_rank"],  # "balance", "only_log_rank"],  # [None, "balance", "balance+correct", "only_log_rank"]
+    "criterion": ["maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei",
+    "leaf_model": ["base_zero_after"],  # ["base_fast", "base_zero_after"]
+    "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
 
     "min_samples_leaf": [0.05, 0.01, 0.001],
     "max_features": [0.3, "sqrt"],
@@ -55,7 +55,7 @@ BOOST_param_grid = {
     "ens_metric_name": ["IBS"],  # ["bic", "roc", "ibs"], , "IBS_WW", "IBS_REMAIN"
     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],
     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
-    "balance": [None],  #, "balance", "only_log_rank"],  # [None, "balance", "balance+correct", "only_log_rank"]
+    "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
 
     "min_samples_leaf": [0.01, 0.001],
     "max_features": [0.3, "sqrt"],
@@ -88,7 +88,7 @@ CL_BOOST_param_grid = {
     "size_sample": [0.5, 1.0],  # 0.7
     "n_estimators": [50],
     "depth": [7],  # 10
-    "l_reg": [0, 0.01, 0.1, 0.5, 0.9],  # [0, 0.001, 0.01, 0.05, 0.1],
+    "l_reg": [0, 0.01, 0.1, 0.5, 0.9],
     "ens_metric_name": ["IBS"],
     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "symm_peto",
     "leaf_model": ["base_zero_after"],  # "base_fast"
