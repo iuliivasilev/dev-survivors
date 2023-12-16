@@ -220,7 +220,7 @@ def load_covid_dataset(dir_env=None):
     new_important = [repl[s] for s in schemes_list]
     
     sec = sec.reset_index()
-    y = get_y(sec[CENS_NAME], sec[TIME_NAME])
+    y = get_y(cens=sec[CENS_NAME], time=sec[TIME_NAME])
     X = sec.loc[:, new_sign]
     return X, y, new_sign, new_categ, new_important
 

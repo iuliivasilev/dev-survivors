@@ -19,7 +19,7 @@ def load_smart_2017_date_not_all_year():
     categ = ['model']
     df['model'] = str_to_categ(df['model'])
     sign = list(set(df.columns) - set([CENS_NAME, TIME_NAME]))
-    y = get_y(df[CENS_NAME], df[TIME_NAME])
+    y = get_y(cens=df[CENS_NAME], time=df[TIME_NAME])
     X = df.loc[:, sign].reset_index()
     return X, y, sign, categ, []
 
@@ -30,7 +30,7 @@ def load_backblaze_dataset():  # load_smart_2017_date_not_in_last_report():
     categ = ['model']
     df['model'] = str_to_categ(df['model'])
     sign = sorted(list(set(df.columns) - set([CENS_NAME, TIME_NAME])))
-    y = get_y(df[CENS_NAME], df[TIME_NAME])
+    y = get_y(cens=df[CENS_NAME], time=df[TIME_NAME])
     X = df.loc[:, sign].reset_index()
     return X, y, sign, categ, []
 
@@ -41,7 +41,7 @@ def load_smart_2017_raw_9_not_all_year():
     categ = ['model']
     df['model'] = str_to_categ(df['model'])
     sign = list(set(df.columns) - set([CENS_NAME, TIME_NAME]))
-    y = get_y(df[CENS_NAME], df[TIME_NAME])
+    y = get_y(cens=df[CENS_NAME], time=df[TIME_NAME])
     X = df.loc[:, sign].reset_index()
     return X, y, sign, categ, []
 
@@ -52,6 +52,6 @@ def load_smart_2017_raw_9_not_in_last_report():
     categ = ['model']
     df['model'] = str_to_categ(df['model'])
     sign = list(set(df.columns) - set([CENS_NAME, TIME_NAME]))
-    y = get_y(df[CENS_NAME], df[TIME_NAME])
+    y = get_y(cens=df[CENS_NAME], time=df[TIME_NAME])
     X = df.loc[:, sign].reset_index()
     return X, y, sign, categ, []

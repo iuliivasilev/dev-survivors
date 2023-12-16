@@ -34,7 +34,7 @@ def load_scheme_dataset(name):
     sign_c = [c for c in df.columns if c.startswith("num_") or c.startswith("fac_")]
     categ_c = [c for c in df.columns if c.startswith("fac_")]
 
-    y = get_y(df[CENS_NAME], df[TIME_NAME].astype("int"))
+    y = get_y(cens=df[CENS_NAME], time=df[TIME_NAME].astype("int"))
     X = df.loc[:, sign_c]
 
     for c in categ_c:
@@ -70,7 +70,7 @@ def load_gbsg_dataset():
     df = pd.read_csv(join(dir_env, 'GBSG.csv'))
     df = df.rename({"rfst": TIME_NAME, "cens": CENS_NAME}, axis=1)
     
-    y = get_y(df[CENS_NAME], df[TIME_NAME])
+    y = get_y(cens=df[CENS_NAME], time=df[TIME_NAME])
     X = df.loc[:, sign_gbsg]
 
     if y[TIME_NAME].min() == 0:
@@ -85,7 +85,7 @@ def load_pbc_dataset():
     df[CENS_NAME] = np.array(df[CENS_NAME] > 1, dtype=int)
     df['sex'] = df['sex'].map({'f': 1, 'm': 0})
     
-    y = get_y(df[CENS_NAME], df[TIME_NAME])
+    y = get_y(cens=df[CENS_NAME], time=df[TIME_NAME])
     X = df.loc[:, sign_pbc]
 
     if y[TIME_NAME].min() == 0:
@@ -123,7 +123,7 @@ def load_wuhan_dataset(invert_death=False):
     
     if invert_death:
         df_f[CENS_NAME] = 1 - df_f[CENS_NAME]
-    y = get_y(df_f[CENS_NAME], df_f[TIME_NAME])
+    y = get_y(cens=df_f[CENS_NAME], time=df_f[TIME_NAME])
     X = df_f.loc[:, sorted(sign_covid)]
 
     if y[TIME_NAME].min() == 0:

@@ -182,6 +182,6 @@ def load_onk_dataset(diag={'C20', 'C50.4', 'C61'},
         ret_categ = [onk_descr.get(ns, ns) for ns in ret_categ]
         ret_sch_nan = [onk_descr.get(ns, ns) for ns in ret_sch_nan]
         
-    y = get_y(sourceDF[CENS_NAME], sourceDF[TIME_NAME])
+    y = get_y(cens=sourceDF[CENS_NAME], time=sourceDF[TIME_NAME])
     X = sourceDF.loc[:, ret_sign]
     return X, y, ret_sign, ret_categ, ret_sch_nan
