@@ -11,7 +11,9 @@ from .. import constants as cnt
 from .stratified_model import LEAF_MODEL_DICT, LeafModel
 from ..scheme import Scheme
 
-sns.set()
+#sns.set()
+custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
+sns.set_theme(style="ticks", rc=custom_params)
 
 """" Auxiliary functions """
 
@@ -136,6 +138,8 @@ class Node(object):
         self.info.setdefault("signif", 1.1)
         self.info.setdefault("signif_stat", stats.chi2.isf(min(self.info["signif"], 1.0), df=1))
         self.info.setdefault("thres_cont_bin_max", 100)
+        self.info.setdefault("normalize", True)
+
         if self.info["max_features"] == "sqrt":
             self.info["max_features"] = int(np.trunc(np.sqrt(len(self.features))+0.5))
         elif isinstance(self.info["max_features"], float):
@@ -145,9 +149,9 @@ class Node(object):
         if not(self.info["weights_feature"] is None):
             self.info["weights"] = self.df[self.info["weights_feature"]].to_numpy()
 
-        self.info.setdefault("leaf_model", "base")
+        self.info.setdefault("leaf_model", "base_zero_after")  # base
         if isinstance(self.info["leaf_model"], str):
-            self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base")()
+            self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base_zero_after")()  # base
         elif isinstance(self.info["leaf_model"], type):  # Check is class
             self.leaf_model = self.info["leaf_model"]()
             if not(isinstance(self.leaf_model, LeafModel)):
@@ -155,7 +159,14 @@ class Node(object):
         else:
             self.leaf_model = None
         self.size = self.df.shape[0]
-        self.leaf_model.fit(self.df)
+
+        self.info.setdefault("need_features", [cnt.TIME_NAME, cnt.CENS_NAME])
+        if isinstance(self.info["need_features"], list):
+            self.info["need_features"] += [cnt.TIME_NAME, cnt.CENS_NAME]
+            self.info["need_features"] = list(set(self.info["need_features"]))
+        self.leaf_model.fit(self.df, self.info["need_features"], self.info["normalize"])
+        self.ch = np.array(
+            [np.mean(self.df["time"]), np.std(self.df["time"]), np.sum(self.df["cens"]) / self.df["cens"].shape[0]])
 
     """ GROUP FUNCTIONS: CREATE LEAVES """
     def get_comb_fast(self, features):
@@ -188,14 +199,14 @@ class Node(object):
         args = self.get_comb_fast(selected_feats)
 
         # ml = np.vectorize(lambda x: hist_best_attr_split(**x))(args)
-
         with Parallel(n_jobs=n_jobs, verbose=self.verbose, batch_size=10) as parallel:  # prefer="threads"
-            ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
+           ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)
+        # with Parallel(n_jobs=1, verbose=self.verbose) as parallel:  # prefer="threads"
+        #     ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
 
         # attr = min(attrs, key=lambda x: attrs[x]["p_value"])  # simple p-value
         attr = max(attrs, key=lambda x: attrs[x]["stat_val"])  # simple stat-val
-
         # attrs_gr = dict(filter(lambda x: x[1]["sign_split"] > 0, attrs.items()))
         # if len(attrs_gr) == 0:
         #     attr = min(attrs, key=lambda x: attrs[x]["p_value"])
@@ -225,10 +236,10 @@ class Node(object):
         # The best split is not significant
         if best_split["sign_split"] == 0:
             if self.verbose > 0:
-                print(f'Конец ветви, незначащее p-value: {best_split["p_value"]}')
+                print(f'Конец ветви, незначащее p-value: {best_split["stat_val"]}')
             return node_edges
         if self.verbose > 0:
-            print('='*6, best_split["p_value"], attr)
+            print('='*6, best_split["stat_val"], attr)
 
         branch_ind = self.ind_for_nodes(self.df[attr], best_split, attr in self.categ)
 
@@ -323,6 +334,8 @@ class Node(object):
             res = self.leaf_model.predict_survival_at_times(X, bins)  # target(X_node=dataset)
         elif target == "hazard":
             res = self.leaf_model.predict_hazard_at_times(X, bins)
+        elif target == "ch":
+            res = np.repeat(self.ch[np.newaxis, :], X.shape[0], axis=0)
         elif target in self.__dict__:
             res = np.repeat(getattr(self, target, np.nan), X.shape[0], axis=0)
         else:
@@ -346,6 +359,11 @@ class Node(object):
             lst = self.leaf_model.predict_list_feature(target)
             plt.hist(lst, bins=25)
             ax.set_xlim([0, np.max(lst)])
+            ax.set_xlabel(f'{target}', fontsize=25)
+        elif mode == "kde":
+            #lst = self.leaf_model.predict_list_feature(target)
+            lst = self.leaf_model.old_durs
+            sns.kdeplot(lst, ax=ax)
             ax.set_xlabel(f'{target}', fontsize=25)
         elif mode == "surv":
             sf = self.leaf_model.predict_survival_at_times(X=None, bins=bins)
