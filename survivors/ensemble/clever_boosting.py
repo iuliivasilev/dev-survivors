@@ -6,6 +6,38 @@ from .. import constants as cnt
 from .boosting import BoostingCRAID
 import matplotlib.pyplot as plt
 
+from ..tree.stratified_model import KaplanMeierZeroAfter, NelsonAalen
+
+
+def f_predict_survival_at_times(ch, bins=None):
+    mean, std, prob = ch
+    durs = np.random.normal(mean, std, 1000)
+    events = np.random.binomial(1, prob, size=1000)
+    events = events[durs > 0]
+    durs = durs[durs > 0]
+
+    survival = KaplanMeierZeroAfter()
+    survival.fit(durs, events)
+    if bins is None:
+        bins = survival.timeline
+    sf = survival.survival_function_at_times(bins)
+    return sf
+
+
+def f_predict_hazard_at_times(ch, bins=None):
+    mean, std, prob = ch
+    durs = np.random.normal(mean, std, 1000)
+    events = np.random.binomial(1, prob, size=1000)
+    events = events[durs > 0]
+    durs = durs[durs > 0]
+
+    hazard = NelsonAalen()
+    hazard.fit(durs, events)
+    if bins is None:
+        bins = hazard.timeline
+    hf = hazard.cumulative_hazard_at_times(bins)
+    return hf
+
 class IBSCleverBoostingCRAID(BoostingCRAID):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -58,20 +90,43 @@ class IBSCleverBoostingCRAID(BoostingCRAID):
             res = self.get_aggreg(res, weights)
         return res
 
+    # def predict_at_times(self, x_test, bins, aggreg=True, mode="surv"):
+    #     res = []
+    #     weights = []
+    #     for i in range(len(self.models)):
+    #         res.append(self.models[i].predict_at_times(x_test, bins=bins,
+    #                                                    mode=mode))
+    #
+    #     res = np.array(res)
+    #     weights = None
+    #     if aggreg:
+    #         res = self.get_aggreg(res, weights)
+    #         if mode == "surv":
+    #             res[:, -1] = 0
+    #             res[:, 0] = 1
+    #     return res
+
     def predict_at_times(self, x_test, bins, aggreg=True, mode="surv"):
         res = []
-        weights = []
         for i in range(len(self.models)):
-            res.append(self.models[i].predict_at_times(x_test, bins=bins,
-                                                       mode=mode))
+            res.append(self.models[i].predict(x_test, target="ch")[np.newaxis, :])
 
-        res = np.array(res)
-        weights = None
-        if aggreg:
-            res = self.get_aggreg(res, weights)
-            if mode == "surv":
-                res[:, -1] = 0
-                res[:, 0] = 1
+        res = np.vstack(res)
+        means, stds, probs = res.T
+        mean = np.mean(means, axis=1)
+        std = np.sqrt(np.sum(stds ** 2, axis=1)) / np.sqrt(stds.shape[1])
+        # std = np.sqrt(np.sum(stds ** 2, axis=1)) / np.sqrt(stds.shape[1])
+        #         std = np.sqrt(np.sum((1/stds.shape[1]*stds)**2, axis=1))*1/np.sqrt(stds.shape[1])
+        #         std = np.mean(stds, axis=1)
+        prob = np.mean(probs, axis=1)
+
+        prepared = np.vstack([mean, std, prob]).T
+        if mode == "surv":
+            res = np.array(list(map(lambda x: f_predict_survival_at_times(x, bins), prepared)))
+            res[:, -1] = 0
+            res[:, 0] = 1
+        else:
+            res = np.array(list(map(lambda x: f_predict_hazard_at_times(x, bins), prepared)))
         return res
 
     def count_model_weights(self, model, X_sub, y_sub):
