@@ -1,3 +1,7 @@
+|PyPi|_
+
+.. |PyPi| image:: https://img.shields.io/pypi/v/survivors
+.. _PyPi: https://pypi.org/project/survivors/
 
 ===============
 survivors
@@ -77,6 +81,12 @@ Based on the **survivors**, it is possible to carry out the following work scena
 
 4. Predicting the individual survival functions and cumulative hazard of patients. Forecasts can be used to support medical decisions and adjust treatment.
 
+==========
+Communication
+==========
+
+- Mail: iuliivasilev@gmail.com
+- LinkedIn: https://www.linkedin.com/in/iulii-vasilev
 
 ==========
 References
