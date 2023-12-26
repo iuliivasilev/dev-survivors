@@ -2,13 +2,13 @@ joblib
 pickle-mixin
 numpy >= 1.22
 numba >= 0.58.0
-matplotlib
+matplotlib >= 3.5.0
 seaborn
-graphviz
+graphviz >= 2.50.0
 pandas >=0.25
 scipy
 python-dateutil
-scikit-learn
-lifelines
-scikit-survival
+scikit-learn >= 1.0.2
+lifelines >= 0.27.8
+scikit-survival >= 0.17.2
 openpyxl

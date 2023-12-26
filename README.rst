@@ -26,20 +26,20 @@ Statistical methods need data, but complete data may not be available, i.e. the 
 Requirements
 ============
 
-- Python 3.7 or later
+- Python 3.9 or later
 - joblib
 - pickle-mixin
-- numpy
-- numba
-- matplotlib
+- numpy >= 1.22
+- numba >= 0.58.0
+- matplotlib >= 3.5.0
 - seaborn
-- graphviz
+- graphviz >= 2.50.0
 - pandas >=0.25
 - scipy
 - python-dateutil
-- scikit-learn
-- lifelines
-- scikit-survival
+- scikit-learn >= 1.0.2
+- lifelines >= 0.27.8
+- scikit-survival >= 0.17.2
 - openpyxl
 
 ============
