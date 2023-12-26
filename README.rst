@@ -54,7 +54,7 @@ The easiest way to install survivors is to use by running::
 Examples
 ========
 
-The user guides at *demonstration* directory provides in-depth information on the key concepts of survivors, an overview of available survival models,
+The user guides at *doc* and *demonstration* directories provide in-depth information on the key concepts of survivors, an overview of available survival models,
 and hands-on examples in the form of `Jupyter notebooks <https://jupyter.org/>`_.
 
 There are examples of using the library with Jupyter Notebook.
@@ -71,7 +71,7 @@ The example is a variant of solving a multi-stage problem:
 Scenarios
 ==========
 
-Based on the **survivors**, it is possible to carry out the following work scenarios:
+The library allows to carry out the following work scenarios:
 
 1. Collecting data from patient medical histories (hospital tests, medications, treatment) from various medical institutions. The medical history can be presented as a set of tables in csv or xlsx format, or as a hierarchical structure of xml files.
 
