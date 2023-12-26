@@ -1,6 +1,5 @@
 import os
 import pkg_resources
-from pkg_resources import DistributionNotFound, VersionConflict
 
 dependencies = [
   "os",
