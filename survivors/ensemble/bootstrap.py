@@ -1,9 +1,8 @@
-# import pandas as pd
 import numpy as np
 
 from ..tree import CRAID
 from .. import constants as cnt
-from .base_ensemble import BaseEnsemble, FastBaseEnsemble
+from .base_ensemble import FastBaseEnsemble
 
 
 class BootstrapCRAID(FastBaseEnsemble):

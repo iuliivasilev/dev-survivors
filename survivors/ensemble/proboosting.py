@@ -32,10 +32,10 @@ class ProbBoostingCRAID(BoostingCRAID):
         pred_sf = model.predict_at_times(X_sub, bins=self.bins, mode="surv")
         pred_hf = model.predict_at_times(X_sub, bins=self.bins, mode="hazard")
 
-        time_hist = values_to_hist(y_sub["time"])
-        lp_ti = np.log(time_hist / y_sub["time"].shape)
+        time_hist = values_to_hist(y_sub[cnt.TIME_NAME])
+        lp_ti = np.log(time_hist / y_sub[cnt.TIME_NAME].shape)
         lp_xi_ti = np.log(1 / time_hist)
-        likel = loglikelihood_i(y_sub["time"], y_sub["cens"], pred_sf, pred_hf, self.bins)
+        likel = loglikelihood_i(y_sub[cnt.TIME_NAME], y_sub[cnt.CENS_NAME], pred_sf, pred_hf, self.bins)
 
         lp_xi = lp_ti + lp_xi_ti - likel
         wei = - np.exp(-lp_xi)
