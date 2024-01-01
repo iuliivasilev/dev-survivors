@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 from scipy import stats
 # from lifelines import CoxPHFitter
@@ -250,12 +249,4 @@ def weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""):
                                np.int64(weightings))
         return logrank
     except Exception as err:
-        #         print("Error type:", type(err))  # the exception instance
-        #         print("Error args:", err.args)  # arguments stored in .args
-        #         print("Error:", err)
         return 0.0
-
-    #     pvalue = stats.chi2.sf(logrank, df=1)
-    #     return pvalue
-    # except:
-    #     return 1.0

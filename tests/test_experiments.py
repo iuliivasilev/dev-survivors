@@ -20,11 +20,6 @@ from survivors import datasets as ds
 
 from survivors.tree.stratified_model import LEAF_MODEL_DICT
 
-from PARAMS.GBSG_PARAM import GBSG_PARAMS
-from PARAMS.PBC_PARAM import PBC_PARAMS
-from PARAMS.ONK_PARAM import ONK_PARAMS
-from PARAMS.WUHAN_PARAM import WUHAN_PARAMS
-from PARAMS.COVID_PARAM import COVID_PARAMS
 from PARAMS.SCHEME_PARAM import SCHEME_PARAMS
 
 import matplotlib.pyplot as plt
