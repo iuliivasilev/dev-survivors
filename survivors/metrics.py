@@ -388,9 +388,7 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
             scores[i] = np.trapz(tp_no_ties, fp_no_ties)
 
     scores[np.isnan(scores)] = 0
-    if n_times == 1:
-        return scores[0]
-    else:
+    if n_times != 1:
         if time_int:
             time_diff = times[-1] - times[0] if times[-1] > times[0] else 1
             return np.trapz(scores, times, axis=0) / time_diff
@@ -403,7 +401,7 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
             d = -np.diff(np.r_[1.0, s_times])
             integral = (scores * d).sum()
             return integral / (1.0 - s_times[-1])
-    return None
+    return scores[0]
 
 
 def iauc_WW(s_tr, s_tst, est, times, tied_tol=1e-8):
