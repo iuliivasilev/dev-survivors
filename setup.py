@@ -32,21 +32,21 @@ def parse_requirements(filename):
 # 4. (release) twine upload --skip-existing --repository-url https://upload.pypi.org/legacy/ dist/* -u **** -p ****
 
 
-requirements_list = [
-    "joblib",
-    "pickle-mixin",
-    "numpy",
-    "numba",
-    "matplotlib",
-    "seaborn",
-    "graphviz",
-    "pandas >=0.25",
-    "scipy",
-    "python-dateutil",
-    "scikit-learn",
-    "lifelines",
-    "scikit-survival"
-]
+# requirements_list = [
+#     "joblib",
+#     "pickle-mixin",
+#     "numpy",
+#     "numba",
+#     "matplotlib",
+#     "seaborn",
+#     "graphviz",
+#     "pandas >=0.25",
+#     "scipy",
+#     "python-dateutil",
+#     "scikit-learn",
+#     "lifelines",
+#     "scikit-survival"
+# ]
 
 setup(
     name='survivors',
@@ -58,5 +58,5 @@ setup(
     include_package_data=False,
     package_data=PACKAGE_DATA,
     python_requires='>=3.7',
-    install_requires=requirements_list,
+    install_requires=parse_requirements("./requirements.txt")  # requirements_list,
 )
