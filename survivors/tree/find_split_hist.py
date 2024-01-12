@@ -5,7 +5,7 @@ from scipy import stats
 from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
 from ..metrics import ibs_WW, auprc
 from ..constants import get_y
-import diptest
+# import diptest
 
 """ Auxiliary functions """
 
@@ -16,8 +16,6 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
     N_1_j = np.cumsum(time_hist_1[::-1])[::-1]
     N_2_j = np.cumsum(time_hist_2[::-1])[::-1]
     ind = np.where((cens_hist_1 + cens_hist_2 != 0) & (N_1_j * N_2_j != 0))[0]
-    # print(N_1_j[0], N_2_j[0], np.sum(cens_hist_1), np.sum(cens_hist_2))
-    # print(N_1_j, N_2_j, cens_hist_1, cens_hist_2)
     if ind.shape[0] == 0:
         return 0.0
 
@@ -33,17 +31,6 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
     res[:, 1] = O_1_j - E_1_j  # np.abs(O_1_j - E_1_j)
     res[:, 2] = E_1_j * (N_j - O_j) * N_2_j / (N_j * (N_j))  # N_j - 1
 
-    # sf1 = np.cumprod((1.0 - O_1_j / (N_1_j + 1)))
-    # sf1[N_1_j == 0] = 0.0
-    #
-    # sf2 = np.cumprod((1.0 - O_2_j / (N_2_j + 1)))
-    # sf2[N_2_j == 0] = 0.0
-    #
-    # res[:, 1] = sf1 - sf2
-    # res[:, 2] = 1
-
-    # res[:, 2] = E_1_j * (N_j - O_j) * N_2_j / (N_j * (N_j - 1))  # TODO
-    # res[:, 2] = E_1_j * (N_j - O_j + 1) * (N_2_j + 1) / ((N_j + 1) * (N_j))
     res[:, 0] = 1.0
     if weightings == 2:
         res[:, 0] = N_j
@@ -398,14 +385,8 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     # find global hist by times
     na_time_hist, na_cens_hist = get_sa_hists(dur[ind], cens[ind],
                                               minlength=max_bin + 1, weights=weights[ind])
-    # na_time_hist = na_time_hist  # * 20
-    # na_cens_hist = na_cens_hist  # * 20
-
     r_time_hist, r_cens_hist = get_sa_hists(dur_notna, cens_notna,
                                             minlength=max_bin + 1, weights=weights_notna)
-    # r_time_hist = r_time_hist  # * 20 + 1
-    # r_cens_hist = r_cens_hist  # * 20 + 1
-    # l_time_hist = np.zeros_like(r_time_hist, dtype=np.int32)  # + 1
     l_time_hist = np.zeros_like(r_time_hist, dtype=np.float32)  # + 1
     l_cens_hist = l_time_hist.copy()
 
@@ -476,10 +457,10 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         curr_n = curr_mask.sum()
         curr_time_hist, curr_cens_hist = get_sa_hists(dur_notna[curr_mask], cens_notna[curr_mask],
                                                       minlength=max_bin + 1, weights=weights_notna[curr_mask])
-        l_time_hist += curr_time_hist  # * 20
-        l_cens_hist += curr_cens_hist  # * 20
-        r_time_hist -= curr_time_hist  # * 20
-        r_cens_hist -= curr_cens_hist  # * 20
+        l_time_hist += curr_time_hist
+        l_cens_hist += curr_cens_hist
+        r_time_hist -= curr_time_hist
+        r_cens_hist -= curr_cens_hist
         num_l += curr_n
         num_r -= curr_n
 
