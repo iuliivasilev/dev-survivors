@@ -7,6 +7,7 @@ import copy
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
+
 from graphviz import Digraph
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import OneHotEncoder
@@ -20,9 +21,9 @@ from .. import constants as cnt
 def format_to_pandas(X, columns):
     type_df = type(X)
     if type_df.__name__ == "DataFrame":
-        return X.loc[:,columns]
+        return X.loc[:, columns]
     elif type_df.__name__ == "ndarray":
-        return pd.DataFrame(X, columns = columns)
+        return pd.DataFrame(X, columns=columns)
     return None
 
 """ Functions of prunning """
@@ -30,8 +31,10 @@ def format_to_pandas(X, columns):
 def ols(a,b):
     return sum((a - b)**2)
 
+
 def get_full_copy(tree):
     return copy.deepcopy(tree)
+
 
 def count_leaf(tree):
     if tree.is_leaf:
@@ -40,6 +43,7 @@ def count_leaf(tree):
     for edge in tree.edges:
         arr = np.append(arr, count_leaf(edge))
     return arr.flatten().astype('int')
+
 
 def count_spanning_leaf(tree):
     if tree.is_leaf:
@@ -51,11 +55,13 @@ def count_spanning_leaf(tree):
         return np.array([tree.numb])
     return arr.flatten().astype('int')
 
+
 def delete_sub_leaf(tree, leaf_list):
     if tree.numb in leaf_list:
         tree.set_leaf()
     for edge in tree.edges:
         delete_sub_leaf(edge, leaf_list)
+
 
 def find_best_uncut(tree, X, y, target, mode_f, choose_f):
     span_leaf = count_spanning_leaf(tree)
@@ -80,18 +86,18 @@ def cutted_tree(tree_, X, target, mode_f, choose_f, verbose = 0):
     
     best_metr[c] = mode_f(y, y_pred)
     best_tree[c] = get_full_copy(tree)
-    while (tree.edges.shape[0] > 0):
+    while tree.edges.shape[0] > 0:
         tree, val = find_best_uncut(tree, X, y, target, mode_f, choose_f)
         c = count_leaf(tree).shape[0]
         best_metr[c] = val
         best_tree[c] = get_full_copy(tree)
     
     best_metric = first_digits(choose_f(best_metr.values()))
-    min_leaf = min([k for k,v in best_metr.items() if first_digits(v) == best_metric])
+    min_leaf = min([k for k, v in best_metr.items() if first_digits(v) == best_metric])
     
     if verbose > 0:
         plt.clf()
-        plt.plot(list(best_metr.keys()), list(best_metr.values()),'o')
+        plt.plot(list(best_metr.keys()), list(best_metr.values()), 'o')
         # plt.plot(list(best_metr.keys()), list(best_metr.values()),'b')
         plt.xlabel("Количество листов")  # ("Leafs")
         plt.ylabel(f"Лучшее значение метрики {mode_f.__name__}")  # {target}")
@@ -101,6 +107,7 @@ def cutted_tree(tree_, X, target, mode_f, choose_f, verbose = 0):
         print(best_metric, min_leaf)
     
     return best_tree[min_leaf]
+
 
 class CRAID(object):
     """
@@ -138,11 +145,11 @@ class CRAID(object):
     visualize : build graphviz Digraph for each node
     
     """
-    def __init__(self, depth = 0,
-                 random_state = 123,
-                 features = [],
-                 categ = [],
-                 cut = False,
+    def __init__(self, depth=0,
+                 random_state=123,
+                 features=[],
+                 categ=[],
+                 cut=False,
                  **info):
         self.info = info
         self.cut = cut
@@ -152,7 +159,7 @@ class CRAID(object):
         self.features = features
         self.categ = categ
         self.random_state = random_state
-        self.name = "CRAID_%s" % (self.random_state)
+        self.name = "CRAID_%s" % self.random_state
         self.coxph = None
         self.ohenc = None
         self.bins = []
@@ -160,25 +167,25 @@ class CRAID(object):
     def fit(self, X, y):
         if len(self.features) == 0:
             self.features = X.columns
-        self.bins = cnt.get_bins(time = y[cnt.TIME_NAME])#, cens = y[cnt.CENS_NAME])
+        self.bins = cnt.get_bins(time=y[cnt.TIME_NAME])  # cens = y[cnt.CENS_NAME])
         X = X.reset_index(drop=True)
         X_tr = X.copy()
         X_tr[cnt.CENS_NAME] = y[cnt.CENS_NAME].astype(np.int32)
         X_tr[cnt.TIME_NAME] = y[cnt.TIME_NAME].astype(np.int32)
         
-        if not("min_samples_leaf" in self.info):
+        if not ("min_samples_leaf" in self.info):
             self.info["min_samples_leaf"] = 0.01*X_tr.shape[0]
         cnt.set_seed(self.random_state)
         
         if self.cut:
-            X_val = X_tr.sample(n = int(0.2*X_tr.shape[0]), random_state=self.random_state)
-            X_tr = X_tr.loc[X_tr.index.difference(X_val.index),:]
+            X_val = X_tr.sample(n=int(0.2*X_tr.shape[0]), random_state=self.random_state)
+            X_tr = X_tr.loc[X_tr.index.difference(X_val.index), :]
          
         # t_start = time.perf_counter()
-        self.tree = Node(X_tr, features = self.features, 
-                         categ = self.categ, **self.info)
-        stack_nodes = np.array([self.tree], dtype = object)
-        while(stack_nodes.shape[0] > 0):
+        self.tree = Node(X_tr, features=self.features,
+                         categ=self.categ, **self.info)
+        stack_nodes = np.array([self.tree], dtype=object)
+        while stack_nodes.shape[0] > 0:
             node = stack_nodes[0]
             stack_nodes = stack_nodes[1:]
             if node.depth >= self.depth:
@@ -188,11 +195,11 @@ class CRAID(object):
                 stack_nodes = np.append(stack_nodes, node.edges[ind_edge])
                 
         if self.cut:
-            self.cut_tree(X_val, cnt.CENS_NAME, mode_f = roc_auc_score, choose_f = max)
+            self.cut_tree(X_val, cnt.CENS_NAME, mode_f=roc_auc_score, choose_f=max)
         
-        self.coxph = CoxPHSurvivalAnalysis(alpha = 0.1)
+        self.coxph = CoxPHSurvivalAnalysis(alpha=0.1)
         self.ohenc = OneHotEncoder(handle_unknown='ignore')
-        pred_node = self.tree.predict(X, target = "num_node").to_numpy().reshape(-1,1)
+        pred_node = self.tree.predict(X, target="num_node").to_numpy().reshape(-1, 1)
         ohenc_node = self.ohenc.fit_transform(pred_node).toarray()
         self.coxph.fit(ohenc_node, y)
         
@@ -270,7 +277,7 @@ class CRAID(object):
         
     def predict_cox_hazard(self, X, bins):
         bins = np.clip(bins, self.bins.min(), self.bins.max())
-        pred_node = self.tree.predict(X, target="num_node").to_numpy().reshape(-1,1)
+        pred_node = self.tree.predict(X, target="num_node").to_numpy().reshape(-1, 1)
         ohenc_node = self.ohenc.transform(pred_node).toarray()
         hazards = self.coxph.predict_cumulative_hazard_function(ohenc_node)
         pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
@@ -308,23 +315,6 @@ class CRAID(object):
             for file in files:
                 os.remove(os.path.join(root, file))
         os.rmdir(tmp_dir)
-        
-    # def get_score(self, X_v, bins, mode = 'cox'):
-    #     print("CRAID", end = " ")
-    #     print("IBC: {:.4}".format(self.score(X_v, bins, name = "ibs")), end = " ")
-    #     print("CONC: {:.4}".format(self.score(X_v, bins, name = "conc")))
-        
-    # def score(self, X_v, bins = None, name = "conc"):
-    #     X_t = self.tree.get_df_node()
-    #     if name == "conc":
-    #         pred_time = self.tree.predict(X_v, cnt.TIME_NAME)
-    #         return concordance_index(X_v[cnt.TIME_NAME],pred_time)
-    #     pred_bins = self.predict_at_times(X_v, bins = bins, mode = "surv")
-        
-    #     y_train = cnt.get_y(X_t[cnt.CENS_NAME],X_t[cnt.TIME_NAME])
-    #     y_true = cnt.get_y(X_v[cnt.CENS_NAME],X_v[cnt.TIME_NAME])
-        
-    #     return metr.ibs(y_train, y_true, pred_bins, bins)
     
     def translate(self, describe):
         self.features = [describe.get(f,f) for f in self.features]
