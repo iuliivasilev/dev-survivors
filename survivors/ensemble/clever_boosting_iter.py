@@ -1,8 +1,9 @@
 import numpy as np
 
 from .. import metrics as metr
-from ..tree import CRAID
 from .. import constants as cnt
+
+from ..tree import CRAID
 from .boosting import BoostingCRAID
 import matplotlib.pyplot as plt
 
