@@ -1,6 +1,7 @@
-from .boosting import BoostingCRAID
-from .. import constants as cnt
 import numpy as np
+
+from .. import constants as cnt
+from .boosting import BoostingCRAID
 
 
 def loglikelihood_i(time, cens, sf, cumhf, bins):

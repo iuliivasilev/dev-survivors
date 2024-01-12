@@ -1,7 +1,7 @@
-from .boosting import BoostingCRAID
-from .. import metrics as metr
 import numpy as np
 
+from .. import metrics as metr
+from .boosting import BoostingCRAID
 
 class IBSBoostingCRAID(BoostingCRAID):
     def __init__(self, **kwargs):
