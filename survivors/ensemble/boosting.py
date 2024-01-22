@@ -1,4 +1,3 @@
-# import pandas as pd
 import numpy as np
 
 from .. import metrics as metr
@@ -76,7 +75,7 @@ class BoostingCRAID(FastBaseEnsemble):
     .. [1] Drucker H. Improving regressors using boosting techniques 
             //ICML. – 1997. – Т. 97. – С. 107-115.
     """
-    def __init__(self, mode_wei="linear", with_arc=True, weighted_tree=True, all_weight=False,
+    def __init__(self, mode_wei="linear", with_arc=False, weighted_tree=False, all_weight=False,
                  ens_metric_name="roc", **kwargs):
         self.name = "BoostingCRAID"
         self.mode_wei = mode_wei
