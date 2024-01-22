@@ -50,9 +50,9 @@ BOOST_param_grid = {
     "size_sample": [0.5, 1.0],  # 0.7
     "n_estimators": [50],
     "depth": [7],
-    "l_reg": [0, 0.1, 0.9],
-    "mode_wei": ['exp', 'square'],  # 'exp', 'square', "sigmoid", "softmax"],
-    "ens_metric_name": ["IBS"],  # ["bic", "roc", "ibs"], , "IBS_WW", "IBS_REMAIN"
+    "l_reg": [0, 0.01, 0.1, 0.5, 0.9],
+    "mode_wei": ['linear', 'exp', 'square'],  # 'exp', 'square', "sigmoid", "softmax"],
+    "ens_metric_name": ["IBS_REMAIN"],  # ["bic", "roc", "ibs"], , "IBS_WW", "IBS_REMAIN"
     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],
     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
@@ -64,24 +64,6 @@ BOOST_param_grid = {
     'weighted_tree': [False],
     "all_weight": [False]  # [False, True]
 }
-
-# CL_BOOST_param_grid = {
-#     "aggreg_func": ['wei', 'mean'],
-#     "size_sample": [0.7, 1.0],  # 0.7
-#     "n_estimators": [50],
-#     "depth": [10],
-#     "ens_metric_name": ["IBS"],
-#     "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
-#     "leaf_model": ["base_zero_after", "base_fast"],  # "base_zero_after", "base_fast"
-#     "balance": [None],
-#
-#     "min_samples_leaf": [0.05, 0.001],
-#     "max_features": [0.3, "sqrt"],
-#     "n_jobs": [5],
-#
-#     "all_weight": [True],
-#     "weighted_tree": [True]
-# }
 
 CL_BOOST_param_grid = {
     "aggreg_func": ["mean"],  # 'wei',
@@ -101,6 +83,25 @@ CL_BOOST_param_grid = {
     "all_weight": [True],
     "weighted_tree": [False]
 }
+
+
+# CL_BOOST_param_grid = {
+#     "aggreg_func": ['wei', 'mean'],
+#     "size_sample": [0.7, 1.0],  # 0.7
+#     "n_estimators": [50],
+#     "depth": [10],
+#     "ens_metric_name": ["IBS"],
+#     "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
+#     "leaf_model": ["base_zero_after", "base_fast"],  # "base_zero_after", "base_fast"
+#     "balance": [None],
+#
+#     "min_samples_leaf": [0.05, 0.001],
+#     "max_features": [0.3, "sqrt"],
+#     "n_jobs": [5],
+#
+#     "all_weight": [True],
+#     "weighted_tree": [True]
+# }
 
 SCHEME_PARAMS = {
     "TREE": CRAID_param_grid,
