@@ -209,6 +209,7 @@ class BoostingCRAID(FastBaseEnsemble):
         return np.mean(x, axis=0)
 
 
+
 class SumBoostingCRAID(BoostingCRAID):
     def __init__(self, learning_rate=0.1, **kwargs):
         self.name = "SumBoostingCRAID"
