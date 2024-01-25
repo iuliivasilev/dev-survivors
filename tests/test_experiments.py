@@ -243,7 +243,7 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     # NORMAL_SHORT_QUANTILE_TIME_
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_SUM_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
 
-    prefix = f"{best_metric}_STRATTIME+_EXT10_MEANING_EQ_REG_PART_BOOST_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
+    prefix = f"{best_metric}_STRATTIME+_EXT10_MEANING_EQ_REG_LINEAR_MEDIAN_PART_BOOST_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
     # prefix = f"{best_metric}_scsurv_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
     # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
     #               dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
