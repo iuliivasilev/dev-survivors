@@ -108,7 +108,7 @@ def count_metric(y_train, y_test, pred_time, pred_surv, pred_haz, bins, metrics_
 
 
 def get_name_file(method, params, mode, fold):
-    filter_params = ["categ", "ens_metric_name"]
+    filter_params = ["categ", "ens_metric_name", "aggreg_func"]
     name_lst = [method.__name__]
     name_lst += [v for k, v in params.items() if not(k in filter_params)]
     name_lst += [mode, fold]
@@ -150,6 +150,7 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 if dir_path is None:
                     est.fit(X_train, y_train)
+                    est.aggreg_func = kwargs.get("aggreg_func", None)
                     est.tolerance_find_best(kwargs["ens_metric_name"])
                 else:
                     name = os.path.join(dir_path, get_name_file(method, kwargs, mode, fold) + '.pkl')
@@ -161,6 +162,7 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
 
                     with open(name, 'rb') as inp:
                         est = pickle.load(inp)
+                        est.aggreg_func = kwargs.get("aggreg_func", None)
                         est.tolerance_find_best(kwargs["ens_metric_name"])
 
                 pred_surv = est.predict_at_times(X_test, bins=bins, mode="surv")
