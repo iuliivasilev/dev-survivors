@@ -157,7 +157,8 @@ def import_tables(dirs):
 
 
 def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
-        with_external=True, except_stop="all", mode="CV", dir_path=None, bins_sch="", best_metric="IBS"):
+        with_external=True, except_stop="all", mode="CV", dir_path=None, bins_sch="",
+        best_metric="IBS", mode_wei=None):
     """
     Conduct experiments for defined dataset and methods (self and external)
 
@@ -218,6 +219,7 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
         for alg in with_self:
             PARAMS_[dataset][alg]["categ"] = [categ]
             PARAMS_[dataset][alg]["ens_metric_name"] = [best_metric]
+            PARAMS_[dataset][alg]["mode_wei"] = [mode_wei]
             experim.add_method(SELF_ALGS[alg], PARAMS_[dataset][alg])
     experim.run_effective(X, y, dir_path=dir_path, verbose=1)
     return experim
@@ -237,13 +239,17 @@ def dir_path():
     "best_metric", ["IBS_REMAIN"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 @pytest.mark.parametrize(
-    "dataset",  ["rott2", "PBC", "GBSG", "WUHAN", "support2", "flchain", "smarto"]  # "backblaze", "actg",
+    "mode_wei", ["exp", "sigmoid"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
-def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):
+@pytest.mark.parametrize(
+    "dataset",  ["rott2", "PBC", "GBSG", "WUHAN"]  # , "support2", "flchain", "smarto", "backblaze", "actg",
+)
+def test_dataset_exp(dir_path, dataset, best_metric, mode_wei, bins_sch="origin", mode="CV+SAMPLE"):
     # NORMAL_SHORT_QUANTILE_TIME_
-    # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_SUM_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
+    # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_SUM_ALL_BINS_{bins_sch}"
+    # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
 
-    prefix = f"{best_metric}_STRATTIME+_EXT10_MEANING_EQ_REG_LINEAR_MEDIAN_PART_BOOST_ALL_BINS_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
+    prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_PART_BOOST_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_scsurv_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
     # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
     #               dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
@@ -251,7 +257,7 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     if not os.path.exists(storage_path):
         os.makedirs(storage_path)
     res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode=mode,  # CLEVERBOOST
-                  dir_path=storage_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # ["TREE", "BSTR", "BOOST"]
+                  dir_path=storage_path+"\\", bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
     df_criterion = res_exp.get_best_by_mode(stratify="criterion")

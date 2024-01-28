@@ -46,12 +46,12 @@ BSTR_param_grid = {
 # }
 
 BOOST_param_grid = {
-    "aggreg_func": ['mean'],  # ['wei', 'mean'],
+    "aggreg_func": ['mean'],  # ['wei', 'mean', 'median'],
     "size_sample": [0.5, 1.0],  # 0.7
     "n_estimators": [50],
     "depth": [7],
     "l_reg": [0, 0.01, 0.1, 0.5, 0.9],
-    "mode_wei": ['linear', 'exp', 'square'],  # 'exp', 'square', "sigmoid", "softmax"],
+    "mode_wei": ['exp'],  # 'linear', 'exp', 'square', "sigmoid", "softmax"],
     "ens_metric_name": ["IBS_REMAIN"],  # ["bic", "roc", "ibs"], , "IBS_WW", "IBS_REMAIN"
     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],
     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
