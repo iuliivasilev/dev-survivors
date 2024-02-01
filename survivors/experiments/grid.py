@@ -304,27 +304,31 @@ class Experiments(object):
             grid_params = ParameterGrid(grid)
             p_size = len(grid_params)
             for i_p, p in enumerate(grid_params):
-                #try:
-                start_time = time.time()
-                eval_metr = fit_eval_func(**p)
-                full_time = time.time() - start_time
-                curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                             "PARAMS": str(p), "TIME": full_time}
-                eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
-                curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
-                # self.result_table = self.result_table.append(curr_dict, ignore_index=True)
-                self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
-                if verbose > 0:
-                    print(f"Iteration: {i_p + 1}/{p_size}")
-                    print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
-                              {k: [np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
-                # except KeyboardInterrupt:
-                #     print("HANDELED KeyboardInterrupt")
-                #     break
-                # except Exception as e:
-                #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                #     #if self.except_stop == "all":
-                #     #    break
+                try:
+                    start_time = time.time()
+                    eval_metr = fit_eval_func(**p)
+                    full_time = time.time() - start_time
+                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
+                                 "PARAMS": str(p), "TIME": full_time}
+                    eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
+                    curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
+                    # self.result_table = self.result_table.append(curr_dict, ignore_index=True)
+                    self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
+                    if verbose > 0:
+                        print(f"Iteration: {i_p + 1}/{p_size}")
+                        print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
+                                  {k: [np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
+                except KeyboardInterrupt:
+                    print("HANDELED KeyboardInterrupt")
+                    break
+                except Exception as e:
+                    print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
+                    #if self.except_stop == "all":
+                    #    break
+                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
+                                 "PARAMS": str(p), "TIME": -1}
+                    curr_dict.update({m: np.array([np.nan, np.nan]) for i, m in enumerate(self.metrics)})
+                    self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
         if self.mode in ["TIME-CV", "CV+HOLD-OUT"]:
             for m in self.metrics:
                 self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
@@ -398,9 +402,15 @@ class Experiments(object):
             if sub_table.shape[0] == 0:
                 continue
             if choose == "max":
-                best_row = sub_table.loc[sub_table[by_metric].idxmax()]
+                best_ind = sub_table[by_metric].idxmax()
+                if np.isnan(best_ind):
+                    continue
+                best_row = sub_table.loc[best_ind]
             elif choose == "min":
-                best_row = sub_table.loc[sub_table[by_metric].idxmin()]
+                best_ind = sub_table[by_metric].idxmin()
+                if np.isnan(best_ind):
+                    continue
+                best_row = sub_table.loc[best_ind]
             else:
                 best_row = sub_table.sort_values(by=by_metric).iloc[sub_table.shape[0] // 2]
 
