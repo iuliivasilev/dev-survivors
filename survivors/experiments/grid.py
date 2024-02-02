@@ -380,7 +380,7 @@ class Experiments(object):
             params = eval(method_params[1])
             params = {k: [v] for k, v in params.items()}
             ho_exp.add_method(method, params)
-        ho_exp.run(X, y, verbose=1)
+        ho_exp.run(X, y, dir_path=self.dir_path, verbose=1)
         res_table = ho_exp.result_table.copy()
         for m in self.metrics:
             res_table[f"{m}_CV"] = best_table[m]
