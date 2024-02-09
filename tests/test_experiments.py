@@ -21,6 +21,8 @@ from survivors import datasets as ds
 from survivors.tree.stratified_model import LEAF_MODEL_DICT
 
 from PARAMS.SCHEME_PARAM import SCHEME_PARAMS
+from survivors.external import LogLogisticAFT, WeibullAFT, LogNormalAFT
+from survivors.external import AFT_param_grid
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -75,7 +77,7 @@ cox_param_grid = {
 }
 
 RSF_param_grid = {
-    'n_estimators': [30, 50, 100],
+    'n_estimators': [30, 50],  # 100],
     'max_depth': [None, 20],
     'min_samples_leaf': [1, 10, 20],  # [500, 1000, 3000],
     # 'max_features': ["sqrt"],
@@ -91,7 +93,7 @@ ST_param_grid = {
 GBSA_param_grid = {
     'loss': ["coxph"],
     'learning_rate': [0.01, 0.05, 0.1, 0.5],
-    'n_estimators': [30, 50, 100],
+    'n_estimators': [30, 50],  # 100],
     'max_depth': [20, 30],
     'min_samples_leaf': [1, 10, 20],
     'max_features': ["sqrt"],
@@ -100,7 +102,7 @@ GBSA_param_grid = {
 CWGBSA_param_grid = {
     'loss': ["coxph"],
     'learning_rate': [0.01, 0.05, 0.1, 0.5],
-    'n_estimators': [30, 50, 100],
+    'n_estimators': [30, 50],  # 100],
     'subsample': [0.7, 1.0],
     'dropout_rate': [0.0, 0.1, 0.5],
     "random_state": [123]
@@ -215,11 +217,14 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
         experim.add_method(RandomSurvivalForest, RSF_param_grid)
         experim.add_method(ComponentwiseGradientBoostingSurvivalAnalysis, CWGBSA_param_grid)
         experim.add_method(GradientBoostingSurvivalAnalysis, GBSA_param_grid)
+        experim.add_method(LEAF_MODEL_DICT["base"], {})
+        experim.add_method(WeibullAFT, AFT_param_grid)
+        experim.add_method(LogLogisticAFT, AFT_param_grid)
     if len(with_self) > 0:
         for alg in with_self:
             PARAMS_[dataset][alg]["categ"] = [categ]
             PARAMS_[dataset][alg]["ens_metric_name"] = [best_metric]
-            PARAMS_[dataset][alg]["mode_wei"] = [mode_wei]
+            # PARAMS_[dataset][alg]["mode_wei"] = [mode_wei]
             experim.add_method(SELF_ALGS[alg], PARAMS_[dataset][alg])
     experim.run_effective(X, y, dir_path=dir_path, verbose=1)
     return experim
@@ -234,29 +239,34 @@ def dir_path():
 # @pytest.mark.parametrize(
 #     "bins_sch", ["origin", "rank", "quantile", "log+scale"]
 # )
+# @pytest.mark.parametrize(
+#     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid" ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
+# )
 
 @pytest.mark.parametrize(
-    "best_metric", ["IBS_REMAIN"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
+    "best_metric", ["likelihood"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 @pytest.mark.parametrize(
-    "mode_wei", ["exp", "sigmoid"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
+    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "flchain", "backblaze", "actg",
 )
-@pytest.mark.parametrize(
-    "dataset",  ["rott2", "PBC", "GBSG", "WUHAN"]  # , "support2", "flchain", "smarto", "backblaze", "actg",
-)
-def test_dataset_exp(dir_path, dataset, best_metric, mode_wei, bins_sch="origin", mode="CV+SAMPLE"):
+def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):
+    mode_wei = None
     # NORMAL_SHORT_QUANTILE_TIME_
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_SUM_ALL_BINS_{bins_sch}"
     # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
 
-    prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_PART_BOOST_ALL_BINS_{bins_sch}"
-    # prefix = f"{best_metric}_scsurv_{bins_sch}"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
+    # prefix = f"{best_metric}_STRATTIME+_EXT10_EQ_REG_TREE_ALL_BINS_{bins_sch}"
+    prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"
+    # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_PART_BOOST_ALL_BINS_{bins_sch}"
+
+    # prefix = f"{best_metric}_STRATTIME+_scsurv"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
     # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
     #               dir_path=dir_path+"\\", bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
+
     storage_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset)
     if not os.path.exists(storage_path):
         os.makedirs(storage_path)
-    res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode=mode,  # CLEVERBOOST
+    res_exp = run(dataset, with_self=["CLEVERBOOST"], with_external=False, mode=mode,  # CLEVERBOOST
                   dir_path=storage_path+"\\", bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
