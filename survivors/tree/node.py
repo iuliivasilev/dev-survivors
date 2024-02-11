@@ -357,7 +357,7 @@ class Node(object):
 
     def get_figure(self, mode="hist", bins=None, target=cnt.CENS_NAME, save_path=""):
         plt.ioff()
-        fig, ax = plt.subplots(figsize=(8, 6))
+        fig, ax = plt.subplots(figsize=(7, 5))
         if mode == "hist":
             lst = self.leaf_model.predict_list_feature(target)
             plt.hist(lst, bins=25)
@@ -370,7 +370,7 @@ class Node(object):
             ax.set_xlabel(f'{target}', fontsize=25)
         elif mode == "surv":
             sf = self.leaf_model.predict_survival_at_times(X=None, bins=bins)
-            plt.step(bins, sf)
+            plt.step(bins, sf, linewidth=3)
             ax.set_xlabel('Time', fontsize=25)
             ax.set_ylabel('Survival probability', fontsize=25)
         plt.savefig(save_path)
@@ -380,13 +380,13 @@ class Node(object):
         m_cens = round(self.leaf_model.predict_feature(X=None, feature_name=cnt.CENS_NAME), 2)
         m_time = round(self.leaf_model.predict_feature(X=None, feature_name=cnt.TIME_NAME), 2)
         label = "\n".join([f"size = {self.leaf_model.get_shape()[0]}",
-                           f"events/size = {m_cens}",
+                           f"events (%) = {m_cens}",
                            # f"depth = {self.depth}",
-                           f"time of event = {m_time}"])
+                           f"mean time = {m_time}"])
         return label
 
     def set_dot_node(self, dot, path_dir="", depth=None, **args):
-        if not(depth is None) and depth < self.depth:
+        if not (depth is None) and depth < self.depth:
             return dot
         img_path = path_dir + str(self.numb) + '.png'
         self.get_figure(save_path=img_path, **args)
@@ -395,7 +395,7 @@ class Node(object):
         return dot
 
     def set_dot_edges(self, dot):
-        if not(self.is_leaf):
+        if not self.is_leaf:
             for e in range(len(self.rule_edges)):
                 s = self.rule_edges[e].to_str()
                 dot.edge(str(self.numb), str(self.edges[e]), label=s, fontsize='30')
