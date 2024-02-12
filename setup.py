@@ -31,26 +31,9 @@ def parse_requirements(filename):
 # 3. (test) twine upload --skip-existing --repository-url https://test.pypi.org/legacy/ dist/* -u **** -p ****
 # 4. (release) twine upload --skip-existing --repository-url https://upload.pypi.org/legacy/ dist/* -u **** -p ****
 
-
-# requirements_list = [
-#     "joblib",
-#     "pickle-mixin",
-#     "numpy",
-#     "numba",
-#     "matplotlib",
-#     "seaborn",
-#     "graphviz",
-#     "pandas >=0.25",
-#     "scipy",
-#     "python-dateutil",
-#     "scikit-learn",
-#     "lifelines",
-#     "scikit-survival"
-# ]
-
 setup(
     name='survivors',
-    version='1.4.5',
+    version='1.5.0',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',
     packages=find_packages(),
