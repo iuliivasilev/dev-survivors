@@ -1,7 +1,4 @@
-|PyPi|_
-
-.. |PyPi| image:: https://img.shields.io/pypi/v/survivors
-.. _PyPi: https://pypi.org/project/survivors/
+|License| |PyPi|_ |DOI|_
 
 ===============
 survivors
@@ -81,9 +78,9 @@ The library allows to carry out the following work scenarios:
 
 4. Predicting the individual survival functions and cumulative hazard of patients. Forecasts can be used to support medical decisions and adjust treatment.
 
-==========
+==============
 Communication
-==========
+==============
 
 - Mail: iuliivasilev@gmail.com
 - LinkedIn: https://www.linkedin.com/in/iulii-vasilev
@@ -131,3 +128,13 @@ Please cite the following paper if you are using **survivors**.
     }
 
 .. _survival analysis: https://en.wikipedia.org/wiki/Survival_analysis
+
+.. |PyPi| image:: https://img.shields.io/pypi/v/survivors
+.. _PyPi: https://pypi.org/project/survivors/
+
+.. |License| image:: https://img.shields.io/:license-mit-blue.svg
+  :target: COPYING
+  :alt: License
+
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10649986.svg
+.. _DOI: https://zenodo.org/doi/10.5281/zenodo.10649777
