@@ -19,7 +19,7 @@ class LeafModel(object):
         self.lists = dict()
         self.default_bins = np.array([1, 10, 100, 1000])
 
-    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME]):
+    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME], normalize=True):
         X_sub = X_node[need_features]
         self.shape = X_sub.shape
         self.features_predict = X_sub.mean(axis=0).to_dict()
@@ -202,12 +202,29 @@ class WeightSurviveModel(LeafModel):
         self.weights_name = weights_name
         super().__init__()
 
-    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME]):
-        if self.weights_name is None:
-            self.weights = np.ones_like(X_node[cnt.TIME_NAME])
-        else:
-            self.weights = X_node[self.weights_name].to_numpy()
+    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME], normalize=True):
         super().fit(X_node, need_features)
+        #
+        # if self.weights_name is None:
+        #     self.weights = np.ones_like(X_node[cnt.TIME_NAME])
+        # else:
+        #     self.weights = X_node[self.weights_name].to_numpy()
+
+        # if normalize:
+        #     self.old_durs = X_node[cnt.TIME_NAME]
+        #     self.old_events = X_node[cnt.CENS_NAME]
+        if normalize:
+            durs = np.random.normal(np.mean(self.lists[cnt.TIME_NAME]),
+                                    np.std(self.lists[cnt.TIME_NAME]) / np.sqrt(2), 1000)
+            events = np.random.choice(self.lists[cnt.CENS_NAME], size=1000, replace=True)
+            self.lists[cnt.CENS_NAME] = events[durs > 0]
+            self.lists[cnt.TIME_NAME] = durs[durs > 0]
+
+        # self.lists[cnt.TIME_NAME] = np.vstack([np.random.choice(self.lists[cnt.TIME_NAME], size=1000, replace=True),
+        #                                        np.random.choice(self.lists[cnt.TIME_NAME], size=1000, replace=True)]).mean(axis=0)
+        # self.lists[cnt.CENS_NAME] = np.random.choice(self.lists[cnt.CENS_NAME], size=1000, replace=True)
+
+        self.weights = np.ones_like(self.lists[cnt.TIME_NAME])
 
     def predict_survival_at_times(self, X=None, bins=None):
         if self.survival is None:
@@ -239,16 +256,20 @@ class WeightSurviveModel(LeafModel):
 
 class KaplanMeierZeroAfter(KaplanMeier):
     def fit(self, durations, right_censor, weights=None):
-        # durs = np.random.normal(np.mean(durations), np.std(durations), 100)
-        # events = np.ones_like(durs)
-
         # durs = np.hstack([durations, np.random.normal(np.mean(durations), np.std(durations), 100)])
         # events = np.hstack([right_censor, np.random.choice(right_censor, size=100, replace=True)])
 
-        durs = np.random.normal(np.mean(durations), np.std(durations) / np.sqrt(2), 1000)
-        events = np.random.choice(right_censor, size=1000, replace=True)
+        # self.durs = np.random.normal(np.mean(durations), np.std(durations), 1000)  # / np.sqrt(2)
+        # self.events = np.random.choice(right_censor, size=1000, replace=True)
 
-        super().fit(durs, events)
+        # qs = np.quantile(durations, np.linspace(0.025, 0.975, 100))
+        # self.durs = np.random.choice(qs, size=1000, replace=True)
+        # self.events = np.random.choice(right_censor, size=1000, replace=True)
+
+        self.durs = np.array(durations)
+        self.events = np.array(right_censor)
+
+        super().fit(self.durs, self.events)
 
     def survival_function_at_times(self, times):
         place_bin = np.searchsorted(self.timeline, times)
@@ -258,6 +279,16 @@ class KaplanMeierZeroAfter(KaplanMeier):
         sf[times < self.timeline[0]] = 1
         return sf
 
+
+class NelsonAalenSample(NelsonAalen):
+    def fit(self, durations, right_censor, weights=None):
+        # self.durs = np.random.normal(np.mean(durations), np.std(durations), 1000)  # / np.sqrt(2)
+        # self.events = np.random.choice(right_censor, size=1000, replace=True)
+
+        self.durs = np.array(durations)
+        self.events = np.array(right_censor)
+
+        super().fit(self.durs, self.events)
 
 class WeightSurviveModelZeroAfter(WeightSurviveModel):
     def predict_survival_at_times(self, X=None, bins=None):
@@ -273,11 +304,59 @@ class WeightSurviveModelZeroAfter(WeightSurviveModel):
             return sf
         return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
 
+    def predict_hazard_at_times(self, X=None, bins=None):
+        if self.hazard is None:
+            self.hazard = NelsonAalenSample()
+            self.hazard.fit(self.lists[cnt.TIME_NAME],
+                            self.lists[cnt.CENS_NAME],
+                            self.weights)
+        if bins is None:
+            bins = self.hazard.timeline
+        hf = self.hazard.cumulative_hazard_at_times(bins)
+        if X is None:
+            return hf
+        return np.repeat(hf[np.newaxis, :], X.shape[0], axis=0)
+
+    def predict_feature(self, X=None, feature_name=None):
+        self.predict_survival_at_times()
+        if not(X is None) and feature_name == "time":
+            return np.repeat(np.trapz(self.survival.survival_function, np.hstack([0, self.survival.timeline])), X.shape[0], axis=0)
+        return super().predict_feature(X, feature_name)
+
 
 class WeightOnlySurviveModelZeroAfter(WeightSurviveModelZeroAfter):
     def predict_hazard_at_times(self, X=None, bins=None):
         sf = self.predict_survival_at_times(X, bins)
         return -1*np.log(sf + 1e-100)
+
+
+class BaseWeightMeaningSurviveModel(WeightSurviveModelZeroAfter):
+    def __init__(self, weights_name=None):
+        self.weights_name = weights_name
+        super().__init__()
+
+    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME], normalize=True):
+        super().fit(X_node, need_features)
+        self.lists[cnt.TIME_NAME] = np.vstack([np.random.choice(self.lists[cnt.TIME_NAME], size=1000, replace=True),
+                                               np.random.choice(self.lists[cnt.TIME_NAME], size=1000, replace=True)]).mean(axis=0)
+        self.lists[cnt.CENS_NAME] = np.random.choice(self.lists[cnt.CENS_NAME], size=1000, replace=True)
+
+        self.weights = np.ones_like(self.lists[cnt.TIME_NAME])
+
+class BaseWeightNormSurviveModel(WeightSurviveModelZeroAfter):
+    def __init__(self, weights_name=None):
+        self.weights_name = weights_name
+        super().__init__()
+
+    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME], normalize=True):
+        super().fit(X_node, need_features)
+        durs = np.random.normal(np.mean(self.lists[cnt.TIME_NAME]),
+                                np.std(self.lists[cnt.TIME_NAME]), 1000)
+        events = np.random.choice(self.lists[cnt.CENS_NAME], size=1000, replace=True)
+        self.lists[cnt.CENS_NAME] = events[durs > 0]
+        self.lists[cnt.TIME_NAME] = durs[durs > 0]
+
+        self.weights = np.ones_like(self.lists[cnt.TIME_NAME])
 
 class BaseFastOnlySurviveModelZeroAfter(WeightOnlySurviveModelZeroAfter):
     def __init__(self):
@@ -317,5 +396,7 @@ LEAF_MODEL_DICT = {
     "base_zero_after": BaseFastSurviveModelZeroAfter,
     "base_only_zero_after": BaseFastOnlySurviveModelZeroAfter,
     "wei_zero_after": WeightSurviveModelZeroAfter,
-    "fullprob_fast": FullProbSurviveModel
+    "fullprob_fast": FullProbSurviveModel,
+    "base_meaning": BaseWeightMeaningSurviveModel,
+    "base_normal": BaseWeightNormSurviveModel
 }
