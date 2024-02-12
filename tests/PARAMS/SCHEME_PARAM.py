@@ -5,7 +5,7 @@ CRAID_param_grid = {
     "min_samples_leaf": [0.05, 0.01, 0.001],
     "l_reg": [0, 0.01, 0.1, 0.5, 0.9],  # [0, 0.001, 0.01, 0.1, 0.2]
     "leaf_model": ["base_zero_after"],
-    'cut': [False],  # [True, False]
+    'cut': [True, False],
     "woe": [True],
     "signif": [0.05, 0.1, 1.0],
     "max_features": [1.0],
@@ -47,7 +47,7 @@ BSTR_param_grid = {
 
 BOOST_param_grid = {
     "aggreg_func": ['mean'],  # ['wei', 'mean', 'median'],
-    "size_sample": [0.5, 1.0],  # 0.7
+    "size_sample": [1.0],  # [0.5, 1.0] 0.7
     "n_estimators": [50],
     "depth": [7],
     "l_reg": [0, 0.01, 0.1, 0.5, 0.9],
@@ -57,7 +57,7 @@ BOOST_param_grid = {
     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
 
-    "min_samples_leaf": [0.01, 0.001],
+    "min_samples_leaf": [0.01],  # [0.01, 0.001]
     "max_features": [0.3, "sqrt"],
     "n_jobs": [5],
     "with_arc": [False],
