@@ -10,7 +10,7 @@ from ..constants import get_y
 """ Auxiliary functions """
 
 
-# @njit('f4(f4[:], f4[:], f4[:], f4[:], u4, f4[:])', cache=True)
+@njit('f4(f4[:], f4[:], f4[:], f4[:], u4, f4[:])', cache=True)
 def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
                       weightings, obs_weights):
     N_1_j = np.cumsum(time_hist_1[::-1])[::-1]
