@@ -317,7 +317,7 @@ class Experiments(object):
                     if verbose > 0:
                         print(f"Iteration: {i_p + 1}/{p_size}")
                         print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
-                                  {k: [np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
+                                  {k: [np.mean(v), np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
                 except KeyboardInterrupt:
                     print("HANDELED KeyboardInterrupt")
                     break
