@@ -165,11 +165,10 @@ class Node(object):
 
         self.info.setdefault("need_features", [cnt.TIME_NAME, cnt.CENS_NAME])
         if isinstance(self.info["need_features"], list):
-            self.info["need_features"] += [cnt.TIME_NAME, cnt.CENS_NAME]
-            self.info["need_features"] = list(set(self.info["need_features"]))
+            self.info["need_features"] = list(set(self.info["need_features"] + [cnt.TIME_NAME, cnt.CENS_NAME]))
         self.leaf_model.fit(self.df, self.info["need_features"], self.info["normalize"])
-        self.ch = np.array(
-            [np.mean(self.df["time"]), np.std(self.df["time"]), np.sum(self.df["cens"]) / self.df["cens"].shape[0]])
+        # self.ch = np.array(
+        #     [np.mean(self.df["time"]), np.std(self.df["time"]), np.sum(self.df["cens"]) / self.df["cens"].shape[0]])
 
     """ GROUP FUNCTIONS: CREATE LEAVES """
     def get_comb_fast(self, features):
