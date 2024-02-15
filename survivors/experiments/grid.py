@@ -182,6 +182,9 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 valid_feat = s[s].index
                 X_train = X_train[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
                 X_test = X_test[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
+                # med_val = X_train[valid_feat].median()
+                # X_train = X_train[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
+                # X_test = X_test[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
 
                 est = est.fit(X_train, y_train)
                 survs = est.predict_survival_function(X_test)
