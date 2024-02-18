@@ -1,7 +1,9 @@
 from .. import constants as cnt
-from ..tree import LeafModel
+# from ..tree.stratified_model import LeafModel
+from .leaf_model import LeafModel
 from lifelines import WeibullAFTFitter, LogNormalAFTFitter, LogLogisticAFTFitter
 import numpy as np
+
 
 AFT_param_grid = {
     "penalizer": [0, 0.01, 0.1, 0.5, 1.0],
@@ -52,3 +54,10 @@ class LogNormalAFT(AcceleratedFailureTimeBase):
 
 class LogLogisticAFT(AcceleratedFailureTimeBase):
     base_model = LogLogisticAFTFitter
+
+
+LEAF_AFT_DICT = {
+    "WeibullAFT": WeibullAFT,
+    "LogNormalAFT": LogNormalAFT,
+    "LogLogisticAFT": LogLogisticAFT
+}
