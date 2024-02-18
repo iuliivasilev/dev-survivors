@@ -5,10 +5,10 @@ import seaborn as sns
 from joblib import Parallel, delayed
 from scipy import stats
 
-from .find_split import best_attr_split
 from .find_split_hist import hist_best_attr_split
 from .. import constants as cnt
-from .stratified_model import LEAF_MODEL_DICT, LeafModel
+# from .stratified_model import LEAF_MODEL_DICT, LeafModel
+from ..external import LEAF_MODEL_DICT, LeafModel
 from ..scheme import Scheme
 
 #sns.set()
@@ -157,8 +157,8 @@ class Node(object):
             self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base_zero_after")()  # base
         elif isinstance(self.info["leaf_model"], type):  # Check is class
             self.leaf_model = self.info["leaf_model"]()
-            if not(isinstance(self.leaf_model, LeafModel)):
-                self.leaf_model = None
+            # if not(isinstance(self.leaf_model, LeafModel)):
+            #     self.leaf_model = None
         else:
             self.leaf_model = None
         self.size = self.df.shape[0]

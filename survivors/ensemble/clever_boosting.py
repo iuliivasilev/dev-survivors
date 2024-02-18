@@ -6,7 +6,8 @@ from .. import constants as cnt
 from .boosting import BoostingCRAID
 import matplotlib.pyplot as plt
 
-from ..tree.stratified_model import KaplanMeierZeroAfter, NelsonAalen
+# from ..tree.stratified_model import KaplanMeierZeroAfter, NelsonAalen
+from ..external import NelsonAalen, KaplanMeierZeroAfter
 
 
 def f_predict_survival_at_times(ch, bins=None):

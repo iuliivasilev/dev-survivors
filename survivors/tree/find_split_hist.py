@@ -2,7 +2,8 @@ import numpy as np
 from numba import njit
 
 from scipy import stats
-from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
+# from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
+from ..external import KaplanMeier, NelsonAalen, KaplanMeierZeroAfter
 from ..metrics import ibs_WW, auprc
 from ..constants import get_y
 # import diptest
@@ -279,15 +280,15 @@ def mw_hist(x, y):
     U = np.maximum(U1, U2)
     return U
 
-def diptest_hist(x, y):
-    res = 0
-    if np.sum(x) > 0:
-        t1 = np.repeat(np.arange(1, x.size + 1), x.astype(int))
-        res = max(res, diptest.dipstat(t1))
-    if np.sum(y) > 0:
-        t2 = np.repeat(np.arange(1, y.size + 1), y.astype(int))
-        res = max(res, diptest.dipstat(t2))
-    return res
+# def diptest_hist(x, y):
+#     res = 0
+#     if np.sum(x) > 0:
+#         t1 = np.repeat(np.arange(1, x.size + 1), x.astype(int))
+#         res = max(res, diptest.dipstat(t1))
+#     if np.sum(y) > 0:
+#         t2 = np.repeat(np.arange(1, y.size + 1), y.astype(int))
+#         res = max(res, diptest.dipstat(t2))
+#     return res
 
 def stdtest_hist(x, y):
     res = 0

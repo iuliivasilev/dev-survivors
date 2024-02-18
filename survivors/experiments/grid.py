@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 
 from .. import constants as cnt
 from .. import metrics as metr
-from ..tree.stratified_model import LeafModel
+from ..external import LeafModel
 
 
 def to_str_from_dict_list(d, strat):
@@ -180,11 +180,11 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
             else:  # Methods from scikit-survival
                 s = pd.isna(X_train).sum(axis=0) != X_train.shape[0]
                 valid_feat = s[s].index
-                X_train = X_train[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
-                X_test = X_test[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
-                # med_val = X_train[valid_feat].median()
-                # X_train = X_train[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
-                # X_test = X_test[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
+                # X_train = X_train[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
+                # X_test = X_test[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
+                med_val = X_train[valid_feat].median()
+                X_train = X_train[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
+                X_test = X_test[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
 
                 est = est.fit(X_train, y_train)
                 survs = est.predict_survival_function(X_test)
