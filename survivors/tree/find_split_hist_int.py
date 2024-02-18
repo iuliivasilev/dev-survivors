@@ -2,7 +2,8 @@ import numpy as np
 from numba import njit
 
 from scipy import stats
-from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
+# from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
+from ..external import KaplanMeier, NelsonAalen, KaplanMeierZeroAfter
 from ..metrics import ibs_WW, auprc
 from ..constants import get_y
 
@@ -259,11 +260,11 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         ci = kmf.get_confidence_interval_()
         weights_hist = 1 / (ci[1:, 1] - ci[1:, 0] + 1e-5)  # (ci[1:, 1] + ci[1:, 0] + 1e-5)
         criterion = "weights"
-    elif criterion == "fullprob":
-        kmf = FullProbKM()
-        kmf.fit(dur, cens)
-        weights_hist = kmf.survival_function_at_times(np.unique(dur))
-        criterion = "weights"
+    # elif criterion == "fullprob":
+    #     kmf = FullProbKM()
+    #     kmf.fit(dur, cens)
+    #     weights_hist = kmf.survival_function_at_times(np.unique(dur))
+    #     criterion = "weights"
     elif criterion == "ibswei":
         kmf = KaplanMeierZeroAfter()
         dur_ = arr[2].copy()
