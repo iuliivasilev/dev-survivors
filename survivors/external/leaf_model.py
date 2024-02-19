@@ -1,20 +1,11 @@
 import numpy as np
 from .. import constants as cnt
 
-# from ..external import KaplanMeier, KaplanMeierZeroAfter
-# from ..external import NelsonAalen
-
 
 class LeafModel(object):
-    survival_class = None
-    hazard_class = None
 
     def __init__(self, weights_name=None):
-        if (self.survival_class is None) and (self.hazard_class is None):
-            raise Exception("There is no survival or hazard base class!")
         self.shape = None
-        self.survival = None
-        self.hazard = None
         self.features_predict = dict()
         self.lists = dict()
         self.default_bins = np.array([1, 10, 100, 1000])
@@ -46,6 +37,24 @@ class LeafModel(object):
         if X is None:
             return value
         return np.repeat(value, X.shape[0], axis=0)
+
+    def predict_survival_at_times(self, X=None, bins=None):
+        pass
+
+    def predict_hazard_at_times(self, X=None, bins=None):
+        pass
+
+
+class NonparamLeafModel(LeafModel):
+    survival_class = None
+    hazard_class = None
+
+    def __init__(self, *args, **kwargs):
+        if (self.survival_class is None) and (self.hazard_class is None):
+            raise Exception("There is no survival or hazard base class!")
+        self.survival = None
+        self.hazard = None
+        super().__init__(*args, **kwargs)
 
     def predict_survival_at_times(self, X=None, bins=None):
         if self.survival_class is None:
@@ -84,7 +93,7 @@ class LeafModel(object):
         return np.repeat(hf[np.newaxis, :], X.shape[0], axis=0)
 
 
-class NormalizedLeafModel(LeafModel):
+class NormalizedLeafModel(NonparamLeafModel):
     def fit(self, *args, **kwargs):
         super().fit(*args, **kwargs)
 
@@ -96,7 +105,7 @@ class NormalizedLeafModel(LeafModel):
         self.weights = np.ones_like(self.lists[cnt.TIME_NAME])
 
 
-class MeaningLeafModel(LeafModel):
+class MeaningLeafModel(NonparamLeafModel):
     def fit(self, *args, **kwargs):
         super().fit(*args, **kwargs)
         self.lists[cnt.TIME_NAME] = np.random.choice(self.lists[cnt.TIME_NAME], size=(2, 1000), replace=True).mean(axis=0)
