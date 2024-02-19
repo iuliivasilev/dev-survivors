@@ -132,9 +132,8 @@ Please cite the following paper if you are using **survivors**.
 .. |PyPi| image:: https://img.shields.io/pypi/v/survivors
 .. _PyPi: https://pypi.org/project/survivors/
 
-.. |License| image:: https://img.shields.io/:license-mit-blue.svg
-  :target: COPYING
-  :alt: License
+.. |License| image:: https://img.shields.io/badge/license-BSD%203--Clause-blue.svg
+  :target: https://github.com/iuliivasilev/dev-survivors/blob/master/LICENSE
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10649986.svg
 .. _DOI: https://zenodo.org/doi/10.5281/zenodo.10649777
