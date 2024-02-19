@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.stats as ss
-from .leaf_model import LeafModel, MixLeafModel, NormalizedLeafModel, MeaningLeafModel
+from .leaf_model import NonparamLeafModel, MixLeafModel, NormalizedLeafModel, MeaningLeafModel
 
 
 def epanechnikov_kernel(t, T, bandwidth=1.0):
@@ -133,14 +133,14 @@ class KaplanMeierZeroAfter(KaplanMeier):
 
 
 
-class BaseLeafModel(LeafModel):
+class BaseLeafModel(NonparamLeafModel):
     survival_class = KaplanMeier
     hazard_class = NelsonAalen
 
-class BaseLeafModelOnlySurv(LeafModel):
+class BaseLeafModelOnlySurv(NonparamLeafModel):
     survival_class = KaplanMeier
 
-class BaseLeafModelOnlyHazard(LeafModel):
+class BaseLeafModelOnlyHazard(NonparamLeafModel):
     hazard_class = NelsonAalen
 
 
