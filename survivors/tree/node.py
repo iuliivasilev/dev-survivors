@@ -149,16 +149,17 @@ class Node(object):
             self.info["max_features"] = int(self.info["max_features"]*len(self.features))
 
         self.info.setdefault("weights_feature", None)
-        if not(self.info["weights_feature"] is None):
+        if not (self.info["weights_feature"] is None):
             self.info["weights"] = self.df[self.info["weights_feature"]].to_numpy()
 
+        leaf_kwargs = {k[5:]: v for k, v in self.info.items() if (k.find("leaf_") != -1) and (k != "leaf_model")}
         self.info.setdefault("leaf_model", "base_zero_after")  # base
         if isinstance(self.info["leaf_model"], str):
-            self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base_zero_after")()  # base
+            self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base_zero_after")(**leaf_kwargs)  # base
         elif isinstance(self.info["leaf_model"], type):  # Check is class
-            self.leaf_model = self.info["leaf_model"]()
-            # if not(isinstance(self.leaf_model, LeafModel)):
-            #     self.leaf_model = None
+            self.leaf_model = self.info["leaf_model"](**leaf_kwargs)
+            if not (isinstance(self.leaf_model, LeafModel)):
+                self.leaf_model = None
         else:
             self.leaf_model = None
         self.size = self.df.shape[0]
@@ -166,7 +167,7 @@ class Node(object):
         self.info.setdefault("need_features", [cnt.TIME_NAME, cnt.CENS_NAME])
         if isinstance(self.info["need_features"], list):
             self.info["need_features"] = list(set(self.info["need_features"] + [cnt.TIME_NAME, cnt.CENS_NAME]))
-        self.leaf_model.fit(self.df, self.info["need_features"], self.info["normalize"])
+        self.leaf_model.fit(self.df, self.info["need_features"])  # , self.info["normalize"])
         # self.ch = np.array(
         #     [np.mean(self.df["time"]), np.std(self.df["time"]), np.sum(self.df["cens"]) / self.df["cens"].shape[0]])
 
@@ -363,12 +364,14 @@ class Node(object):
             ax.set_xlim([0, np.max(lst)])
             ax.set_xlabel(f'{target}', fontsize=25)
         elif mode == "kde":
-            #lst = self.leaf_model.predict_list_feature(target)
-            lst = self.leaf_model.old_durs
+            lst = self.leaf_model.predict_list_feature(target)
+            # lst = self.leaf_model.old_durs
             sns.kdeplot(lst, ax=ax)
             ax.set_xlabel(f'{target}', fontsize=25)
         elif mode == "surv":
             sf = self.leaf_model.predict_survival_at_times(X=None, bins=bins)
+            if len(sf.shape) > 1:
+                sf = sf.flat
             plt.step(bins, sf, linewidth=3)
             ax.set_xlabel('Time', fontsize=25)
             ax.set_ylabel('Survival probability', fontsize=25)
@@ -376,12 +379,16 @@ class Node(object):
         plt.close(fig)
 
     def get_description(self):
-        m_cens = round(self.leaf_model.predict_feature(X=None, feature_name=cnt.CENS_NAME), 2)
-        m_time = round(self.leaf_model.predict_feature(X=None, feature_name=cnt.TIME_NAME), 2)
+        m_cens = self.leaf_model.predict_feature(X=None, feature_name=cnt.CENS_NAME)
+        m_time = self.leaf_model.predict_feature(X=None, feature_name=cnt.TIME_NAME)
+        if isinstance(m_cens, np.ndarray):
+            m_cens = m_cens[0]
+        if isinstance(m_time, np.ndarray):
+            m_time = m_time[0]
         label = "\n".join([f"size = {self.leaf_model.get_shape()[0]}",
-                           f"events (%) = {m_cens}",
+                           f"events (%) = {round(m_cens, 2)}",
                            # f"depth = {self.depth}",
-                           f"mean time = {m_time}"])
+                           f"mean time = {round(m_time, 2)}"])
         return label
 
     def set_dot_node(self, dot, path_dir="", depth=None, **args):
