@@ -1,17 +1,20 @@
 from .. import constants as cnt
-# from ..tree.stratified_model import LeafModel
 from .leaf_model import LeafModel
 from lifelines import WeibullAFTFitter, LogNormalAFTFitter, LogLogisticAFTFitter
+from lifelines import CoxPHFitter
 import numpy as np
 
 
-AFT_param_grid = {
+PARAM_GRID = {
     "penalizer": [0, 0.01, 0.1, 0.5, 1.0],
     "l1_ratio": [100, 10, 1, 0.1, 0.01, 0.001]
 }
 
+AFT_param_grid = PARAM_GRID.copy()
+CoxPH_param_grid = PARAM_GRID.copy()
 
-class AcceleratedFailureTimeBase(LeafModel):
+
+class ParametricLifelinesBase(LeafModel):
     base_model = None
 
     def __init__(self, **kwargs):
@@ -20,6 +23,10 @@ class AcceleratedFailureTimeBase(LeafModel):
         super().__init__()
 
     def prepare_data(self, X):
+        if X is None:
+            if self.model is None:
+                raise Exception("Model does not exist")
+            return self.model._central_values
         return X.fillna(0).replace(np.nan, 0)
 
     def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME]):
@@ -34,8 +41,8 @@ class AcceleratedFailureTimeBase(LeafModel):
 
     def predict_hazard_at_times(self, X=None, bins=None):
         X = self.prepare_data(X)
-        hf = self.model.predict_hazard(X, times=bins).to_numpy().T
-        return np.cumsum(hf, axis=1)
+        chf = self.model.predict_cumulative_hazard(X, times=bins).to_numpy().T
+        return chf
 
     def predict_feature(self, X=None, feature_name=None):
         X = self.prepare_data(X)
@@ -44,20 +51,25 @@ class AcceleratedFailureTimeBase(LeafModel):
         return super().predict_feature(X, feature_name)
 
 
-class WeibullAFT(AcceleratedFailureTimeBase):
+class WeibullAFT(ParametricLifelinesBase):
     base_model = WeibullAFTFitter
 
 
-class LogNormalAFT(AcceleratedFailureTimeBase):
+class LogNormalAFT(ParametricLifelinesBase):
     base_model = LogNormalAFTFitter
 
 
-class LogLogisticAFT(AcceleratedFailureTimeBase):
+class LogLogisticAFT(ParametricLifelinesBase):
     base_model = LogLogisticAFTFitter
+
+
+class CoxPH(ParametricLifelinesBase):
+    base_model = CoxPHFitter
 
 
 LEAF_AFT_DICT = {
     "WeibullAFT": WeibullAFT,
     "LogNormalAFT": LogNormalAFT,
-    "LogLogisticAFT": LogLogisticAFT
+    "LogLogisticAFT": LogLogisticAFT,
+    "CoxPH": CoxPH
 }
