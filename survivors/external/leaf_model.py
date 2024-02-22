@@ -4,18 +4,23 @@ from .. import constants as cnt
 
 class LeafModel(object):
 
-    def __init__(self, weights_name=None):
+    def __init__(self, features=[], weights_name=None, **kwargs):
+        self.kwargs = kwargs
+        self.features = features
         self.shape = None
         self.features_predict = dict()
         self.lists = dict()
         self.default_bins = np.array([1, 10, 100, 1000])
         self.weights_name = weights_name
 
-    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME], *args, **kwargs):
-        X_sub = X_node[need_features]
+    def fit(self, X_node, *args, **kwargs):
+        if self.features == []:
+            self.features = X_node.columns
+
+        X_sub = X_node[self.features]
         self.shape = X_sub.shape
         self.features_predict = X_sub.mean(axis=0).to_dict()
-        self.lists = X_sub.to_dict(orient="list")
+        self.lists = X_sub[[cnt.TIME_NAME, cnt.CENS_NAME]].to_dict(orient="list")
         if self.weights_name is None:
             self.weights = None
         else:
