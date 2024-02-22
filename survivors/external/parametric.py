@@ -17,23 +17,38 @@ CoxPH_param_grid = PARAM_GRID.copy()
 class ParametricLifelinesBase(LeafModel):
     base_model = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, except_stop=True, **kwargs):
         self.model = None
-        self.kwargs = kwargs
-        super().__init__()
+        self.except_stop = except_stop
+        super().__init__(**kwargs)
 
     def prepare_data(self, X):
         if X is None:
             if self.model is None:
                 raise Exception("Model does not exist")
             return self.model._central_values
-        return X.fillna(0).replace(np.nan, 0)
 
-    def fit(self, X_node, need_features=[cnt.TIME_NAME, cnt.CENS_NAME]):
+        if self.model is None:  # Prepare train sample
+            self.features = set(self.features) & set((X.notna().sum() != 0).index)  # Delete full nan
+            self.features = set(self.features) & set((X.std() == 0).index)  # Delete columns with one value
+            self.features = list(self.features | {cnt.TIME_NAME, cnt.CENS_NAME})
+            if X[cnt.CENS_NAME].sum() == 0:
+                X[cnt.CENS_NAME] = 1  # parametric models do not work with only censored observations
+        X = X[list(set(self.features) & set(X.columns))].copy()
+        X = X.fillna(0).replace(np.nan, 0)
+        return X
+
+    def fit(self, X_node):
+        super().fit(X_node)
         X_node = self.prepare_data(X_node)
         self.model = self.base_model(**self.kwargs)
-        self.model.fit(X_node, cnt.TIME_NAME, event_col=cnt.CENS_NAME)
-        super().fit(X_node, need_features)
+        try:
+            self.model.fit(X_node, cnt.TIME_NAME, event_col=cnt.CENS_NAME)
+        except Exception as e:
+            if self.except_stop:
+                raise Exception(f"Leaf model fitting raise exception: {str(e)}")
+            self.features = [cnt.TIME_NAME, cnt.CENS_NAME]
+            self.model.fit(X_node[self.features], cnt.TIME_NAME, event_col=cnt.CENS_NAME)
 
     def predict_survival_at_times(self, X=None, bins=None):
         X = self.prepare_data(X)
