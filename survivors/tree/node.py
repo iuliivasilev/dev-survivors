@@ -164,10 +164,7 @@ class Node(object):
             self.leaf_model = None
         self.size = self.df.shape[0]
 
-        self.info.setdefault("need_features", [cnt.TIME_NAME, cnt.CENS_NAME])
-        if isinstance(self.info["need_features"], list):
-            self.info["need_features"] = list(set(self.info["need_features"] + [cnt.TIME_NAME, cnt.CENS_NAME]))
-        self.leaf_model.fit(self.df, self.info["need_features"])  # , self.info["normalize"])
+        self.leaf_model.fit(self.df)  # , self.info["normalize"])
         # self.ch = np.array(
         #     [np.mean(self.df["time"]), np.std(self.df["time"]), np.sum(self.df["cens"]) / self.df["cens"].shape[0]])
 
