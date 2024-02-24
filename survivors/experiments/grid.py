@@ -143,9 +143,11 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
     """
     def f(**kwargs):
         metr_lst = []
+        exec_times = []
         fold = 0
         for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds, mode):
-            print("X_train.shape:", X_train.shape)
+            # print("X_train.shape:", X_train.shape)
+            s_time = time.time()
             est = method(**kwargs)
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 if dir_path is None:
@@ -194,12 +196,13 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 pred_time = -1*est.predict(X_test)
                 # pred_time = np.trapz(pred_surv, bins)
                 # Integral version from: https://lifelines.readthedocs.io/en/latest/fitters/regression/CoxPHFitter.html
-            
+
+            exec_times.append(time.time() - s_time)
             metr_lst.append(count_metric(y_train, y_test, pred_time,
                                          pred_surv, pred_haz, bins, metrics_names))
             fold += 1
             del est
-        return np.vstack(metr_lst)
+        return np.vstack(metr_lst), np.array(exec_times)
     return f
 
 
@@ -308,18 +311,16 @@ class Experiments(object):
             p_size = len(grid_params)
             for i_p, p in enumerate(grid_params):
                 try:
-                    start_time = time.time()
-                    eval_metr = fit_eval_func(**p)
-                    full_time = time.time() - start_time
+                    eval_metr, exec_times = fit_eval_func(**p)
                     curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                                 "PARAMS": str(p), "TIME": full_time}
+                                 "PARAMS": str(p), "TIMES": exec_times, "TIME": np.sum(exec_times)}
                     eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
                     curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
                     # self.result_table = self.result_table.append(curr_dict, ignore_index=True)
                     self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
                     if verbose > 0:
                         print(f"Iteration: {i_p + 1}/{p_size}")
-                        print(f"EXECUTION TIME OF {method.__name__}: {full_time}",
+                        print(f"EXECUTION TIME OF {method.__name__}: {exec_times}",
                                   {k: [np.mean(v), np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
                 except KeyboardInterrupt:
                     print("HANDELED KeyboardInterrupt")
@@ -346,7 +347,8 @@ class Experiments(object):
         #     # add_time = strftime("%H:%M:%S", gmtime(time.time()))
         #     self.save(dir_path)
 
-    def run_effective(self, X, y, dir_path=None, verbose=0):
+    def run_effective(self, X, y, dir_path=None, verbose=0,
+                      stratify_best=["criterion", "balance", "leaf_model", "l_reg"]):
         if not(self.mode in ["CV+SAMPLE"]):
             self.run(X, y, dir_path=dir_path, verbose=verbose)
             return None
@@ -367,8 +369,7 @@ class Experiments(object):
         old_mode = self.mode
         self.mode = "CV"
         self.run(X_tr, y_tr, dir_path=dir_path, verbose=verbose)
-        self.sample_table = self.eval_on_sample_by_best_params(X, y, folds=folds,
-                                                               stratify=["criterion", "balance", "leaf_model", "l_reg"])
+        self.sample_table = self.eval_on_sample_by_best_params(X, y, folds=folds, stratify=stratify_best)
         self.mode = old_mode
 
     def eval_on_sample_by_best_params(self, X, y, folds=20, stratify="criterion"):
