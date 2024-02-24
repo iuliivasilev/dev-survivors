@@ -71,7 +71,7 @@ class Node(object):
     numb : int
         Number or name of the Node
     full_rule : list
-        List of rules from the root
+        Rules from the root
     depth : int
         Distance from the root
     edges : array-like
@@ -170,7 +170,7 @@ class Node(object):
 
     """ GROUP FUNCTIONS: CREATE LEAVES """
     def get_comb_fast(self, features):
-        X = self.df.loc[:, features + [cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
+        X = self.df[features + [cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
 
         def create_params_f(v_feature, name):
             d = self.info.copy()
@@ -329,18 +329,15 @@ class Node(object):
             Values by target
 
         """
-        res = np.full((X.shape[0]), np.nan, dtype=object)
         if target == "surv":
-            res = self.leaf_model.predict_survival_at_times(X, bins)  # target(X_node=dataset)
+            return self.leaf_model.predict_survival_at_times(X, bins)  # target(X_node=dataset)
         elif target == "hazard":
-            res = self.leaf_model.predict_hazard_at_times(X, bins)
+            return self.leaf_model.predict_hazard_at_times(X, bins)
         elif target == "ch":
-            res = np.repeat(self.ch[np.newaxis, :], X.shape[0], axis=0)
+            return np.repeat(self.ch[np.newaxis, :], X.shape[0], axis=0)
         elif target in self.__dict__:
-            res = np.repeat(getattr(self, target, np.nan), X.shape[0], axis=0)
-        else:
-            res = self.leaf_model.predict_feature(X, target)  # np.mean(dataset[target])
-        return res
+            return np.repeat(getattr(self, target, np.nan), X.shape[0], axis=0)
+        return self.leaf_model.predict_feature(X, target)  # np.mean(dataset[target])
 
     def predict_scheme(self, X, scheme_feats):
         feat_means = np.array([self.leaf_model.features_predict.get(s_f, np.nan)
