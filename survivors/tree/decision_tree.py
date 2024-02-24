@@ -23,8 +23,7 @@ from imblearn.over_sampling import RandomOverSampler
 def format_to_pandas(X, columns):
     type_df = type(X)
     if type_df.__name__ == "DataFrame":
-        X = X.reset_index(drop=True)
-        return X.loc[:, columns]
+        return X[columns].reset_index(drop=True)
     elif type_df.__name__ == "ndarray":
         return pd.DataFrame(X, columns=columns)
     return None
@@ -272,24 +271,27 @@ class CRAID(object):
             shape = (X.shape[0], len(bins))
         if target == "ch":
             shape = (X.shape[0], 3)
-        res = np.full(shape, np.nan, dtype=object)
+        if mode == "rules":
+            res = np.full(shape, np.nan, dtype=object)
+        else:
+            # res = np.full(shape, np.nan, dtype=float)
+            res = np.empty(shape, dtype=float)
+            res[:] = np.nan
         for i in sorted(self.nodes.keys()):
-            ind = np.where(node_bin[:, num_node_to_key[i]])[0]
-            ind_x = X.index[ind]
+            ind = node_bin[:, num_node_to_key[i]]
+            X_loc = X[ind]
             if ind.shape[0] > 0:
                 if self.nodes[i].is_leaf or (i in end_list):
                     if target == "surv" or target == "hazard":
-                        res[ind] = self.nodes[i].predict(X.loc[ind_x, :], target, bins)
+                        res[ind] = self.nodes[i].predict(X_loc, target, bins)
                     elif mode == "target":
-                        res[ind] = self.nodes[i].predict(X.loc[ind_x, :], target)
+                        res[ind] = self.nodes[i].predict(X_loc, target)
                     elif mode == "rules":
                         res[ind] = self.nodes[i].get_full_rule()
                 else:
-                    pred_edges = self.nodes[i].get_edges(X.loc[ind_x, :])
+                    pred_edges = self.nodes[i].get_edges(X_loc)
                     for e in set(pred_edges):
                         node_bin[ind, num_node_to_key[e]] = pred_edges == e
-        if not(mode == "rules"):
-            res = res.astype(float)
         return res
 
     def predict_at_times(self, X, bins, mode="surv"):
