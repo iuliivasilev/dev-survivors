@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import re
 from os.path import dirname, join
-from dateutil import parser
+from dateutil import parser  # python-dateutil
 from ..constants import TIME_NAME, CENS_NAME, get_y
 
 schemes_list = [
@@ -54,7 +54,8 @@ def_categ_full = {
     'Группа риска': {'Хроники': 0, 'Беременные': 1, 'Старше 65': 2, 0: 0, 1: 1, 2: 2}
 }
 
-sign = [#'osmotr_tyazhest',
+sign = [
+    # 'osmotr_tyazhest',
     'days_f', 'days_s', 'spo2', 'chdd', 'has_odyshka_ili_zatrudnennoe_dyhanie', 'temperatura_tela_value',
     'has_oschussh_zalozhen_v_grudnoi_kletke', 'has_slabost_ili_lomota', 'Пол', 'возраст',
     'IGG_N', 'IGM_N', 'IGG_DEF', 'IGM_DEF', 'PCR_N',
@@ -104,17 +105,17 @@ mapp_sch = {
     "cyto_5": "Метилпреднизолон Дексаметазон",
     "cyto_6": "Тоцилизумаб Сарилумаб Канакинумаб",
     "MOS_AM": "Амоксициллин",
-    "MOS_AM_AZ": "Ампициллин Азитромицин",   #Антибиотик: Ампициллин
+    "MOS_AM_AZ": "Ампициллин Азитромицин",     # Антибиотик: Ампициллин
     "N_MOS_AM_AZ": "Азитромицин",
-    "MOS_AM_LVF": "Ампициллин Левофлоксацин",#Антибиотик: Ампициллин
+    "MOS_AM_LVF": "Ампициллин Левофлоксацин",  # Антибиотик: Ампициллин
     "N_MOS_AM_LVF": "Левофлоксацин",
-    "MOS_CFTR": "Цефтриаксон",               #Антибиотик Цефтриаксон
-    "MOS_CFT": "Цефотаксим",                 #Антибиотик Цефотаксим
-    "MOS_CFP": "Цефепим",                    #Антибиотик Цефепим
-    "MOS_CFP_LVF": "Цефепим Левофлоксацин",  #Антибиотик Цефепим
+    "MOS_CFTR": "Цефтриаксон",                 # Антибиотик Цефтриаксон
+    "MOS_CFT": "Цефотаксим",                   # Антибиотик Цефотаксим
+    "MOS_CFP": "Цефепим",                      # Антибиотик Цефепим
+    "MOS_CFP_LVF": "Цефепим Левофлоксацин",    # Антибиотик Цефепим
     "N_MOS_CFP_LVF": "Левофлоксацин",
     "MOS_MOK": "Моксифлоксацин",
-    "MOS_PIP": "Пиперациллин",               #Антибиотик Пиперациллин
+    "MOS_PIP": "Пиперациллин",               # Антибиотик Пиперациллин
 
     "MOS_LVF_MOK": "Левофлоксацин Моксифлоксацин",
     'mos_light_1': "Фавипиравир Риамиловир Гидроксихлорохин ",
@@ -166,7 +167,7 @@ def create_none_ft(fill_df, sign_f, fill_none=False):
                 fill_df[i] = fill_df[i].astype('float64')
             len_uniq = len(fill_df[i].unique())
             if len_uniq < 10:
-                if len_uniq <= 6 and len_uniq >= right_thres:
+                if (len_uniq <= 6) and (len_uniq >= right_thres):
                     print('Categorical var:', i, len_uniq)
                     dict_encoder = {v_u: i_u for i_u, v_u in enumerate(np.sort(fill_df[i].unique())) if v_u == v_u}
                     fill_df[i] = fill_df[i].map(dict_encoder)
@@ -194,7 +195,7 @@ def dest_date(x, y, with_neg=False):
         days = (p_1 - p_2).days
         if not with_neg:
             days = abs(days)
-    except:
+    except Exception as e:
         pass
     return days
 
