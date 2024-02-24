@@ -3,7 +3,7 @@ from numba import njit
 
 from scipy import stats
 # from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
-from ..external import KaplanMeier, NelsonAalen, KaplanMeierZeroAfter
+from ..external import KaplanMeier, NelsonAalen, KaplanMeierZeroAfter, FullProbKM
 from ..metrics import ibs_WW, auprc
 from ..constants import get_y
 # import diptest
@@ -46,9 +46,9 @@ def lr_hist_statistic(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2,
     elif weightings == 7:
         res[:, 0] = np.cumprod((1.0 - O_j / (N_j + 1)))
     elif weightings == 8:
-        res[:, 0] = N_j/(N_1_j*N_2_j)
-        #res[:, 0] = np.cumprod((1.0 - O_1_j / (N_1_j + 1))) - np.cumprod((1.0 - O_2_j / (N_2_j + 1)))
-    var = ((res[:, 0] * res[:, 0] * res[:, 2]).sum())
+        res[:, 0] = N_j/(N_1_j * N_2_j)
+        # res[:, 0] = np.cumprod((1.0 - O_1_j / (N_1_j + 1))) - np.cumprod((1.0 - O_2_j / (N_2_j + 1)))
+    var = (res[:, 0] * res[:, 0] * res[:, 2]).sum()
     num = res[:, 0] * res[:, 1]
     stat_val = np.power(num.sum(), 2) / var  # ((res[:, 0] * res[:, 0] * res[:, 2]).sum())
 
@@ -72,7 +72,7 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
         if cens_hist_2 is None:
             cens_hist_2 = time_hist_2
         if weights_hist is None:
-            weights_hist = np.ones_like(time_hist_1)
+            weights_hist = np.ones(time_hist_1.shape[0])
         d = {"logrank": 1, "wilcoxon": 2, "tarone-ware": 3, "peto": 4, "weights": 5}
         d.update({"diff": 6, "maxcombo": 7, "symm_peto": 8})
         weightings = d.get(weightings, 1)
@@ -84,11 +84,12 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
                                     np.uint32(weightings),
                                     weights_hist.astype("float32")
                                     )
-        return logrank
     except Exception as err:
-        print(err)
-        print(time_hist_1.shape, time_hist_2.shape, cens_hist_1.shape, cens_hist_2.shape, weights_hist.shape)
-        return 0.0
+        # print(err)
+        # print(time_hist_1, time_hist_2, cens_hist_1, cens_hist_2, weights_hist)
+        # print(time_hist_1.shape, time_hist_2.shape, cens_hist_1.shape, cens_hist_2.shape, weights_hist.shape)
+        logrank = 0.0
+    return logrank
 
 
 # def optimal_criter_split_hist(left_time_hist, left_cens_hist,
@@ -327,7 +328,7 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         # cens = np.ones_like(dur)
         return best_attr
     if weights is None:
-        weights = np.ones_like(dur)
+        weights = np.ones(dur.shape, dtype=float)  # np.ones_like(dur)
         # kmf = KaplanMeierZeroAfter()
         # kmf.fit(dur, cens)
         # dd = np.unique(dur)
