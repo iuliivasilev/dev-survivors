@@ -33,7 +33,7 @@ def parse_requirements(filename):
 
 setup(
     name='survivors',
-    version='1.5.0',
+    version='1.6.0',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',
     packages=find_packages(),
