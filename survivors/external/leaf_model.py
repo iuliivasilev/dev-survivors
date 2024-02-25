@@ -75,6 +75,8 @@ class NonparamLeafModel(LeafModel):
         if bins is None:
             bins = self.survival.timeline
         sf = self.survival.survival_function_at_times(bins)
+        if type(sf).__name__ == "Series":
+            sf = sf.values
         if X is None:
             return sf
         return np.repeat(sf[np.newaxis, :], X.shape[0], axis=0)
@@ -93,6 +95,8 @@ class NonparamLeafModel(LeafModel):
         if bins is None:
             bins = self.hazard.timeline
         hf = self.hazard.cumulative_hazard_at_times(bins)
+        if type(hf).__name__ == "Series":
+            hf = hf.values
         if X is None:
             return hf
         return np.repeat(hf[np.newaxis, :], X.shape[0], axis=0)

@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as ss
 from .leaf_model import NonparamLeafModel, MixLeafModel, NormalizedLeafModel, MeaningLeafModel
-
+from lifelines import KaplanMeierFitter, NelsonAalenFitter
 
 def epanechnikov_kernel(t, T, bandwidth=1.0):
     M = 0.75 * (1 - ((t - T) / bandwidth) ** 2)
@@ -158,9 +158,14 @@ class BaseMixLeafModel(MixLeafModel):
     survival_class = KaplanMeierZeroAfter
     hazard_class = NelsonAalen
 
+class BaseLeafModeLL(NonparamLeafModel):
+    survival_class = KaplanMeierFitter
+    hazard_class = NelsonAalenFitter
+
 
 LEAF_NONPARAM_DICT = {
     "base": BaseLeafModel,
+    "baseLL": BaseLeafModeLL,
     "only_hazard": BaseLeafModelOnlyHazard,
     "only_survive": BaseLeafModelOnlySurv,
     "base_zero_after": BaseNormalizedLeafModel,
