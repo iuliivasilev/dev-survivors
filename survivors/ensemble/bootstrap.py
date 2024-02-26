@@ -86,7 +86,7 @@ class ParallelBootstrapCRAID(BootstrapCRAID):
         for model, x_sub_ind in zip(ml, x_sub_ind):
             x_oob = self.X_train.loc[self.X_train.index.difference(x_sub_ind), :]
             self.add_model(model, x_oob)
-        print(f"fitted: {len(self.models)} models.")
+        # print(f"fitted: {len(self.models)} models.")
 
     # def predict_at_times(self, x_test, bins, aggreg=True, mode="surv"):
     #     with Parallel(n_jobs=self.tree_kwargs.get("n_jobs", 10), verbose=False, batch_size=10) as parallel:
