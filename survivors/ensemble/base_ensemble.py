@@ -228,8 +228,8 @@ class FastBaseEnsemble(BaseEnsemble):
         else:
             best_index = np.argmax(ens_metr_arr)
         self.select_model(0, best_index + 1)
-        print(ens_metr_arr)
-        print(f"fitted: {len(self.models)} models.")
+        # print(ens_metr_arr)
+        # print(f"fitted: {len(self.models)} models.")
 
     def prepare_for_tolerance(self):
         if self.ens_metric_name in ["iauc", "likelihood", "bic"] or self.ens_metric_name.upper().find("IBS") >= 0:
