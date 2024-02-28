@@ -49,13 +49,13 @@ install_requires = parse_requirements("requirements/requirements.txt")
 
 setup(
     name='survivors',
-    version='1.6.0',
+    version='1.6.2',
     license='BSD 3-Clause License',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',
     packages=find_packages(),
     long_description=open(join(dirname(__file__), 'README.rst')).read(),
-    include_package_data=True,
+    include_package_data=False,
     package_data=PACKAGE_DATA,
     python_requires='>=3.10',
     install_requires=install_requires,  # requirements_list
