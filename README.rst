@@ -129,7 +129,7 @@ Please cite the following paper if you are using **survivors**.
 
 .. _survival analysis: https://en.wikipedia.org/wiki/Survival_analysis
 
-.. |Price| image::https://img.shields.io/badge/price-FREE-0098f7.svg
+.. |Price| image:: https://img.shields.io/badge/price-FREE-0098f7.svg
    :target: https://github.com/iuliivasilev/dev-survivors/blob/master/LICENSE
 
 .. |PyPi| image:: https://img.shields.io/pypi/v/survivors
