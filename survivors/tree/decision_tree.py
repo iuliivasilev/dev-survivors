@@ -135,6 +135,7 @@ class CRAID(object):
     get_leaf_numbers : return leaf numbers from nodes
     get_spanning_leaf_numbers : return pre-leaves numbers from nodes
     delete_leaves_by_span : set up pre-leaves from lists to leaves
+
     """
     def __init__(self, depth=0,
                  random_state=123,
@@ -261,6 +262,7 @@ class CRAID(object):
         -------
         res : array-like
             Values by mode & target
+
         """
         X = format_to_pandas(X, self.features)
         num_node_to_key = dict(zip(sorted(self.nodes.keys()), range(len(self.nodes))))
@@ -315,7 +317,8 @@ class CRAID(object):
         Returns
         -------
         array-like
-            Vector of function values in times (bins).
+            Vector of function values in times (bins)
+
         """
         X = format_to_pandas(X, self.features)
         # if mode == "cox-hazard":

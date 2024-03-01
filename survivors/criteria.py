@@ -232,8 +232,7 @@ def weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""):
     -------
     logrank : float
         Chi2 statistic value of weighted log-rank test
-    # p-value : float
-    #     Chi2 p-value of weighted log-rank test
+
     """
     try:
         if cens_A is None:
