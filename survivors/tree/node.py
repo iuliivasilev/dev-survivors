@@ -270,18 +270,17 @@ class Node(object):
         #     node_edges = np.append(node_edges, N)
         #     self.rule_edges = np.append(self.rule_edges, rule)
 
+        self.df = None
         return node_edges
 
     def set_edges(self, edges):
         self.edges = edges
         self.is_leaf = False
-        self.df = None
 
     def set_leaf(self):
-        if self.is_leaf:
-            return
         self.edges = np.array([], dtype=int)
         self.is_leaf = True
+        self.df = None
 
     def prepare_df_for_attr(self, X):
         attr = self.rule_edges[0].get_feature()

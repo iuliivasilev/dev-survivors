@@ -206,6 +206,7 @@ class CRAID(object):
             node = self.nodes[stack_nodes[0]]
             stack_nodes = stack_nodes[1:]
             if node.depth >= self.depth:
+                node.set_leaf()
                 continue
             sub_nodes = node.split()
             if sub_nodes.shape[0] > 0:
