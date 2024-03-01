@@ -1,4 +1,4 @@
-|License| |PyPi|_ |DOI|_
+|Price| |License| |PyPi|_ |DOI|_
 
 ===============
 survivors
@@ -23,20 +23,20 @@ Statistical methods need data, but complete data may not be available, i.e. the 
 Requirements
 ============
 
-- Python 3.9 or later
+- Python (>= 3.9)
+- NumPy (>= 1.22)
+- Pandas (>=0.25)
+- Numba (>= 0.58.0)
+- SciPy
+- matplotlib (>= 3.5.0)
+- seaborn
+- graphviz (>= 2.50.0)
 - joblib
 - pickle-mixin
-- numpy >= 1.22
-- numba >= 0.58.0
-- matplotlib >= 3.5.0
-- seaborn
-- graphviz >= 2.50.0
-- pandas >=0.25
-- scipy
 - python-dateutil
-- scikit-learn >= 1.0.2
-- lifelines >= 0.27.8
-- scikit-survival >= 0.17.2
+- scikit-learn (>= 1.0.2)
+- lifelines (>= 0.27.8)
+- scikit-survival (>= 0.17.2)
 - openpyxl
 
 ============
@@ -128,6 +128,9 @@ Please cite the following paper if you are using **survivors**.
     }
 
 .. _survival analysis: https://en.wikipedia.org/wiki/Survival_analysis
+
+.. |Price| image::https://img.shields.io/badge/price-FREE-0098f7.svg)
+   :target: https://github.com/iuliivasilev/dev-survivors/blob/master/LICENSE
 
 .. |PyPi| image:: https://img.shields.io/pypi/v/survivors
 .. _PyPi: https://pypi.org/project/survivors/
