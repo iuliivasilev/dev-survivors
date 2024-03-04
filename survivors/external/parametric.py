@@ -17,7 +17,7 @@ CoxPH_param_grid = PARAM_GRID.copy()
 class ParametricLifelinesBase(LeafModel):
     base_model = None
 
-    def __init__(self, except_stop=True, **kwargs):
+    def __init__(self, except_stop=False, **kwargs):
         self.model = None
         self.except_stop = except_stop
         super().__init__(**kwargs)
