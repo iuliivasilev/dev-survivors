@@ -214,17 +214,17 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
     experim.set_metrics(lst_metrics)
     experim.add_metric_best(best_metric)
     if with_external:
-        # experim.add_method(CoxPHSurvivalAnalysis, cox_param_grid)
-        # experim.add_method(SurvivalTree, ST_param_grid)
-        # experim.add_method(RandomSurvivalForest, RSF_param_grid)
-        # experim.add_method(ComponentwiseGradientBoostingSurvivalAnalysis, CWGBSA_param_grid)
-        # experim.add_method(GradientBoostingSurvivalAnalysis, GBSA_param_grid)
-        # experim.add_method(LEAF_MODEL_DICT["base"], {})
-        # experim.add_method(LEAF_MODEL_DICT["baseLL"], {})
-        # experim.add_method(WeibullAFT, AFT_param_grid)
-        # experim.add_method(LogLogisticAFT, AFT_param_grid)
+        experim.add_method(CoxPHSurvivalAnalysis, cox_param_grid)
+        experim.add_method(SurvivalTree, ST_param_grid)
+        experim.add_method(RandomSurvivalForest, RSF_param_grid)
+        experim.add_method(ComponentwiseGradientBoostingSurvivalAnalysis, CWGBSA_param_grid)
+        experim.add_method(GradientBoostingSurvivalAnalysis, GBSA_param_grid)
+        experim.add_method(LEAF_MODEL_DICT["base"], {})
+        experim.add_method(LEAF_MODEL_DICT["baseLL"], {})
+        experim.add_method(WeibullAFT, AFT_param_grid)
+        experim.add_method(LogLogisticAFT, AFT_param_grid)
         experim.add_method(LogNormalAFT, AFT_param_grid)
-        # experim.add_method(CoxPH, CoxPH_param_grid)
+        experim.add_method(CoxPH, CoxPH_param_grid)
     if len(with_self) > 0:
         for alg in with_self:
             PARAMS_[dataset][alg]["categ"] = [categ]
@@ -257,7 +257,7 @@ def dir_path():
 @pytest.mark.parametrize(
     "dataset",  ["support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG", "flchain", "backblaze", "actg", "support2", "smarto"
 )
-def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV"):  # CV+SAMPLE
+def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
     mode_wei = None
     # NORMAL_SHORT_QUANTILE_TIME_
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_SUM_ALL_BINS_{bins_sch}"
@@ -267,20 +267,21 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
 
     # prefix = f"{best_metric}_STRATTIME+_EXT10_EQ_REG_TREE_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"
+    prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_PAR_BSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_reg(0_01)_PART_BOOST_ALL_BINS_{bins_sch}"
 
-    prefix = f"{best_metric}_STRATTIME+_scsurv_test_LNAFT"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
-    res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
-                  # dir_path=dir_path+"\\",
-                  bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
+    # prefix = f"{best_metric}_STRATTIME+_scsurv_mean"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
+    # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
+    #               # dir_path=dir_path+"\\",
+    #               bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
 
-    # storage_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset)
-    # if not os.path.exists(storage_path):
-    #     os.makedirs(storage_path)
-    # res_exp = run(dataset, with_self=["PARBSTR"], with_external=False, mode=mode,  # CLEVERBOOST
-    #               # dir_path=storage_path+"\\",
-    #               bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "BSTR", "BOOST"]
+    storage_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset)
+    if not os.path.exists(storage_path):
+        os.makedirs(storage_path)
+    res_exp = run(dataset, with_self=["PARBSTR"], with_external=False, mode=mode,  # CLEVERBOOST
+                  # dir_path=storage_path+"\\",
+                  bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
     df_criterion = res_exp.get_best_by_mode(stratify="criterion")
