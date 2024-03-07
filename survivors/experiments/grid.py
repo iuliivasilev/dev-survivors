@@ -7,6 +7,7 @@ import pickle
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import ParameterGrid
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from .. import constants as cnt
 from .. import metrics as metr
@@ -152,7 +153,7 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 if dir_path is None:
                     est.fit(X_train, y_train)
-                    est.aggreg_func = kwargs.get("aggreg_func", None)
+                    est.aggreg_func = kwargs.get("aggreg_func", "mean")
                     est.tolerance_find_best(kwargs["ens_metric_name"])
                 else:
                     name = os.path.join(dir_path, get_name_file(method, kwargs, mode, fold) + '.pkl')
@@ -182,11 +183,15 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
             else:  # Methods from scikit-survival
                 s = pd.isna(X_train).sum(axis=0) != X_train.shape[0]
                 valid_feat = s[s].index
-                # X_train = X_train[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
-                # X_test = X_test[valid_feat].fillna(0).replace(np.nan, 0).replace(np.inf, 0)
-                med_val = X_train[valid_feat].median()
+                med_val = 0
+                # med_val = X_train[valid_feat].median()
+                # med_val = X_train[valid_feat].mean()
                 X_train = X_train[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
                 X_test = X_test[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
+
+                scaler = StandardScaler()
+                X_train = scaler.fit_transform(X_train)
+                X_test = scaler.transform(X_test)
 
                 est = est.fit(X_train, y_train)
                 survs = est.predict_survival_function(X_test)
@@ -321,9 +326,9 @@ class Experiments(object):
                     if verbose > 0:
                         print(f"Iteration: {i_p + 1}/{p_size}")
                         print(f"EXECUTION TIME OF {method.__name__}: {exec_times}",
-                                  {k: [np.mean(v), np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
+                              {k: [np.mean(v), np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
                 except KeyboardInterrupt:
-                    print("HANDELED KeyboardInterrupt")
+                    print("Handled KeyboardInterrupt")
                     break
                 except Exception as e:
                     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
