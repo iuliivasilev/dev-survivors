@@ -248,14 +248,14 @@ def dir_path():
 #     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid" ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 # )
 
-@pytest.mark.parametrize(
-    "best_metric", ["IBS_REMAIN"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
+@pytest.mark.parametrize(  # , "IBS", "IBS_WW"
+    "best_metric", ["likelihood"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 # @pytest.mark.parametrize(
 #     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid" ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 # )
 @pytest.mark.parametrize(
-    "dataset",  ["support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG", "flchain", "backblaze", "actg", "support2", "smarto"
+    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG", "flchain", "backblaze", "actg", "support2", "smarto"
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
     mode_wei = None
@@ -280,7 +280,7 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     if not os.path.exists(storage_path):
         os.makedirs(storage_path)
     res_exp = run(dataset, with_self=["PARBSTR"], with_external=False, mode=mode,  # CLEVERBOOST
-                  # dir_path=storage_path+"\\",
+                  dir_path=storage_path+"\\",
                   bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
