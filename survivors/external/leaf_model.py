@@ -16,6 +16,7 @@ class LeafModel(object):
     def fit(self, X_node, *args, **kwargs):
         if self.features == []:
             self.features = X_node.columns
+        self.features = sorted(list(set(self.features + [cnt.TIME_NAME, cnt.CENS_NAME])))
 
         X_sub = X_node[self.features]
         self.shape = X_sub.shape
