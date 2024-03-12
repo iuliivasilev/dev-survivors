@@ -249,13 +249,13 @@ def dir_path():
 # )
 
 @pytest.mark.parametrize(  # , "IBS", "IBS_WW"
-    "best_metric", ["likelihood"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
+    "best_metric", ["IBS", "IBS_WW"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 # @pytest.mark.parametrize(
 #     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid" ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
 # )
 @pytest.mark.parametrize(
-    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG", "flchain", "backblaze", "actg", "support2", "smarto"
+    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto", "flchain", "backblaze", "actg",
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
     mode_wei = None

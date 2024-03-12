@@ -25,7 +25,7 @@ BSTR_param_grid = {
 
     "min_samples_leaf": [0.05, 0.01, 0.001],
     "max_features": [0.3, "sqrt"],
-    "n_jobs": [15]
+    "n_jobs": [15]  # 15
 }
 
 PAR_BSTR_param_grid = BSTR_param_grid
