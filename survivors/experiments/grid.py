@@ -109,9 +109,9 @@ def count_metric(y_train, y_test, pred_time, pred_surv, pred_haz, bins, metrics_
 
 
 def get_name_file(method, params, mode, fold):
-    filter_params = ["categ", "ens_metric_name", "aggreg_func"]
+    filter_params = ["categ", "ens_metric_name", "aggreg_func", "n_jobs"]
     name_lst = [method.__name__]
-    name_lst += [v for k, v in params.items() if not(k in filter_params)]
+    name_lst += [v for k, v in params.items() if not (k in filter_params)]
     name_lst += [mode, fold]
     return "_".join(map(str, name_lst))
 
