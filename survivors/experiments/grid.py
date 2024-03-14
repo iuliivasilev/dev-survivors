@@ -3,6 +3,7 @@ import pandas as pd
 import time
 import os
 import pickle
+import mgzip  # Custom
 
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import ParameterGrid
@@ -160,10 +161,10 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                     if not os.path.exists(name):
                         print("Fitted from scratch")
                         est.fit(X_train, y_train)
-                        with open(name, 'wb') as out:
+                        with mgzip.open(name, 'wb') as out:  # Custom
                             pickle.dump(est, out, pickle.HIGHEST_PROTOCOL)
 
-                    with open(name, 'rb') as inp:
+                    with mgzip.open(name, 'rb') as inp:
                         est = pickle.load(inp)
                         est.aggreg_func = kwargs.get("aggreg_func", None)
                         est.tolerance_find_best(kwargs["ens_metric_name"])
