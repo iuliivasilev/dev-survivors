@@ -199,13 +199,13 @@ class FastBaseEnsemble(BaseEnsemble):
         self.bins = cnt.get_bins(time=self.y_train[cnt.TIME_NAME],
                                  cens=self.y_train[cnt.CENS_NAME])
 
-        if self.ens_metric_name in ["iauc", "likelihood", "bic"] or self.ens_metric_name.upper().find("IBS") >= 0:
+        if self.ens_metric_name in ["iauc", "LOGLIKELIHOOD", "bic"] or self.ens_metric_name.upper().find("IBS") >= 0:
             dim = (self.X_train.shape[0], self.bins.shape[0])
         else:
             dim = (self.X_train.shape[0])
         self.oob_prediction = np.zeros(dim, dtype=np.float)
 
-        if self.ens_metric_name in ["likelihood", "bic"]:
+        if self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
             self.oob_prediction_hf = np.zeros(dim, dtype=np.float)
         self.oob_count = np.zeros((self.X_train.shape[0]), dtype=np.int)
 
@@ -220,7 +220,7 @@ class FastBaseEnsemble(BaseEnsemble):
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.TIME_NAME)
         elif self.ens_metric_name == "roc":
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.CENS_NAME)
-        elif self.ens_metric_name in ["likelihood", "bic"]:
+        elif self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
             self.oob_count = np.ones((self.X_train.shape[0]), dtype=np.int)
             self.oob_prediction_hf += model.predict_at_times(self.X_train, bins=self.bins, mode="hazard")
             self.oob_prediction += model.predict_at_times(self.X_train, bins=self.bins, mode="surv")
@@ -235,7 +235,7 @@ class FastBaseEnsemble(BaseEnsemble):
         is_ibs = self.ens_metric_name.upper().find("IBS") >= 0
         if is_ibs:
             pred = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob][:, None]
-        elif self.ens_metric_name in ["likelihood", "bic"]:
+        elif self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
             pred_hf = self.oob_prediction_hf[index_join_oob]  # / self.oob_count[index_join_oob][:, None]
             pred_sf = self.oob_prediction[index_join_oob]  # / self.oob_count[index_join_oob][:, None]
         else:
@@ -252,7 +252,7 @@ class FastBaseEnsemble(BaseEnsemble):
         elif is_ibs:
             y_true = cnt.get_y(target_cens, target_time)
             return metr.METRIC_DICT[self.ens_metric_name.upper()](self.y_train, y_true, None, pred, None, self.bins)
-        elif self.ens_metric_name == "likelihood":
+        elif self.ens_metric_name == "LOGLIKELIHOOD":
             return metr.loglikelihood(target_time, target_cens, pred_sf, pred_hf, self.bins)
         elif self.ens_metric_name == "bic":
             return metr.bic(len(self.models), self.size_sample, target_time, target_cens, pred_sf, pred_hf, self.bins)
