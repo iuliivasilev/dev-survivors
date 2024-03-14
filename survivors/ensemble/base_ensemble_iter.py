@@ -94,7 +94,7 @@ class BaseEnsemble(object):
     def add_model(self, model, x_oob):
         self.models.append(model)
         self.oob.append(x_oob)
-        if self.ens_metric_name == "conc":
+        if self.ens_metric_name == "CI":
             tree_pred = pd.DataFrame(model.predict(x_oob, target=cnt.TIME_NAME), index=x_oob.index)
         elif self.ens_metric_name == "roc":
             tree_pred = pd.DataFrame(model.predict(x_oob, target=cnt.CENS_NAME), index=x_oob.index)
@@ -155,7 +155,7 @@ class BaseEnsemble(object):
         scores = np.array([])
         for i in range(len(self.models)):
             X_v = self.oob[i]
-            if self.ens_metric_name == "conc":
+            if self.ens_metric_name == "CI":
                 pred = self.models[i].predict(X_v, target=cnt.TIME_NAME)
                 score = concordance_index(X_v[cnt.TIME_NAME], pred)
             else:
@@ -167,7 +167,7 @@ class BaseEnsemble(object):
 
     def aggregate_score_selfoob(self, bins=None):
         is_ibs = self.ens_metric_name.upper().find("IBS") >= 0
-        if self.ens_metric_name in ["conc"] or is_ibs:
+        if self.ens_metric_name in ["CI"] or is_ibs:
             list_target_time = [oob_[cnt.TIME_NAME].to_frame() for oob_ in self.oob]
             target_time = pd.concat(list_target_time, axis=1).mean(axis=1)
 
@@ -175,9 +175,9 @@ class BaseEnsemble(object):
             list_target_cens = [oob_[cnt.CENS_NAME].to_frame() for oob_ in self.oob]
             target_cens = pd.concat(list_target_cens, axis=1).mean(axis=1)
 
-        if self.ens_metric_name in ["conc", "roc"]:
+        if self.ens_metric_name in ["CI", "roc"]:
             pred = pd.concat(self.list_pred_oob, axis=1).mean(axis=1)
-            if self.ens_metric_name == "conc":
+            if self.ens_metric_name == "CI":
                 return concordance_index(target_time, pred)
             return roc_auc_score(target_cens, pred)
 
@@ -216,7 +216,7 @@ class FastBaseEnsemble(BaseEnsemble):
 
         oob_index = x_oob.index.values
         self.oob_count[oob_index] += 1
-        if self.ens_metric_name == "conc":
+        if self.ens_metric_name == "CI":
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.TIME_NAME)
         elif self.ens_metric_name == "roc":
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.CENS_NAME)
@@ -245,7 +245,7 @@ class FastBaseEnsemble(BaseEnsemble):
         target_time = join_oob[cnt.TIME_NAME]
         target_cens = join_oob[cnt.CENS_NAME]
 
-        if self.ens_metric_name == "conc":
+        if self.ens_metric_name == "CI":
             return concordance_index(target_time, pred)
         elif self.ens_metric_name == "roc":
             return roc_auc_score(target_cens, pred)

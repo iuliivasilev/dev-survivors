@@ -30,7 +30,7 @@ BSTR_param_grid = {
 # BOOST_param_grid = {
 #     "size_sample": [0.5] if short else [0.7],
 #     "n_estimators": [15] if short else [15], 
-#     "ens_metric_name": ["ibs"] if short else ["conc","ibs"],
+#     "ens_metric_name": ["ibs"] if short else ["CI","ibs"],
 #     "depth": [15, 25],
 #     "mode_wei": ['exp'] if short else ['square','exp'],
 #     # "woe" : [],
@@ -43,7 +43,7 @@ BSTR_param_grid = {
 BOOST_param_grid = {
     "size_sample": [0.7] if short else [0.7],
     "n_estimators": [20] if short else [20],  # new 50
-    "ens_metric_name": ["conc"] if short else ["bic", "conc", "ibs"],  # ["conc", "ibs"],
+    "ens_metric_name": ["CI"] if short else ["bic", "CI", "ibs"],  # ["CI", "ibs"],
     "depth": [5],  # 15
     "mode_wei": ['square'] if short else ['linear', 'exp', 'square', "sigmoid", "softmax"],
     "criterion": ["weights", "wilcoxon"] if short else ["confident", "weights",

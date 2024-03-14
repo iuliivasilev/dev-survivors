@@ -244,15 +244,12 @@ def dir_path():
 # @pytest.mark.parametrize(
 #     "bins_sch", ["origin", "rank", "quantile", "log+scale"]
 # )
-# @pytest.mark.parametrize(
-#     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid" ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
-# )
 
 @pytest.mark.parametrize(  # , "IBS", "IBS_WW"
-    "best_metric", ["IBS", "IBS_WW"]  # ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
+    "best_metric", ["CI"]  # ["likelihood", "CI", "IBS", "IBS_WW", "IBS_REMAIN"]
 )
 # @pytest.mark.parametrize(
-#     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid" ["likelihood", "conc", "IBS", "IBS_WW", "IBS_REMAIN"]
+#     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid"
 # )
 @pytest.mark.parametrize(
     "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto", "flchain", "backblaze", "actg",

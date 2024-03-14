@@ -17,7 +17,7 @@ BSTR_param_grid = {
     "size_sample": [0.5, 0.7],  # 0.5
     "n_estimators": [10] if short else [30],
     "depth": [10],
-    "ens_metric_name": ["IBS_REMAIN"],  # ["bic", "conc", "ibs"],
+    "ens_metric_name": ["IBS_REMAIN"],  # ["bic", "CI", "ibs"],
     "criterion": ["peto"] if short else ["confident", "peto", "tarone-ware", "wilcoxon", "logrank"],
     "leaf_model": ["base_fast"] if short else ["base_fast"],
     "balance": [None],  # [None, "balance", "balance+weights", "only_log_rank"]
@@ -28,7 +28,7 @@ BSTR_param_grid = {
 BOOST_param_grid = {
     "size_sample": [0.5] if short else [0.5, 0.7],  # [0.5, 0.7]
     "n_estimators": [15] if short else [50],  # new 50
-    "ens_metric_name": ["ibs"] if short else ["bic", "conc", "ibs"],  # ["roc", "conc", "ibs"],
+    "ens_metric_name": ["ibs"] if short else ["bic", "CI", "ibs"],  # ["roc", "CI", "ibs"],
     "depth": [10],  # new 5
     "mode_wei": ['exp'] if short else ['linear', 'square', "exp", "sigmoid", "softmax"],  # 'square', 'exp'],
     "criterion": ["confident", 'logrank'] if short else ["confident", "weights",

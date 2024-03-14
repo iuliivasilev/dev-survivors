@@ -37,7 +37,7 @@ BOOST_PARAMS = {
             'min_samples_leaf': 1, 'mode_wei': 'square', 'n_estimators': 15, 'size_sample': 0.5},
     # Baseline time: 350,59 -> 77.4
     "ONK": {'aggreg_func': 'wei', 'categ': ['Диагноз'], 'criterion': 'peto',
-            'depth': 15, 'ens_metric_name': 'conc', 'max_features': 'sqrt',
+            'depth': 15, 'ens_metric_name': 'CI', 'max_features': 'sqrt',
             'min_samples_leaf': 100, 'mode_wei': 'square', 'n_estimators': 30, 'size_sample': 0.5, "n_jobs": 1}
 }
 

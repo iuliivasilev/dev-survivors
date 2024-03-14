@@ -29,7 +29,7 @@ BSTR_param_grid = {
 #     "aggreg_func": ['wei'] if short else ['wei', 'mean'],
 #     "criterion": ["logrank"] if short else ["peto", "tarone-ware", "wilcoxon", "logrank"],
 #     "depth": [15],
-#     "ens_metric_name": ["ibs"] if short else ["conc","ibs"],
+#     "ens_metric_name": ["ibs"] if short else ["CI","ibs"],
 #     "max_features": [0.3] if short else [0.3], #"sqrt"],
 #     "min_samples_leaf": [1] if short else [1, 5, 15],
 #     "mode_wei": ['square', 'exp'] if short else ['square'],#'exp'],
