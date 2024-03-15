@@ -95,7 +95,7 @@ class BaseEnsemble(object):
     def add_model(self, model, x_oob):
         self.models.append(model)
         self.oob.append(x_oob)
-        if self.ens_metric_name == "conc":
+        if self.ens_metric_name == "CI":
             tree_pred = pd.DataFrame(model.predict(x_oob, target=cnt.TIME_NAME), index=x_oob.index)
         elif self.ens_metric_name == "roc":
             tree_pred = pd.DataFrame(model.predict(x_oob, target=cnt.CENS_NAME), index=x_oob.index)
@@ -159,7 +159,7 @@ class BaseEnsemble(object):
         scores = np.array([])
         for i in range(len(self.models)):
             X_v = self.oob[i]
-            if self.ens_metric_name == "conc":
+            if self.ens_metric_name == "CI":
                 pred = self.models[i].predict(X_v, target=cnt.TIME_NAME)
                 score = concordance_index(X_v[cnt.TIME_NAME], pred)
             else:
@@ -171,7 +171,7 @@ class BaseEnsemble(object):
 
     def aggregate_score_selfoob(self, bins=None):
         is_ibs = self.ens_metric_name.upper().find("IBS") >= 0
-        if self.ens_metric_name in ["conc"] or is_ibs:
+        if self.ens_metric_name in ["CI"] or is_ibs:
             list_target_time = [oob_[cnt.TIME_NAME].to_frame() for oob_ in self.oob]
             target_time = pd.concat(list_target_time, axis=1).mean(axis=1)
 
@@ -179,9 +179,9 @@ class BaseEnsemble(object):
             list_target_cens = [oob_[cnt.CENS_NAME].to_frame() for oob_ in self.oob]
             target_cens = pd.concat(list_target_cens, axis=1).mean(axis=1)
 
-        if self.ens_metric_name in ["conc", "roc"]:
+        if self.ens_metric_name in ["CI", "roc"]:
             pred = pd.concat(self.list_pred_oob, axis=1).mean(axis=1)
-            if self.ens_metric_name == "conc":
+            if self.ens_metric_name == "CI":
                 return concordance_index(target_time, pred)
             return roc_auc_score(target_cens, pred)
 
@@ -214,6 +214,12 @@ class FastBaseEnsemble(BaseEnsemble):
 
     def tolerance_find_best(self, ens_metric_name="bic"):
         self.ens_metric_name = ens_metric_name
+
+        self.is_ci = self.ens_metric_name.upper().find("CI") >= 0
+        self.is_ibs = self.ens_metric_name.upper().find("IBS") >= 0
+        self.is_auprc = self.ens_metric_name.upper().find("AUPRC") >= 0
+        self.is_iauc = self.ens_metric_name.upper().find("IAUC") >= 0
+
         ens_metr_arr = np.zeros(self.n_estimators)
 
         self.prepare_for_tolerance()
@@ -232,13 +238,13 @@ class FastBaseEnsemble(BaseEnsemble):
         # print(f"fitted: {len(self.models)} models.")
 
     def prepare_for_tolerance(self):
-        if self.ens_metric_name in ["iauc", "likelihood", "bic"] or self.ens_metric_name.upper().find("IBS") >= 0:
+        if self.ens_metric_name in ["LOGLIKELIHOOD", "bic"] or self.is_ibs or self.is_iauc or self.is_auprc:
             dim = (self.X_train.shape[0], self.bins.shape[0])
         else:
             dim = (self.X_train.shape[0])
         self.oob_prediction = np.zeros(dim, dtype=np.float)
 
-        if self.ens_metric_name in ["likelihood", "bic"]:
+        if self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
             self.oob_prediction_hf = np.zeros(dim, dtype=np.float)
         self.oob_count = np.zeros((self.X_train.shape[0]), dtype=np.int)
 
@@ -248,41 +254,33 @@ class FastBaseEnsemble(BaseEnsemble):
         x_oob = self.X_train.iloc[oob_index, :]
 
         self.oob_count[oob_index] += 1
-        if self.ens_metric_name == "conc":
+        if self.is_ci:
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.TIME_NAME)
         elif self.ens_metric_name == "roc":
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.CENS_NAME)
-        elif self.ens_metric_name in ["likelihood", "bic"]:
-            self.oob_count = np.ones((self.X_train.shape[0]), dtype=np.int)
+        elif self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
             self.oob_prediction_hf += model.predict_at_times(self.X_train, bins=self.bins, mode="hazard")
             self.oob_prediction += model.predict_at_times(self.X_train, bins=self.bins, mode="surv")
-        else:
+        elif self.is_iauc:
+            self.oob_prediction[oob_index] += model.predict_at_times(x_oob, bins=self.bins, mode="hazard")
+        elif self.is_ibs or self.is_auprc:
             self.oob_prediction[oob_index] += model.predict_at_times(x_oob, bins=self.bins, mode="surv")
 
     def aggregate_score_selfoob(self):
         index_join_oob = np.where(self.oob_count != 0)
-        is_ibs = self.ens_metric_name.upper().find("IBS") >= 0
-        if is_ibs:
-            pred = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob][:, None]
-        elif self.ens_metric_name in ["likelihood", "bic"]:
-            pred_hf = self.oob_prediction_hf[index_join_oob]  # / self.oob_count[index_join_oob][:, None]
-            pred_sf = self.oob_prediction[index_join_oob]  # / self.oob_count[index_join_oob][:, None]
-        else:
-            pred = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob]
+
+        pred_time = None
+        pred_sf, pred_hf = None, None
+        if self.is_ibs or self.is_auprc:
+            pred_sf = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob][:, None]
+        elif self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
+            pred_hf = self.oob_prediction_hf[index_join_oob] / (self.tolerance_iter + 1)
+            pred_sf = self.oob_prediction[index_join_oob] / (self.tolerance_iter + 1)
+        elif self.is_iauc:
+            pred_hf = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob][:, None]
+        elif self.is_ci:
+            pred_time = self.oob_prediction[index_join_oob] / self.oob_count[index_join_oob]
 
         join_oob = self.y_train[index_join_oob]
-        target_time = join_oob[cnt.TIME_NAME]
-        target_cens = join_oob[cnt.CENS_NAME]
-
-        if self.ens_metric_name == "conc":
-            return concordance_index(target_time, pred)
-        elif self.ens_metric_name == "roc":
-            return roc_auc_score(target_cens, pred)
-        elif is_ibs:
-            y_true = cnt.get_y(target_cens, target_time)
-            return metr.METRIC_DICT[self.ens_metric_name.upper()](self.y_train, y_true, None, pred, None, self.bins)
-        elif self.ens_metric_name == "likelihood":
-            return metr.loglikelihood(target_time, target_cens, pred_sf, pred_hf, self.bins)
-        elif self.ens_metric_name == "bic":
-            return metr.bic(self.tolerance_iter+1, self.size_sample, target_time, target_cens, pred_sf, pred_hf, self.bins)
-        return None
+        y_true = cnt.get_y(cens=join_oob[cnt.CENS_NAME], time=join_oob[cnt.TIME_NAME])
+        return metr.METRIC_DICT[self.ens_metric_name.upper()](self.y_train, y_true, pred_time, pred_sf, pred_hf, self.bins)
