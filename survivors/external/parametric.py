@@ -60,9 +60,12 @@ class ParametricLifelinesBase(LeafModel):
         return chf
 
     def predict_feature(self, X=None, feature_name=None):
-        X = self.prepare_data(X)
         if feature_name == cnt.TIME_NAME:
-            return self.model.predict_expectation(X).to_numpy()
+            ts = np.linspace(self.model.durations.min(), self.model.durations.max(), 100)
+            sf = self.predict_survival_at_times(X=X, bins=ts)
+            return np.trapz(sf, ts, axis=1)
+            #return self.model.predict_expectation(X).to_numpy()
+        X = self.prepare_data(X)
         return super().predict_feature(X, feature_name)
 
 
