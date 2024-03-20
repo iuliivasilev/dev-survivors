@@ -282,8 +282,8 @@ class CRAID(object):
             res[:] = np.nan
         for i in sorted(self.nodes.keys()):
             ind = node_bin[:, num_node_to_key[i]]
-            X_loc = X[ind]
-            if ind.shape[0] > 0:
+            if np.any(ind):
+                X_loc = X[ind]
                 if self.nodes[i].is_leaf or (i in end_list):
                     if target == "surv" or target == "hazard":
                         res[ind] = self.nodes[i].predict(X_loc, target, bins)
