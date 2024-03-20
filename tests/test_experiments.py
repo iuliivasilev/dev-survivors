@@ -246,13 +246,13 @@ def dir_path():
 # )
 
 @pytest.mark.parametrize(  # , "IBS", "IBS_WW"
-    "best_metric", ["CI"]  # ["likelihood", "CI", "IBS", "IBS_WW", "IBS_REMAIN"]
+    "best_metric", ["IBS_WW"]  # ["CI", "CI_CENS", "LOGLIKELIHOOD", "IBS", "IBS_WW", "IBS_REMAIN", "IAUC_WW_TI", "AUPRC"]  # "AUPRC", "CI_CENS"
 )
 # @pytest.mark.parametrize(
 #     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid"
 # )
 @pytest.mark.parametrize(
-    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto", "flchain", "backblaze", "actg",
+    "dataset",  ["support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG", "flchain", "backblaze", "actg",
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
     mode_wei = None
@@ -264,6 +264,7 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
 
     # prefix = f"{best_metric}_STRATTIME+_EXT10_EQ_REG_TREE_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"
+
     prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_PAR_BSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_reg(0_01)_PART_BOOST_ALL_BINS_{bins_sch}"
