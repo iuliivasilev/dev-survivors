@@ -442,6 +442,19 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         na.fit(dur, cens, np.ones(len(dur)))
         weights_hist = na.get_smoothed_hazard_at_times(np.unique(dur))
         criterion = "weights"
+    elif criterion == "wilcoxon-pred":
+        if na_time_hist.shape[0] > 0:
+            weights_hist = np.cumsum((r_time_hist + na_time_hist)[::-1])[::-1]
+        else:
+            weights_hist = np.cumsum(r_time_hist[::-1])[::-1]
+        criterion = "weights"
+    elif criterion == "tarone-ware-pred":
+        if na_time_hist.shape[0] > 0:
+            weights_hist = np.sqrt(np.cumsum((r_time_hist + na_time_hist)[::-1])[::-1])
+        else:
+            weights_hist = np.sqrt(np.cumsum(r_time_hist[::-1])[::-1])
+        criterion = "weights"
+
     # elif weights is None:
     #     weights_hist = None
     # else:
