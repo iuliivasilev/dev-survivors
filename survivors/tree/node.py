@@ -136,7 +136,6 @@ class Node(object):
 
     def check_params(self):
         self.info.setdefault("bonf", True)
-        self.info.setdefault("n_jobs", 16)
         self.info.setdefault("max_features", 1.0)
         self.info.setdefault("signif", 1.1)
         self.info.setdefault("signif_stat", stats.chi2.isf(min(self.info["signif"], 1.0), df=1))
@@ -192,14 +191,13 @@ class Node(object):
     def find_best_split(self):
         numb_feats = self.info["max_features"]
         numb_feats = np.clip(numb_feats, 1, len(self.features))
-        n_jobs = min(numb_feats, self.info["n_jobs"])
+        n_jobs = self.info.get("n_jobs", 1 if numb_feats < 20 else 5)
 
         selected_feats = list(np.random.choice(self.features, size=numb_feats, replace=False))
         # args = self.get_comb(selected_feats)
         args = self.get_comb_fast(selected_feats)
-
         # ml = np.vectorize(lambda x: hist_best_attr_split(**x))(args)
-        with Parallel(n_jobs=n_jobs, verbose=self.verbose, batch_size=10) as parallel:  # prefer="threads"
+        with Parallel(n_jobs=n_jobs, verbose=self.verbose) as parallel:  # prefer="threads"
            ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)
         # with Parallel(n_jobs=1, verbose=self.verbose) as parallel:  # prefer="threads"
         #     ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
