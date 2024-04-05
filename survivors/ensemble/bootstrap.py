@@ -78,6 +78,7 @@ class ParallelBootstrapCRAID(BootstrapCRAID):
             params = self.tree_kwargs.copy()
             params['random_state'] = i
             params['features'] = self.features
+            params['n_jobs'] = 1
             p_s.append({"x_sub": x_sub, "params": params})
 
         with Parallel(n_jobs=self.tree_kwargs.get("n_jobs", 10), verbose=False, batch_size=10) as parallel:
