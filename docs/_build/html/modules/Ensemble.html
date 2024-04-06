@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Ensemble &#8212; survivors 1.6.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=e15882dc"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="About Survival Analysis" href="../AboutSA.html" />
+    <link rel="prev" title="Tree" href="Tree.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-survivors.ensemble.base_ensemble">
+<span id="ensemble"></span><h1>Ensemble<a class="headerlink" href="#module-survivors.ensemble.base_ensemble" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.ensemble.base_ensemble.BaseEnsemble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.base_ensemble.</span></span><span class="sig-name descname"><span class="pre">BaseEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'roc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tree_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.base_ensemble.BaseEnsemble" title="Link to this definition">¶</a></dt>
+<dd><p>Base ensemble of survival decision tree.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>size_sample<span class="classifier">float</span></dt><dd><p>Size of generated subsample</p>
+</dd>
+<dt>n_estimators<span class="classifier">int</span></dt><dd><p>Number of base models</p>
+</dd>
+<dt>ens_metric_name<span class="classifier">str</span></dt><dd><p>Metric defines quantitative of ensemble</p>
+</dd>
+<dt>descend_metr<span class="classifier">boolean</span></dt><dd><p>Flag of descend for ens_metric_name</p>
+</dd>
+<dt>bootstrap<span class="classifier">boolean</span></dt><dd><p>Flag for using bootstrap sampling (with return)</p>
+</dd>
+<dt>tolerance<span class="classifier">boolean</span></dt><dd><p>Flag for fitting full ensemble and choosing best submodels</p>
+</dd>
+<dt>aggreg<span class="classifier">boolean</span></dt><dd><p>Flag of aggregating base responses</p>
+</dd>
+<dt>aggreg_func<span class="classifier">str</span></dt><dd><p>Function of aggregating (if aggreg)</p>
+</dd>
+<dt>tree_kwargs<span class="classifier">dict</span></dt><dd><p>Parameters for building base models</p>
+</dd>
+<dt>models<span class="classifier">list</span></dt><dd><p>Base models of ensemble (for example, CRAID)</p>
+</dd>
+<dt>oob<span class="classifier">list</span></dt><dd><p>Out of bag sample for each model</p>
+</dd>
+<dt>ens_metr<span class="classifier">array-like</span></dt><dd><p>Values of ens_metric_name for ensemble with i models</p>
+</dd>
+<dt>list_pred_oob<span class="classifier">list</span></dt><dd><p>Predictions of ensemble models[:i+1]</p>
+</dd>
+</dl>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
+<p>update_params : attributes preparation
+fit : build ensemble with X, y data (abstract)
+add_model : updating ensemble with new model and oob
+select_model : remaining fixed models
+tolerance_find_best : iterative method of selecting best sub ensemble</p>
+<p>predict : return values of features, rules or schemes (look at CRAID)
+predict_at_times : return survival or hazard function</p>
+<p>score_oob : calculate metric “ens_metric_name” for ensemble</p>
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.ensemble.base_ensemble.FastBaseEnsemble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.base_ensemble.</span></span><span class="sig-name descname"><span class="pre">FastBaseEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'roc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tree_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.base_ensemble.FastBaseEnsemble" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class" id="module-survivors.ensemble.bootstrap">
+<dt class="sig sig-object py" id="survivors.ensemble.bootstrap.BootstrapCRAID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.bootstrap.</span></span><span class="sig-name descname"><span class="pre">BootstrapCRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.bootstrap.BootstrapCRAID" title="Link to this definition">¶</a></dt>
+<dd><p>Bootstrap aggregation (Bagging) ensemble of survival decision tree.
+On each iteration probabilities of observations change by scheme.</p>
+<section id="id1">
+<h2>Attributes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>kwargs<span class="classifier">dict</span></dt><dd><p>Parameters for building base ensemble (look at BaseEnsemble)</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h2>Methods<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>fit : build ensemble with X, y data</p>
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.ensemble.bootstrap.ParallelBootstrapCRAID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.bootstrap.</span></span><span class="sig-name descname"><span class="pre">ParallelBootstrapCRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.bootstrap.ParallelBootstrapCRAID" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">survivors</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Component%20description.html">Component description</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../API%20Reference.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About survivors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../AboutSA.html">About survival analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Why.html">Why survivors?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../API%20Reference.html">API Reference</a><ul>
+      <li>Previous: <a href="Tree.html" title="previous chapter">Tree</a></li>
+      <li>Next: <a href="../AboutSA.html" title="next chapter">About Survival Analysis</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Iulii Vasilev.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/modules/Ensemble.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

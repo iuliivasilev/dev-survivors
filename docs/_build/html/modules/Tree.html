@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Tree &#8212; survivors 1.6.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=e15882dc"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Ensemble" href="Ensemble.html" />
+    <link rel="prev" title="External" href="External.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-survivors.tree.node">
+<span id="tree"></span><h1>Tree<a class="headerlink" href="#module-survivors.tree.node" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.tree.node.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.tree.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_rule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">woe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node" title="Link to this definition">¶</a></dt>
+<dd><p>Node of decision tree.
+Allow to separate data into 2 child nodes</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>df<span class="classifier">Pandas DataFrame</span></dt><dd><p>Data of the Node</p>
+</dd>
+<dt>numb<span class="classifier">int</span></dt><dd><p>Number or name of the Node</p>
+</dd>
+<dt>full_rule<span class="classifier">list</span></dt><dd><p>Rules from the root</p>
+</dd>
+<dt>depth<span class="classifier">int</span></dt><dd><p>Distance from the root</p>
+</dd>
+<dt>edges<span class="classifier">array-like</span></dt><dd><p>Numbers of child nodes</p>
+</dd>
+<dt>rule_edges<span class="classifier">array-like</span></dt><dd><p>Rules for child nodes</p>
+</dd>
+<dt>features<span class="classifier">list</span></dt><dd><p>Available features</p>
+</dd>
+<dt>categ<span class="classifier">list</span></dt><dd><p>Names of categorical features</p>
+</dd>
+<dt>woe<span class="classifier">boolean</span></dt><dd><p>Mode of categorical preparation</p>
+</dd>
+<dt>is_leaf<span class="classifier">boolean</span></dt><dd><p>True if node has no subnodes</p>
+</dd>
+<dt>verbose<span class="classifier">int</span></dt><dd><p>Print the best split of the node</p>
+</dd>
+<dt>info<span class="classifier">dict</span></dt><dd><p>Parameters for finding the best splitting</p>
+</dd>
+<dt>leaf_model<span class="classifier">LeafModel</span></dt><dd><p>Stratified model by parameter &lt;&lt;leaf_model&gt;&gt; (map with LEAF_MODEL_DICT)</p>
+</dd>
+</dl>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
+<p>check_params : Fill empty parameters and map max_features to int
+find_best_split : Choose best split of node according to parameters
+split : Try to create subnodes by best split
+set_edges: Set number of child nodes from hash table of main tree
+set_leaf : Delete subnodes and reset data</p>
+<p>predict : Return statistic values of a data
+predict_scheme : Return all possible outcomes for additional features determination</p>
+<p>prepare_df_for_attr : set input values to numpy format (and fill missing features)
+get_edges : defines appropriate child nodes according to input values
+get_full_rule : convert full_rules to a string format</p>
+<p>get_figure : Create picture of a data (hist, survival function)
+get_description : Return common values of a data (size, depth, death, cens)</p>
+<p>set_dot_node : add self node to the graphviz dot
+set_dot_edges : add child nodes to the graphviz dot
+translate : Replace rules and features by dictionary</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Predict target values for X data</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
+<dl>
+<dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events</p>
+</dd>
+<dt>target<span class="classifier">str or function</span></dt><dd><p>Column name, mode or aggregate function of a leaf sample
+Column name : must be in dataset.columns</p>
+<blockquote>
+<div><p>Return mean of feature</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Mode :</dt><dd><p>“surv” return survival function
+“hazard” return cumulative hazard function
+attribute_name return attribute value (e.g. depth, numb)
+feature_name return aggregate statistic value for node</p>
+</dd>
+</dl>
+</dd>
+<dt>bins<span class="classifier">array-like</span></dt><dd><p>Points of timeline</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>res<span class="classifier">array-like</span></dt><dd><p>Values by target</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class" id="module-survivors.tree.decision_tree">
+<dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.tree.decision_tree.</span></span><span class="sig-name descname"><span class="pre">CRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">123</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID" title="Link to this definition">¶</a></dt>
+<dd><p>Survival decision tree model.</p>
+<section id="id1">
+<h2>Attributes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>nodes<span class="classifier">dict</span></dt><dd><p>Dictionary of all tree’s nodes (numbers from hierarchy)</p>
+</dd>
+<dt>cut<span class="classifier">boolean</span></dt><dd><p>Flag of pruning</p>
+</dd>
+<dt>balance<span class="classifier">boolean</span></dt><dd><p>Flag of source data balancing</p>
+</dd>
+<dt>depth<span class="classifier">int</span></dt><dd><p>Maximal depth of nodes</p>
+</dd>
+<dt>features<span class="classifier">list</span></dt><dd><p>Available features</p>
+</dd>
+<dt>categ<span class="classifier">list</span></dt><dd><p>Names of categorical features</p>
+</dd>
+<dt>random_state<span class="classifier">int</span></dt><dd><p>Fixed seed for building reproducibility</p>
+</dd>
+<dt>name<span class="classifier">str</span></dt><dd><p>Model’s name</p>
+</dd>
+<dt>coxph<span class="classifier">CoxPHSurvivalAnalysis</span></dt><dd><p>Model for hazard prediction</p>
+</dd>
+<dt>ohenc<span class="classifier">OneHotEncoder</span></dt><dd><p>Encoding model from number of Node to indicators</p>
+</dd>
+<dt>bins<span class="classifier">array-like</span></dt><dd><p>Points of timeline.</p>
+</dd>
+<dt>info<span class="classifier">dict</span></dt><dd><p>Parameters for building nodes</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h2>Methods<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>fit : build decision tree with X, y data (iterative splitting node)
+fit_cox_hazard : fitting Cox model as aggregating model by leaf numbers
+predict : return values of features, rules or schemes
+predict_cox_hazard : return survival or hazard function from cox model
+predict_at_times : return survival or hazard function
+predict_schemes : return FilledSchemeStrategy or Scheme
+cut_tree : pruning function</p>
+<p>visualize : build graphviz Digraph for each node
+translate : Replace rules and features by dictionary</p>
+<p>get_leaf_numbers : return leaf numbers from nodes
+get_spanning_leaf_numbers : return pre-leaves numbers from nodes
+delete_leaves_by_span : set up pre-leaves from lists to leaves</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.cut_tree">
+<span class="sig-name descname"><span class="pre">cut_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_f=&lt;function</span> <span class="pre">roc_auc_score&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choose_f=&lt;built-in</span> <span class="pre">function</span> <span class="pre">max&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.cut_tree" title="Link to this definition">¶</a></dt>
+<dd><p>Method of pruning tree.
+Find best subtree, which reaches best value of metric “mode_f””</p>
+<section id="id3">
+<h3>Parameters<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
+</dd>
+<dt>target<span class="classifier">str</span></dt><dd><p>Feature name for metric counting.</p>
+</dd>
+<dt>mode_f<span class="classifier">function, optional</span></dt><dd><p>Metric for selecting. The default is roc_auc_score.</p>
+</dd>
+<dt>choose_f<span class="classifier">function, optional</span></dt><dd><p>Type of best value (max or min). The default is max.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'target'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.predict" title="Link to this definition">¶</a></dt>
+<dd><p>Return values by mode &amp; target</p>
+<section id="id4">
+<h3>Parameters<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
+</dd>
+<dt>mode<span class="classifier">str, optional</span></dt><dd><p>Mode of predicting. The default is “target”.
+“surv” : return values of survival function in bins
+“hazard” : return values of hazard function in bins
+“target” : return values of feature (in target variable)
+“rules” : return full rules from node to leaf</p>
+</dd>
+<dt>target<span class="classifier">str or list, optional</span></dt><dd><p>An aim of predicting. The default is occurred time.</p>
+</dd>
+<dt>end_list<span class="classifier">list, optional</span></dt><dd><p>Numbers of endpoint nodes (for cutting)</p>
+</dd>
+<dt>bins<span class="classifier">array-like, optional</span></dt><dd><p>Points of timeline</p>
+</dd>
+</dl>
+</section>
+<section id="id5">
+<h3>Returns<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>res<span class="classifier">array-like</span></dt><dd><p>Values by mode &amp; target</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.predict_at_times">
+<span class="sig-name descname"><span class="pre">predict_at_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'surv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.predict_at_times" title="Link to this definition">¶</a></dt>
+<dd><p>Return survival or hazard function.</p>
+<section id="id6">
+<h3>Parameters<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<dl>
+<dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
+</dd>
+<dt>bins<span class="classifier">array-like</span></dt><dd><p>Points of timeline.</p>
+</dd>
+<dt>mode<span class="classifier">str, optional</span></dt><dd><p>Type of function. The default is “surv”.
+“surv” : send building function in nodes
+“hazard” : send building function in nodes
+“cox-hazard” : fit CoxPH model on node numbers (input)</p>
+<blockquote>
+<div><blockquote>
+<div><p>and time/cens (output)</p>
+</div></blockquote>
+<p>predict cumulative HF from model</p>
+</div></blockquote>
+</dd>
+</dl>
+</section>
+<section id="id7">
+<h3>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>array-like</dt><dd><p>Vector of function values in times (bins)</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">survivors</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Component%20description.html">Component description</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../API%20Reference.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About survivors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../AboutSA.html">About survival analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Why.html">Why survivors?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../API%20Reference.html">API Reference</a><ul>
+      <li>Previous: <a href="External.html" title="previous chapter">External</a></li>
+      <li>Next: <a href="Ensemble.html" title="next chapter">Ensemble</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Iulii Vasilev.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/modules/Tree.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
