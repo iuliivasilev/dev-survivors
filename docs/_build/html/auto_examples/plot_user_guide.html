@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Base User guide &#8212; survivors 1.6.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=e15882dc"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-user-guide-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="base-user-guide">
+<span id="sphx-glr-auto-examples-plot-user-guide-py"></span><h1>Base User guide<a class="headerlink" href="#base-user-guide" title="Link to this heading">¶</a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Iulii Vasilev &lt;iuliivasilev@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD 3 clause</span>
+</pre></div>
+</div>
+<p>First, we will import modules and load data</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">survivors.datasets</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="kn">import</span> <span class="nn">survivors.constants</span> <span class="k">as</span> <span class="nn">cnt</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">categ</span><span class="p">,</span> <span class="n">sch_nan</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">load_pbc_dataset</span><span class="p">()</span>
+<span class="n">bins</span> <span class="o">=</span> <span class="n">cnt</span><span class="o">.</span><span class="n">get_bins</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="n">cnt</span><span class="o">.</span><span class="n">TIME_NAME</span><span class="p">],</span> <span class="n">cens</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="n">cnt</span><span class="o">.</span><span class="n">CENS_NAME</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[  41   42   43 ... 4189 4190 4191]
+</pre></div>
+</div>
+<p>Build Nonparametric KaplanMeier model and visualize survival function</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">survivors.visualize</span> <span class="k">as</span> <span class="nn">vis</span>
+<span class="kn">from</span> <span class="nn">survivors.external</span> <span class="kn">import</span> <span class="n">KaplanMeier</span>
+
+<span class="n">km</span> <span class="o">=</span> <span class="n">KaplanMeier</span><span class="p">()</span>
+<span class="n">km</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">durations</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="n">right_censor</span><span class="o">=</span><span class="n">y</span><span class="p">[</span><span class="s2">&quot;cens&quot;</span><span class="p">])</span>
+<span class="n">sf_km</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">survival_function_at_times</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">bins</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">plot_surival_function</span><span class="p">(</span><span class="n">sf_km</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
+
+<span class="n">bins_short</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">3000</span><span class="p">]</span>
+<span class="n">sf_km_short</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">survival_function_at_times</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">bins_short</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">plot_surival_function</span><span class="p">(</span><span class="n">sf_km_short</span><span class="p">,</span> <span class="n">bins_short</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_user_guide_001.png" srcset="../_images/sphx_glr_plot_user_guide_001.png" alt="plot user guide" class = "sphx-glr-single-img"/><p>Build Tree</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">survivors.tree</span> <span class="kn">import</span> <span class="n">CRAID</span>
+
+<span class="n">cr</span> <span class="o">=</span> <span class="n">CRAID</span><span class="p">(</span><span class="n">criterion</span><span class="o">=</span><span class="s1">&#39;logrank&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">signif</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+           <span class="n">categ</span><span class="o">=</span><span class="n">categ</span><span class="p">,</span> <span class="n">leaf_model</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
+<span class="n">cr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">sf_cr</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">predict_at_times</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;surv&quot;</span><span class="p">)</span>
+<span class="n">chf_cr</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">predict_at_times</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;hazard&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">chf_cr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(418, 4151)
+</pre></div>
+</div>
+<p>Plot dependencies</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">cr</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">cnt</span><span class="o">.</span><span class="n">TIME_NAME</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;surv&quot;</span><span class="p">)</span>
+
+<span class="n">image</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cr</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.png&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_user_guide_002.png" srcset="../_images/sphx_glr_plot_user_guide_002.png" alt="plot user guide" class = "sphx-glr-single-img"/><p>Individual prediction</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Target:&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">cnt</span><span class="o">.</span><span class="n">TIME_NAME</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">cnt</span><span class="o">.</span><span class="n">CENS_NAME</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;depth&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Target: (True, 400.)
+847.4363403320312
+0.9272727272727272
+2.0
+</pre></div>
+</div>
+<p>Building ensembles of survival trees</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">survivors.ensemble</span> <span class="kn">import</span> <span class="n">BootstrapCRAID</span>
+
+<span class="n">bstr</span> <span class="o">=</span> <span class="n">BootstrapCRAID</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">size_sample</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">ens_metric_name</span><span class="o">=</span><span class="s1">&#39;IBS_REMAIN&#39;</span><span class="p">,</span>
+                      <span class="n">max_features</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s1">&#39;peto&#39;</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                      <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">categ</span><span class="o">=</span><span class="n">categ</span><span class="p">,</span> <span class="n">leaf_model</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
+<span class="n">bstr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">sf_bstr</span> <span class="o">=</span> <span class="n">bstr</span><span class="o">.</span><span class="n">predict_at_times</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;surv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>fitted: 10 models.
+</pre></div>
+</div>
+<p>Evaluation of models</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">survivors.metrics</span> <span class="k">as</span> <span class="nn">metr</span>
+
+<span class="n">mean_ibs</span> <span class="o">=</span> <span class="n">metr</span><span class="o">.</span><span class="n">ibs</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sf_bstr</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">mean_ibs</span>  <span class="c1"># 0.071</span>
+<span class="n">ibs_by_obs</span> <span class="o">=</span> <span class="n">metr</span><span class="o">.</span><span class="n">ibs</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sf_bstr</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ibs_by_obs</span>  <span class="c1"># [0.0138, 0.038, ..., 0.0000, 0.0007]</span>
+<span class="n">ibs_by_time</span> <span class="o">=</span> <span class="n">metr</span><span class="o">.</span><span class="n">ibs</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sf_bstr</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ibs_by_time</span>  <span class="c1"># [0.0047, 0.0037, ..., 0.0983, 0.3533]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ibs_by_time</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(4151,)
+</pre></div>
+</div>
+<p>Predict comparison</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">plot_func_comparison</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                         <span class="p">[</span><span class="n">sf_km</span><span class="p">,</span> <span class="n">sf_cr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sf_bstr</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                         <span class="p">[</span><span class="s2">&quot;KM&quot;</span><span class="p">,</span> <span class="s2">&quot;CRAID&quot;</span><span class="p">,</span> <span class="s2">&quot;BootstrapCRAID&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_user_guide_003.png" srcset="../_images/sphx_glr_plot_user_guide_003.png" alt="Prediction for terminal event with time=400.0" class = "sphx-glr-single-img"/><p>Quality comparison in time</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">plot_metric_comparison</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">sf_km</span><span class="p">,</span> <span class="n">sf_cr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sf_bstr</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                           <span class="p">[</span><span class="s2">&quot;KM&quot;</span><span class="p">,</span> <span class="s2">&quot;CRAID&quot;</span><span class="p">,</span> <span class="s2">&quot;BootstrapCRAID&quot;</span><span class="p">],</span> <span class="n">bins</span><span class="p">,</span> <span class="n">metr</span><span class="o">.</span><span class="n">ibs_remain</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">plot_metric_comparison</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">sf_km</span><span class="p">,</span> <span class="n">sf_cr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sf_bstr</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                           <span class="p">[</span><span class="s2">&quot;KM&quot;</span><span class="p">,</span> <span class="s2">&quot;CRAID&quot;</span><span class="p">,</span> <span class="s2">&quot;BootstrapCRAID&quot;</span><span class="p">],</span> <span class="n">bins</span><span class="p">,</span> <span class="n">metr</span><span class="o">.</span><span class="n">auprc</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../_images/sphx_glr_plot_user_guide_004.png" srcset="../_images/sphx_glr_plot_user_guide_004.png" alt="ibs_remain(t) for terminal event with time=400.0" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_user_guide_005.png" srcset="../_images/sphx_glr_plot_user_guide_005.png" alt="auprc(t) for terminal event with time=400.0" class = "sphx-glr-multi-img"/></li>
+</ul>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.552 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-user-guide-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/865138d638cab55f7e37ecace442a530/plot_user_guide.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_user_guide.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/f21584b02607b9c79abe716dcb19c5f5/plot_user_guide.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_user_guide.py</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">survivors</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Component%20description.html">Component description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../API%20Reference.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About survivors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../AboutSA.html">About survival analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Why.html">Why survivors?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Iulii Vasilev.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/auto_examples/plot_user_guide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
