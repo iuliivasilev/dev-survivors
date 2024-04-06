@@ -11,12 +11,10 @@ from .. import constants as cnt
 from ..external import LEAF_MODEL_DICT, LeafModel
 from ..scheme import Scheme
 
-#sns.set()
 custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
 sns.set_theme(style="ticks", rc=custom_params)
 # custom_params = {"font.size": 25, "axes.labelsize": 25, "xtick.labelsize": 25, "ytick.labelsize": 25,
 #                  "axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
-# sns.set_theme(style="ticks", rc=custom_params)
 
 """" Auxiliary functions """
 
@@ -55,11 +53,7 @@ class Rule(object):
         print(f"condition: {self.get_condition()}")
 
 
-""" Класс вершины дерева решений """
 class Node(object):
-    # __slots__ = ("df", "numb", "full_rule",
-    #              "depth", "edges", "rule_edges", "features", "leaf_model",
-    #              "categ", "woe", "is_leaf", "verbose", "info")
     """
     Node of decision tree.
     Allow to separate data into 2 child nodes
@@ -163,7 +157,7 @@ class Node(object):
             self.leaf_model = None
         self.size = self.df.shape[0]
 
-        self.leaf_model.fit(self.df)  # , self.info["normalize"])
+        self.leaf_model.fit(self.df)
         # self.ch = np.array(
         #     [np.mean(self.df["time"]), np.std(self.df["time"]), np.sum(self.df["cens"]) / self.df["cens"].shape[0]])
 
@@ -179,32 +173,22 @@ class Node(object):
 
         return list(map(create_params_f, X[:-2], features))
 
-    def get_comb(self, features):
-        args = np.array([], dtype=dict)
-        for feat in features:
-            t = self.info.copy()
-            t["type_attr"] = ("woe" if self.woe else "categ") if feat in self.categ else "cont"
-            t["arr"] = self.df.loc[:, [feat, cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
-            args = np.append(args, t)
-        return args
-
     def find_best_split(self):
         numb_feats = self.info["max_features"]
         numb_feats = np.clip(numb_feats, 1, len(self.features))
         n_jobs = self.info.get("n_jobs", 1 if numb_feats < 20 else 5)
 
         selected_feats = list(np.random.choice(self.features, size=numb_feats, replace=False))
-        # args = self.get_comb(selected_feats)
+
         args = self.get_comb_fast(selected_feats)
         # ml = np.vectorize(lambda x: hist_best_attr_split(**x))(args)
         with Parallel(n_jobs=n_jobs, verbose=self.verbose) as parallel:  # prefer="threads"
            ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)
-        # with Parallel(n_jobs=1, verbose=self.verbose) as parallel:  # prefer="threads"
-        #     ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)  # hist_best_attr_split
+
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
 
-        # attr = min(attrs, key=lambda x: attrs[x]["p_value"])  # simple p-value
-        attr = max(attrs, key=lambda x: attrs[x]["stat_val"])  # simple stat-val
+        # attr = min(attrs, key=lambda x: attrs[x]["p_value"])  # best by p-value
+        attr = max(attrs, key=lambda x: attrs[x]["stat_val"])  # best by stat-val
         # attrs_gr = dict(filter(lambda x: x[1]["sign_split"] > 0, attrs.items()))
         # if len(attrs_gr) == 0:
         #     attr = min(attrs, key=lambda x: attrs[x]["p_value"])
@@ -255,18 +239,6 @@ class Node(object):
         if self.rule_edges.shape[0] == 1:
             print(branch_ind, self.df[attr], best_split, attr in self.categ)
             raise ValueError('ERROR: Only one branch created!')
-
-        # for v, p_n in zip(best_split["values"], best_split["pos_nan"]):
-        #     query = attr + v
-        #     if p_n == 1:
-        #         query = "(" + attr + v + ") or (" + attr + " != " + attr + ")"
-        #     rule = Rule(feature=attr, condition=v, has_nan=p_n)
-        #     d_node = self.df.query(query).copy()
-        #     N = Node(df=d_node, full_rule=self.full_rule + [rule],
-        #              features=self.features, categ=self.categ,
-        #              depth=self.depth+1, verbose=self.verbose, **self.info)
-        #     node_edges = np.append(node_edges, N)
-        #     self.rule_edges = np.append(self.rule_edges, rule)
 
         self.df = None
         return node_edges
