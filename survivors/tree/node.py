@@ -7,7 +7,6 @@ from scipy import stats
 
 from .find_split_hist import hist_best_attr_split
 from .. import constants as cnt
-# from .stratified_model import LEAF_MODEL_DICT, LeafModel
 from ..external import LEAF_MODEL_DICT, LeafModel
 from ..scheme import Scheme
 
@@ -16,7 +15,7 @@ sns.set_theme(style="ticks", rc=custom_params)
 # custom_params = {"font.size": 25, "axes.labelsize": 25, "xtick.labelsize": 25, "ytick.labelsize": 25,
 #                  "axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
 
-"""" Auxiliary functions """
+""" Auxiliary functions """
 
 
 def join_dict(a, b):
@@ -44,7 +43,7 @@ class Rule(object):
     def to_str(self):
         s = f"({self.feature}{self.condition})"
         if self.has_nan_:
-            s = f"({s}| nan)"  # не указано)"
+            s = f"({s}| nan)"
         return s
 
     def print(self):
@@ -139,7 +138,7 @@ class Node(object):
         if self.info["max_features"] == "sqrt":
             self.info["max_features"] = int(np.trunc(np.sqrt(len(self.features))+0.5))
         elif isinstance(self.info["max_features"], float):
-            self.info["max_features"] = int(self.info["max_features"]*len(self.features))
+            self.info["max_features"] = int(self.info["max_features"] * len(self.features))
 
         self.info.setdefault("weights_feature", None)
         if not (self.info["weights_feature"] is None):
@@ -182,8 +181,8 @@ class Node(object):
 
         args = self.get_comb_fast(selected_feats)
         # ml = np.vectorize(lambda x: hist_best_attr_split(**x))(args)
-        with Parallel(n_jobs=n_jobs, verbose=self.verbose) as parallel:  # prefer="threads"
-           ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)
+        with Parallel(n_jobs=n_jobs, verbose=self.verbose) as parallel:
+            ml = parallel(delayed(hist_best_attr_split)(**a) for a in args)
 
         attrs = {f: ml[ind] for ind, f in enumerate(selected_feats)}
 
@@ -218,7 +217,7 @@ class Node(object):
         # The best split is not significant
         if best_split["sign_split"] == 0:
             if self.verbose > 0:
-                print(f'Конец ветви, незначащее p-value: {best_split["stat_val"]}')
+                print(f'The node is terminal, best p-value: {best_split["stat_val"]}')
             return node_edges
         if self.verbose > 0:
             print('='*6, best_split["stat_val"], attr)
@@ -296,17 +295,16 @@ class Node(object):
         -------
         res : array-like
             Values by target
-
         """
         if target == "surv":
-            return self.leaf_model.predict_survival_at_times(X, bins)  # target(X_node=dataset)
+            return self.leaf_model.predict_survival_at_times(X, bins)
         elif target == "hazard":
             return self.leaf_model.predict_hazard_at_times(X, bins)
-        elif target == "ch":
-            return np.repeat(self.ch[np.newaxis, :], X.shape[0], axis=0)
+        # elif target == "ch":
+        #     return np.repeat(self.ch[np.newaxis, :], X.shape[0], axis=0)
         elif target in self.__dict__:
             return np.repeat(getattr(self, target, np.nan), X.shape[0], axis=0)
-        return self.leaf_model.predict_feature(X, target)  # np.mean(dataset[target])
+        return self.leaf_model.predict_feature(X, target)
 
     def predict_scheme(self, X, scheme_feats):
         feat_means = np.array([self.leaf_model.features_predict.get(s_f, np.nan)
@@ -371,8 +369,6 @@ class Node(object):
         return dot
 
     def translate(self, describe):
-        if self.is_leaf:
-            self.df = self.df.rename(describe, axis=1)
         self.features = [describe.get(f, f) for f in self.features]
         self.categ = [describe.get(c, c) for c in self.categ]
         for e in range(len(self.rule_edges)):
