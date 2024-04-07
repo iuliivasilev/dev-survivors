@@ -29,6 +29,7 @@ These models handle categorical features and deal with missing values,overcoming
 Survivors is a platform for conducting experimental research. The experiment module is compatible with scikit-survival and lifelines models (non-parametric and parametric models have already been embedded into the library).
 
 Developed models published in scientific articles [1]_, [2]_, [3]_ and outperformed existing models in terms of accuracy based on open medical data. We invite survival analysis researchers to join the development of survivors, using the library for their projects, reporting any problems, and creating new solutions.
+Documentation is available on https://iuliivasilev.github.io/dev-survivors/
 
 Principles
 -----------
