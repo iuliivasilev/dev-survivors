@@ -2,7 +2,6 @@ import numpy as np
 from numba import njit
 
 from scipy import stats
-# from .stratified_model import KaplanMeier, FullProbKM, NelsonAalen, KaplanMeierZeroAfter
 from ..external import KaplanMeier, NelsonAalen, KaplanMeierZeroAfter, FullProbKM
 from ..metrics import ibs_WW, auprc
 from ..constants import get_y
