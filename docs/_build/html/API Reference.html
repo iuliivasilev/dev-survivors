@@ -17,7 +17,7 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Criteria" href="modules/Criteria.html" />
+    <link rel="next" title="Constants" href="modules/Constants.html" />
     <link rel="prev" title="Component description" href="Component%20description.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -41,9 +41,12 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules/Criteria.html">Criteria</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/Criteria.html#survivors.criteria.CRITERIA_DICT"><code class="docutils literal notranslate"><span class="pre">CRITERIA_DICT</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/Criteria.html#survivors.criteria.weight_lr_fast"><code class="docutils literal notranslate"><span class="pre">weight_lr_fast()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/Constants.html">Constants</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.RANDOM_STATE"><code class="docutils literal notranslate"><span class="pre">RANDOM_STATE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.TIME_NAME"><code class="docutils literal notranslate"><span class="pre">TIME_NAME</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.get_bins"><code class="docutils literal notranslate"><span class="pre">get_bins()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.get_y"><code class="docutils literal notranslate"><span class="pre">get_y()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.pd_to_xy"><code class="docutils literal notranslate"><span class="pre">pd_to_xy()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/Metrics.html">Metrics</a><ul>
@@ -56,15 +59,12 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/Metrics.html#survivors.metrics.ipa"><code class="docutils literal notranslate"><span class="pre">ipa()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules/Constants.html">Constants</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.RANDOM_STATE"><code class="docutils literal notranslate"><span class="pre">RANDOM_STATE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.TIME_NAME"><code class="docutils literal notranslate"><span class="pre">TIME_NAME</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.get_bins"><code class="docutils literal notranslate"><span class="pre">get_bins()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.get_y"><code class="docutils literal notranslate"><span class="pre">get_y()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/Constants.html#survivors.constants.pd_to_xy"><code class="docutils literal notranslate"><span class="pre">pd_to_xy()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/Criteria.html">Criteria</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/Criteria.html#survivors.criteria.CRITERIA_DICT"><code class="docutils literal notranslate"><span class="pre">CRITERIA_DICT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/Criteria.html#survivors.criteria.weight_lr_fast"><code class="docutils literal notranslate"><span class="pre">weight_lr_fast()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules/Datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/Visualize.html">Visualize</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/External.html">External</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/Tree.html">Tree</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules/Tree.html#survivors.tree.node.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
@@ -84,6 +84,13 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/Ensemble.html#survivors.ensemble.base_ensemble.FastBaseEnsemble"><code class="docutils literal notranslate"><span class="pre">FastBaseEnsemble</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/Ensemble.html#survivors.ensemble.bootstrap.BootstrapCRAID"><code class="docutils literal notranslate"><span class="pre">BootstrapCRAID</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/Ensemble.html#survivors.ensemble.bootstrap.ParallelBootstrapCRAID"><code class="docutils literal notranslate"><span class="pre">ParallelBootstrapCRAID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/Datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/Experiments.html">Experiments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/Experiments.html#survivors.experiments.grid.Experiments"><code class="docutils literal notranslate"><span class="pre">Experiments</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/Experiments.html#survivors.experiments.grid.generate_sample"><code class="docutils literal notranslate"><span class="pre">generate_sample()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/Experiments.html#survivors.experiments.grid.get_fit_eval_func"><code class="docutils literal notranslate"><span class="pre">get_fit_eval_func()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -125,7 +132,7 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="Component%20description.html" title="previous chapter">Component description</a></li>
-      <li>Next: <a href="modules/Criteria.html" title="next chapter">Criteria</a></li>
+      <li>Next: <a href="modules/Constants.html" title="next chapter">Constants</a></li>
   </ul></li>
 </ul>
 </div>
