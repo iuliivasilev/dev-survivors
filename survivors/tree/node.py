@@ -18,11 +18,30 @@ sns.set_theme(style="ticks", rc=custom_params)
 """ Auxiliary functions """
 
 
-def join_dict(a, b):
-    return dict(list(a.items()) + list(b.items()))
-
-
 class Rule(object):
+    """
+    Node of decision tree.
+    Allow to separate data into 2 child nodes
+
+    Attributes
+    ----------
+    feature : str
+        Name of feature for splitting
+    condition : str
+        Operation for splitting
+    has_nan_ : bool
+        Flag of the missing values in node
+
+    Methods
+    -------
+    get_feature : Return feature
+    get_condition : Return condition
+    has_nan : Return has_nan_
+    translate: Replace rule by dictionary
+    to_str : Transforming to linear form
+    print : Print all attributes and descriptions
+
+    """
     def __init__(self, feature: str, condition: str, has_nan: int):
         self.feature = feature
         self.condition = condition
@@ -37,7 +56,7 @@ class Rule(object):
     def has_nan(self):
         return self.has_nan_
 
-    def translate(self, describe):
+    def translate(self, describe: dict):
         self.feature = describe.get(self.feature, self.feature)
 
     def to_str(self):
@@ -220,7 +239,7 @@ class Node(object):
                 print(f'The node is terminal, best p-value: {best_split["stat_val"]}')
             return node_edges
         if self.verbose > 0:
-            print('='*6, best_split["stat_val"], attr)
+            print('='*self.depth, best_split["stat_val"], attr)
 
         branch_ind = self.ind_for_nodes(self.df[attr], best_split, attr in self.categ)
 
