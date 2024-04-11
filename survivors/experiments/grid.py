@@ -5,9 +5,7 @@ import os
 import pickle
 import mgzip  # Custom
 
-from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import ParameterGrid
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold, ParameterGrid, train_test_split
 from sklearn.preprocessing import StandardScaler
 
 from .. import constants as cnt
@@ -55,6 +53,8 @@ def generate_sample(X, y, folds, mode="CV"):
         Contain censuring flag and time of events.
     folds : int
         Quantity of cross-validate folds.
+    mode : str
+        Validation scenario.
 
     Yields
     ------
@@ -120,11 +120,11 @@ def get_name_file(method, params, mode, fold):
 def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_path=None):
     """
     Return function, which on sample X, y apply cross-validation and calculate 
-    metrics on each folds. 
+    metrics for each fold.
 
     Parameters
     ----------
-    method : object
+    method : class
         Must have methods for fitting, predicting time, hazard and survival func
             
     X : Pandas dataframe
@@ -135,6 +135,10 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
         Quantity of cross-validate folds.
     metrics_names : TYPE, optional
         DESCRIPTION. The default is ['CI'].
+    mode : str
+        Validation scenario.
+    dir_path : str
+        Path to cache directory (for loading pretrained models).
 
     Returns
     -------
@@ -317,8 +321,7 @@ class Experiments(object):
                     curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
                                  "PARAMS": str(p), "TIMES": exec_times, "TIME": np.sum(exec_times)}
                     eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
-                    curr_dict.update(eval_metr)  # dict(zip(self.metrics, eval_metr))
-                    # self.result_table = self.result_table.append(curr_dict, ignore_index=True)
+                    curr_dict.update(eval_metr)
                     self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
                     if verbose > 0:
                         print(f"Iteration: {i_p + 1}/{p_size}")
@@ -329,8 +332,8 @@ class Experiments(object):
                     break
                 except Exception as e:
                     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                    #if self.except_stop == "all":
-                    #    break
+                    if self.except_stop == "all":
+                        break
                     curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
                                  "PARAMS": str(p), "TIME": -1}
                     curr_dict.update({m: np.array([np.nan, np.nan]) for i, m in enumerate(self.metrics)})
@@ -345,13 +348,10 @@ class Experiments(object):
             self.result_table[f"{m}_mean"] = self.result_table[m].apply(np.mean)
 
         self.is_table = True
-        # if not(dir_path is None):
-        #     # add_time = strftime("%H:%M:%S", gmtime(time.time()))
-        #     self.save(dir_path)
 
     def run_effective(self, X, y, dir_path=None, verbose=0,
                       stratify_best=["criterion", "balance", "leaf_model", "l_reg"]):
-        if not(self.mode in ["CV+SAMPLE"]):
+        if not (self.mode in ["CV+SAMPLE"]):
             self.run(X, y, dir_path=dir_path, verbose=verbose)
             return None
 
@@ -437,8 +437,8 @@ class Experiments(object):
     def get_hold_out_result(self, stratify="criterion"):
         df_hold_out_best = self.get_agg_results(self.result_table, self.metric_best_p + "_pred_mean",
                                                 choose=self.way_best_p, stratify=stratify)
-        rename_d = {metr + "_pred_mean": metr + "_CV_mean" for metr in self.metrics}
-        rename_d.update({metr + "_last": metr + "_HO" for metr in self.metrics})
+        rename_d = {m + "_pred_mean": m + "_CV_mean" for m in self.metrics}
+        rename_d.update({m + "_last": m + "_HO" for m in self.metrics})
         return df_hold_out_best.rename(rename_d, axis=1)
 
     def get_result(self):
