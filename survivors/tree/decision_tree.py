@@ -317,7 +317,7 @@ class CRAID(object):
 
         Returns
         -------
-        array-like
+        res : array-like
             Vector of function values in times (bins)
 
         """
