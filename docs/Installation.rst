@@ -19,3 +19,4 @@ Next, use the command line to go to the **dev-survivors** directory.
 Finally, the manual installation of the library is completed after executing the following command::
 
     python command setup.py install
+

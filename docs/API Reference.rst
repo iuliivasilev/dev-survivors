@@ -6,10 +6,12 @@ API Reference
    :maxdepth: 3
    :caption: API Reference
 
-   modules/Criteria
-   modules/Metrics
    modules/Constants
-   modules/Datasets
+   modules/Metrics
+   modules/Criteria
+   modules/Visualize
    modules/External
    modules/Tree
    modules/Ensemble
+   modules/Datasets
+   modules/Experiments
