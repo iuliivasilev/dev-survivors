@@ -8,8 +8,6 @@ from graphviz import Digraph, set_jupyter_format
 set_jupyter_format('png')
 
 from sklearn.metrics import roc_auc_score
-from sklearn.preprocessing import OneHotEncoder
-from sksurv.linear_model import CoxPHSurvivalAnalysis
 
 from .node import Node
 from ..scheme import FilledSchemeStrategy
@@ -17,9 +15,6 @@ from .. import constants as cnt
 
 import matplotlib.pyplot as plt
 from imblearn.over_sampling import RandomOverSampler
-
-# import seaborn as sns
-# sns.set()
 
 
 def format_to_pandas(X, columns):
@@ -108,10 +103,6 @@ class CRAID(object):
         Fixed seed for building reproducibility
     name : str
         Model's name
-    coxph : CoxPHSurvivalAnalysis
-        Model for hazard prediction
-    ohenc : OneHotEncoder
-        Encoding model from number of Node to indicators
     bins : array-like
         Points of timeline.
     info : dict
@@ -121,9 +112,7 @@ class CRAID(object):
     -------
 
     fit : build decision tree with X, y data (iterative splitting node)
-    fit_cox_hazard : fitting Cox model as aggregating model by leaf numbers
     predict : return values of features, rules or schemes
-    predict_cox_hazard : return survival or hazard function from cox model
     predict_at_times : return survival or hazard function
     predict_schemes : return FilledSchemeStrategy or Scheme
     cut_tree : pruning function
@@ -152,8 +141,6 @@ class CRAID(object):
         self.categ = categ
         self.random_state = random_state
         self.name = f"CRAID_{self.random_state}"
-        self.coxph = None
-        self.ohenc = None
         self.bins = []
 
     def update_params(self, X_tr):
@@ -294,9 +281,6 @@ class CRAID(object):
             Type of function. The default is "surv".
             "surv" : send building function in nodes
             "hazard" : send building function in nodes
-            "cox-hazard" : fit CoxPH model on node numbers (input)
-                                          and time/cens (output)
-                       predict cumulative HF from model
 
         Returns
         -------
@@ -305,8 +289,6 @@ class CRAID(object):
 
         """
         X = format_to_pandas(X, self.features)
-        # if mode == "cox-hazard":
-        #     return self.predict_cox_hazard(X, bins)
         pred = self.predict(X, target=mode, bins=bins)  # Reverse correction
         if self.balance == "balance+correct":
             if mode == "hazard":
@@ -346,8 +328,6 @@ class CRAID(object):
             sch_list = np.vectorize(dict_leaf_scheme.get)(end_leaf)
             dict_str_fill[str(end_leaf)] = FilledSchemeStrategy(sch_list)
 
-        # res = np.array([str(x[x != np.inf]) for x in ret_leaf_numbers]), dtype=object)
-        # res = np.vectorize(dict_str_fill.get)(res)
         res = np.array(list(map(lambda leaf_list: dict_str_fill.get(str(leaf_list[leaf_list != np.inf]), np.nan),
                                 ret_leaf_numbers)), dtype=object)
         return res
@@ -355,7 +335,7 @@ class CRAID(object):
     def cut_tree(self, X, target, mode_f=roc_auc_score, choose_f=max):
         """
         Method of pruning tree.
-        Find best subtree, which reaches best value of metric "mode_f""
+        Find the best subtree that achieves the best value of the "mode_f" metric".
 
         Parameters
         ----------
@@ -383,7 +363,7 @@ class CRAID(object):
                 dot = self.nodes[i].set_dot_node(dot, path_dir=tmp_dir, **kwargs)
             for i in ordered_nodes:
                 dot = self.nodes[i].set_dot_edges(dot)
-            dot.render(os.path.join(path_dir, self.name), view=True, cleanup=True, format="png")
+            dot.render(os.path.join(path_dir, self.name), cleanup=True, format="png")
         return dot
 
     def translate(self, describe):
