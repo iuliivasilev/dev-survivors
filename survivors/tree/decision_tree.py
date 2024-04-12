@@ -4,7 +4,9 @@ import os
 import copy
 import tempfile
 
-from graphviz import Digraph
+from graphviz import Digraph, set_jupyter_format
+set_jupyter_format('png')
+
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import OneHotEncoder
 from sksurv.linear_model import CoxPHSurvivalAnalysis
@@ -36,9 +38,6 @@ def get_oversample(df, target=cnt.CENS_NAME):
 
 
 """ Functions of prunning """
-
-def ols(a, b):
-    return sum((a - b) ** 2)
 
 
 def find_best_uncut(tree, X, y, target, mode_f, choose_f):
@@ -220,23 +219,7 @@ class CRAID(object):
         if self.cut:
             self.cut_tree(X_val, cnt.CENS_NAME, mode_f=roc_auc_score, choose_f=max)
 
-        # self.fit_cox_hazard(X, y)
         return
-
-    # def fit_cox_hazard(self, X, y):
-    #     self.coxph = CoxPHSurvivalAnalysis(alpha=0.1)
-    #     self.ohenc = OneHotEncoder(handle_unknown='ignore')
-    #     pred_node = self.predict(X, mode="target", target="numb").reshape(-1, 1)
-    #     ohenc_node = self.ohenc.fit_transform(pred_node).toarray()
-    #     self.coxph.fit(ohenc_node, y)
-
-    # def predict_cox_hazard(self, X, bins):
-    #     bins = np.clip(bins, self.bins.min(), self.bins.max())
-    #     pred_node = self.predict(X, mode="target", target="numb").reshape(-1, 1)
-    #     ohenc_node = self.ohenc.transform(pred_node).toarray()
-    #     hazards = self.coxph.predict_cumulative_hazard_function(ohenc_node)
-    #     pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
-    #     return pred_haz
 
     def predict(self, X, mode="target", target=cnt.TIME_NAME, end_list=[], bins=None):
         """
@@ -400,7 +383,8 @@ class CRAID(object):
                 dot = self.nodes[i].set_dot_node(dot, path_dir=tmp_dir, **kwargs)
             for i in ordered_nodes:
                 dot = self.nodes[i].set_dot_edges(dot)
-            dot.render(os.path.join(path_dir, self.name), view=False, cleanup=True, format="png")
+            dot.render(os.path.join(path_dir, self.name), view=True, cleanup=True, format="png")
+        return dot
 
     def translate(self, describe):
         self.features = [describe.get(f, f) for f in self.features]
