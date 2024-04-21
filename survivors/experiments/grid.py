@@ -104,8 +104,8 @@ def generate_sample(X, y, folds, mode="CV"):
     pass
 
 
-def count_metric(y_train, y_test, pred_time, pred_surv, pred_haz, bins, metrics_names):
-    return np.array([metr.METRIC_DICT[metr_name](y_train, y_test, pred_time, pred_surv, pred_haz, bins)
+def count_metric(y_train, y_test, pred_time, pred_sf, pred_hf, bins, metrics_names):
+    return np.array([metr.METRIC_DICT[metr_name](y_train, y_test, pred_time, pred_sf, pred_hf, bins)
                      for metr_name in metrics_names])
 
 
@@ -173,18 +173,18 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                         est.aggreg_func = kwargs.get("aggreg_func", None)
                         est.tolerance_find_best(kwargs["ens_metric_name"])
 
-                pred_surv = est.predict_at_times(X_test, bins=bins, mode="surv")
-                pred_surv[:, -1] = 0
-                pred_surv[:, 0] = 1
+                pred_sf = est.predict_at_times(X_test, bins=bins, mode="surv")
+                pred_sf[:, -1] = 0
+                pred_sf[:, 0] = 1
                 pred_time = est.predict(X_test, target=cnt.TIME_NAME)
-                pred_haz = est.predict_at_times(X_test, bins=bins, mode="hazard")
+                pred_hf = est.predict_at_times(X_test, bins=bins, mode="hazard")
             elif isinstance(est, LeafModel):
                 X_train[cnt.TIME_NAME] = y_train[cnt.TIME_NAME]
                 X_train[cnt.CENS_NAME] = y_train[cnt.CENS_NAME]
                 est.fit(X_train)
-                pred_surv = est.predict_survival_at_times(X_test, bins=bins)
+                pred_sf = est.predict_survival_at_times(X_test, bins=bins)
                 pred_time = est.predict_feature(X_test, feature_name=cnt.TIME_NAME)
-                pred_haz = est.predict_hazard_at_times(X_test, bins=bins)
+                pred_hf = est.predict_hazard_at_times(X_test, bins=bins)
             else:  # Methods from scikit-survival
                 s = pd.isna(X_train).sum(axis=0) != X_train.shape[0]
                 valid_feat = s[s].index
@@ -201,15 +201,15 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 est = est.fit(X_train, y_train)
                 survs = est.predict_survival_function(X_test)
                 hazards = est.predict_cumulative_hazard_function(X_test)
-                pred_surv = np.array(list(map(lambda x: x(bins), survs)))
-                pred_haz = np.array(list(map(lambda x: x(bins), hazards)))
-                pred_time = -1*est.predict(X_test)
-                # pred_time = np.trapz(pred_surv, bins)
+                pred_sf = np.array(list(map(lambda x: x(bins), survs)))
+                pred_hf = np.array(list(map(lambda x: x(bins), hazards)))
+                pred_time = -1 * est.predict(X_test)
+                # pred_time = np.trapz(pred_sf, bins)
                 # Integral version from: https://lifelines.readthedocs.io/en/latest/fitters/regression/CoxPHFitter.html
 
             exec_times.append(time.time() - s_time)
             metr_lst.append(count_metric(y_train, y_test, pred_time,
-                                         pred_surv, pred_haz, bins, metrics_names))
+                                         pred_sf, pred_hf, bins, metrics_names))
             fold += 1
             del est
         return np.vstack(metr_lst), np.array(exec_times)

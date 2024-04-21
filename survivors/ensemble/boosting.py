@@ -141,8 +141,8 @@ class BoostingCRAID(FastBaseEnsemble):
         print('fitted:', len(self.models), 'models.')
     
     # def count_model_weights(self, model):
-    #     pred_surv = model.predict_at_times(self.X_train, bins = self.bins, mode = "surv")
-    #     losses = metr.ibs(self.y_train, self.y_train, pred_surv, self.bins, axis = 0)
+    #     pred_sf = model.predict_at_times(self.X_train, bins = self.bins, mode = "surv")
+    #     losses = metr.ibs(self.y_train, self.y_train, pred_sf, self.bins, axis = 0)
     #     wei, betta = count_weight(losses, mode = self.mode_wei)
     #     return wei, betta
     
