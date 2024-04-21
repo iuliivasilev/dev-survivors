@@ -190,6 +190,7 @@ def split_time_to_bins(time, event=None, apr_times=None, apr_events=None):
 #     n = np.clip(apr_times.shape[0] // 2, 2, 100)
 #     return np.searchsorted(np.quantile(apr_times, np.arange(n + 1)/n), time)
 
+
 def get_attrs(max_stat_val, values, none_to, l_sh, r_sh, nan_sh, stat_diff):
     attrs = dict()
     attrs["stat_val"] = max_stat_val
@@ -316,6 +317,49 @@ def cnttest_hist(time_1, cens_1, time_2, cens_2):
 def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=None, thres_cont_bin_max=100,
                          signif=1.0, signif_stat=0.0, min_samples_leaf=10, bonf=True, verbose=0, balance=False,
                          apr_time=None, apr_event=None, l_reg=0, **kwargs):
+    """
+    Find best split of sample by one feature (histogram realization)
+
+    Parameters
+    ----------
+    arr: numpy ndarray
+        Triplet of two target variables and one splitting feature
+    criterion: str
+        Weighting scheme in log-rank test
+    type_attr: str
+        Type of feature
+        Mode :
+            "cont" -- linear search in continuous values
+            "categ" -- complete search of categorical variable combinations
+            "woe" -- Weight Of Evidence mapping categorical to continuous
+    weights: numpy ndarray
+        Custom weights of observation significance
+    thres_cont_bin_max: int
+        Number of intermediate points
+    signif: float
+        Upper bound of the significance of the partition (p-value)
+    signif_stat: float
+        Lower bound of the significance of the partition (stat value)
+    min_samples_leaf: int
+        Minimum allowed number of observations in a leaf
+    bonf: bool
+        Using bonferroni correction
+    verbose: int
+        Enable verbose output
+    balance: bool
+        Enable balancing in log-rank
+    apr_time: numpy ndarray
+        Source times for log-rank regularization
+    apr_event: numpy ndarray
+        Source event indicator for log-rank regularization
+    l_reg: float
+        Regularization coefficient
+    kwargs: dict
+        Additional parameters
+    Returns
+    -------
+    Dict with the best split of sample by feature
+    """
     best_attr = {"stat_val": signif_stat, "p_value": signif,
                  "sign_split": 0, "values": [], "pos_nan": [1, 0]}
     if arr.shape[1] < 2 * min_samples_leaf:

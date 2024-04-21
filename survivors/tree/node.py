@@ -57,6 +57,9 @@ class Rule(object):
         return self.has_nan_
 
     def translate(self, describe: dict):
+        """
+        Rename feature in rule
+        """
         self.feature = describe.get(self.feature, self.feature)
 
     def to_str(self):
@@ -66,6 +69,9 @@ class Rule(object):
         return s
 
     def print(self):
+        """
+        Print all attributes and descriptions
+        """
         print(f"has_nan: {self.has_nan()}")
         print(f"feature: {self.get_feature()}")
         print(f"condition: {self.get_condition()}")
@@ -97,7 +103,7 @@ class Node(object):
     woe : boolean
         Mode of categorical preparation
     is_leaf : boolean
-        True if node has no subnodes
+        True if node is terminal (there are no child nodes)
     verbose : int
         Print the best split of the node
     info : dict
@@ -109,9 +115,9 @@ class Node(object):
     -------
     check_params : Fill empty parameters and map max_features to int
     find_best_split : Choose best split of node according to parameters
-    split : Try to create subnodes by best split
+    split : Find best split of df sample and create child nodes
     set_edges: Set number of child nodes from hash table of main tree
-    set_leaf : Delete subnodes and reset data
+    set_leaf : Delete child nodes and set node as terminal
 
     predict : Return statistic values of a data
     predict_scheme : Return all possible outcomes for additional features determination
@@ -181,6 +187,9 @@ class Node(object):
 
     """ GROUP FUNCTIONS: CREATE LEAVES """
     def get_comb_fast(self, features):
+        """
+        Create set of all triplets with two target variables and one splitting feature
+        """
         X = self.df[features + [cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
 
         def create_params_f(v_feature, name):
@@ -192,6 +201,10 @@ class Node(object):
         return list(map(create_params_f, X[:-2], features))
 
     def find_best_split(self):
+        """
+        Sort through all combinations of splitting the sample by features.
+        Find a split with the highest statistical value.
+        """
         numb_feats = self.info["max_features"]
         numb_feats = np.clip(numb_feats, 1, len(self.features))
         n_jobs = self.info.get("n_jobs", 1 if numb_feats < 20 else 5)
@@ -220,6 +233,9 @@ class Node(object):
         return (attr, attrs[attr])
 
     def ind_for_nodes(self, X_attr, best_split, is_categ):
+        """
+        Map the number of the according child node by rule and sample features.
+        """
         rule_id = best_split["pos_nan"].index(0)
         query = best_split["values"][rule_id]
         if is_categ:
@@ -229,6 +245,9 @@ class Node(object):
         return np.where(values, rule_id, 1 - rule_id)
 
     def split(self):
+        """
+        Find best split of df sample and create child nodes
+        """
         node_edges = np.array([], dtype=int)
         self.rule_edges = np.array([], dtype=Rule)
 
