@@ -196,8 +196,10 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
 
     Examples
     --------
-    from survivors.tests.experiment import run
-    df_full, df_best = run()
+    from survivors.tests.test_experiment import run
+    res_exp = run()
+    df_full = res_exp.get_result()
+    df_criterion = res_exp.get_best_by_mode(stratify="criterion")
 
     """
     # if dir_path is None:
@@ -208,7 +210,7 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
                    "AUPRC", "EVENT_AUPRC", "CENS_AUPRC", "BAL_AUPRC",
                    "KL", "LOGLIKELIHOOD"]
     if not (dataset in DATASETS_LOAD):
-        print("DATASET %s IS NOT DEFINED" % (dataset))
+        print(f"DATASET {dataset} IS NOT DEFINED")
     X, y, features, categ, sch_nan = DATASETS_LOAD[dataset]()
     experim = exp.Experiments(folds=5, except_stop=except_stop, dataset_name=dataset, mode=mode, bins_sch=bins_sch)
     experim.set_metrics(lst_metrics)
@@ -246,13 +248,13 @@ def dir_path():
 # )
 
 @pytest.mark.parametrize(  # , "IBS", "IBS_WW"
-    "best_metric", ["BAL_IBS_WW", "BAL_IBS_REMAIN"]  # ["CI", "CI_CENS", "LOGLIKELIHOOD", "IBS", "IBS_WW", "IBS_REMAIN", "IAUC_WW_TI", "AUPRC"]  # "AUPRC", "CI_CENS"
+    "best_metric", ["IBS_REMAIN"]  # ["CI", "CI_CENS", "LOGLIKELIHOOD", "IBS", "IBS_WW", "IBS_REMAIN", "IAUC_WW_TI", "AUPRC"]  # "AUPRC", "CI_CENS"
 )
 # @pytest.mark.parametrize(
 #     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid"
 # )
 @pytest.mark.parametrize(
-    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "flchain", "backblaze", "actg",
+    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG"]  # "flchain", "backblaze", "actg", "support2", "smarto"
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
     mode_wei = None
@@ -265,7 +267,8 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     # prefix = f"{best_metric}_STRATTIME+_EXT10_EQ_REG_TREE_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"
 
-    prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_PAR_BSTR_ALL_BINS_{bins_sch}"
+    prefix = f"{best_metric}_PAR_BSTR_TEST_TIME"
+    # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_PAR_BSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_reg(0_01)_PART_BOOST_ALL_BINS_{bins_sch}"
 
@@ -278,7 +281,7 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     if not os.path.exists(storage_path):
         os.makedirs(storage_path)
     res_exp = run(dataset, with_self=["PARBSTR"], with_external=False, mode=mode,  # CLEVERBOOST
-                  dir_path=storage_path+"\\",
+                  #  dir_path=storage_path+"\\",
                   bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()

@@ -43,13 +43,13 @@ def _test_tree(pbs_samples, params, n_obser, l_expected):
 
     pred_time = craid_tree.predict(X_test, target="time")
     pred_prob = craid_tree.predict(X_test, target="cens")
-    pred_surv = craid_tree.predict_at_times(X_test, bins=bins, mode="surv")
+    pred_sf = craid_tree.predict_at_times(X_test, bins=bins, mode="surv")
 
     assert round(pred_prob[n_obser], 5) == l_expected[0]
     assert round(pred_time[n_obser], 3) == l_expected[1]
-    assert round(pred_surv[n_obser][0], 5) == l_expected[2]
-    assert round(pred_surv[n_obser][-1], 5) == l_expected[3]
-    assert round(pred_surv[n_obser].mean(), 5) == l_expected[4]
+    assert round(pred_sf[n_obser][0], 5) == l_expected[2]
+    assert round(pred_sf[n_obser][-1], 5) == l_expected[3]
+    assert round(pred_sf[n_obser].mean(), 5) == l_expected[4]
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
@@ -67,14 +67,14 @@ def _test_boosting(pbs_samples, params, n_obser, l_expected, boost_bettas):
     bstr.fit(X_train, y_train)
     pred_time = bstr.predict(X_test, target="time")
     pred_prob = bstr.predict(X_test, target="cens")
-    pred_surv = bstr.predict_at_times(X_test, bins=bins, mode="surv")
+    pred_sf = bstr.predict_at_times(X_test, bins=bins, mode="surv")
 
     assert list(np.round(bstr.bettas, 5)) == boost_bettas
     assert round(pred_prob[n_obser], 5) == l_expected[0]
     assert round(pred_time[n_obser], 3) == l_expected[1]
-    assert round(pred_surv[n_obser][0], 5) == l_expected[2]
-    assert round(pred_surv[n_obser][-1], 5) == l_expected[3]
-    assert round(pred_surv[n_obser].mean(), 5) == l_expected[4]
+    assert round(pred_sf[n_obser][0], 5) == l_expected[2]
+    assert round(pred_sf[n_obser][-1], 5) == l_expected[3]
+    assert round(pred_sf[n_obser].mean(), 5) == l_expected[4]
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
