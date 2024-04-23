@@ -38,7 +38,154 @@
             
   <section id="module-survivors.external.leaf_model">
 <span id="external"></span><h1>External<a class="headerlink" href="#module-survivors.external.leaf_model" title="Link to this heading">¶</a></h1>
-<span class="target" id="module-survivors.external.parametric"><span id="module-survivors.external.nonparametric"></span></span></section>
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.leaf_model.LeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">LeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.LeafModel" title="Link to this definition">¶</a></dt>
+<dd><p>Unified wrapper for external models.
+Can be used as leaf model in tree-based methods.
+Supported in Experiments module.</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>features<span class="classifier">list</span></dt><dd><p>Covariates for fitting</p>
+</dd>
+<dt>features_predict<span class="classifier">dict</span></dt><dd><p>Description values of features (mean by default)</p>
+</dd>
+<dt>lists: dict</dt><dd><p>Source values of target variables</p>
+</dd>
+<dt>weights_name<span class="classifier">str</span></dt><dd><p>Name of the weighting column</p>
+</dd>
+<dt>kwargs<span class="classifier">dict</span></dt><dd><p>Internal parameters for the leaf model</p>
+</dd>
+</dl>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
+<p>fit : build ensemble on source X_node data
+predict_list_feature : return full data of variables
+predict_feature : return aggregated data of variables
+predict_survival_at_times : return survival function by bins
+predict_hazard_at_times : return hazard function by bins</p>
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.leaf_model.MeaningLeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">MeaningLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.MeaningLeafModel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.leaf_model.MixLeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">MixLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.MixLeafModel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.leaf_model.NonparamLeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">NonparamLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.NonparamLeafModel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.leaf_model.NormalizedLeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">NormalizedLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.NormalizedLeafModel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class" id="module-survivors.external.nonparametric">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseLeafModeLL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">BaseLeafModeLL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.BaseLeafModeLL" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseLeafModeLL.hazard_class">
+<span class="sig-name descname"><span class="pre">hazard_class</span></span><a class="headerlink" href="#survivors.external.nonparametric.BaseLeafModeLL.hazard_class" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">NelsonAalenFitter</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseLeafModeLL.survival_class">
+<span class="sig-name descname"><span class="pre">survival_class</span></span><a class="headerlink" href="#survivors.external.nonparametric.BaseLeafModeLL.survival_class" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">KaplanMeierFitter</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseLeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">BaseLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.BaseLeafModel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseLeafModelOnlyHazard">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">BaseLeafModelOnlyHazard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.BaseLeafModelOnlyHazard" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseLeafModelOnlySurv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">BaseLeafModelOnlySurv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.BaseLeafModelOnlySurv" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseMeaningLeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">BaseMeaningLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.BaseMeaningLeafModel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseMixLeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">BaseMixLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.BaseMixLeafModel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.nonparametric.BaseNormalizedLeafModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">BaseNormalizedLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.BaseNormalizedLeafModel" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class" id="module-survivors.external.parametric">
+<dt class="sig sig-object py" id="survivors.external.parametric.CoxPH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.parametric.</span></span><span class="sig-name descname"><span class="pre">CoxPH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.parametric.CoxPH" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="survivors.external.parametric.CoxPH.base_model">
+<span class="sig-name descname"><span class="pre">base_model</span></span><a class="headerlink" href="#survivors.external.parametric.CoxPH.base_model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">CoxPHFitter</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.parametric.LogLogisticAFT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.parametric.</span></span><span class="sig-name descname"><span class="pre">LogLogisticAFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.parametric.LogLogisticAFT" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="survivors.external.parametric.LogLogisticAFT.base_model">
+<span class="sig-name descname"><span class="pre">base_model</span></span><a class="headerlink" href="#survivors.external.parametric.LogLogisticAFT.base_model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">LogLogisticAFTFitter</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.parametric.LogNormalAFT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.parametric.</span></span><span class="sig-name descname"><span class="pre">LogNormalAFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.parametric.LogNormalAFT" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="survivors.external.parametric.LogNormalAFT.base_model">
+<span class="sig-name descname"><span class="pre">base_model</span></span><a class="headerlink" href="#survivors.external.parametric.LogNormalAFT.base_model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">LogNormalAFTFitter</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.parametric.ParametricLifelinesBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.parametric.</span></span><span class="sig-name descname"><span class="pre">ParametricLifelinesBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.parametric.ParametricLifelinesBase" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.external.parametric.WeibullAFT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.parametric.</span></span><span class="sig-name descname"><span class="pre">WeibullAFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.parametric.WeibullAFT" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="survivors.external.parametric.WeibullAFT.base_model">
+<span class="sig-name descname"><span class="pre">base_model</span></span><a class="headerlink" href="#survivors.external.parametric.WeibullAFT.base_model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">WeibullAFTFitter</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 
 
           </div>

@@ -64,7 +64,7 @@ Allow to separate data into 2 child nodes</p>
 </dd>
 <dt>woe<span class="classifier">boolean</span></dt><dd><p>Mode of categorical preparation</p>
 </dd>
-<dt>is_leaf<span class="classifier">boolean</span></dt><dd><p>True if node has no subnodes</p>
+<dt>is_leaf<span class="classifier">boolean</span></dt><dd><p>True if node is terminal (there are no child nodes)</p>
 </dd>
 <dt>verbose<span class="classifier">int</span></dt><dd><p>Print the best split of the node</p>
 </dd>
@@ -78,9 +78,9 @@ Allow to separate data into 2 child nodes</p>
 <h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
 <p>check_params : Fill empty parameters and map max_features to int
 find_best_split : Choose best split of node according to parameters
-split : Try to create subnodes by best split
+split : Find best split of df sample and create child nodes
 set_edges: Set number of child nodes from hash table of main tree
-set_leaf : Delete subnodes and reset data</p>
+set_leaf : Delete child nodes and set node as terminal</p>
 <p>predict : Return statistic values of a data
 predict_scheme : Return all possible outcomes for additional features determination</p>
 <p>prepare_df_for_attr : set input values to numpy format (and fill missing features)
@@ -92,26 +92,41 @@ get_description : Return common values of a data (size, depth, death, cens)</p>
 set_dot_edges : add child nodes to the graphviz dot
 translate : Replace rules and features by dictionary</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.find_best_split">
+<span class="sig-name descname"><span class="pre">find_best_split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.find_best_split" title="Link to this definition">¶</a></dt>
+<dd><p>Sort through all combinations of splitting the sample by features.
+Find a split with the highest statistical value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.get_comb_fast">
+<span class="sig-name descname"><span class="pre">get_comb_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.get_comb_fast" title="Link to this definition">¶</a></dt>
+<dd><p>Create set of all triplets with two target variables and one splitting feature</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.ind_for_nodes">
+<span class="sig-name descname"><span class="pre">ind_for_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_categ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.ind_for_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Map the number of the according child node by rule and sample features.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="survivors.tree.node.Node.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.predict" title="Link to this definition">¶</a></dt>
 <dd><p>Predict target values for X data</p>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h3>
-<dl>
+<dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events</p>
 </dd>
 <dt>target<span class="classifier">str or function</span></dt><dd><p>Column name, mode or aggregate function of a leaf sample
-Column name : must be in dataset.columns</p>
-<blockquote>
-<div><p>Return mean of feature</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Mode :</dt><dd><p>“surv” return survival function
-“hazard” return cumulative hazard function
-attribute_name return attribute value (e.g. depth, numb)
-feature_name return aggregate statistic value for node</p>
-</dd>
-</dl>
+Column name : must be in dataset.columns
+- Return mean of feature
+Mode :
+- “surv” return survival function
+- “hazard” return cumulative hazard function
+- attribute_name return attribute value (e.g. depth, numb)
+- feature_name return aggregate statistic value for node</p>
 </dd>
 <dt>bins<span class="classifier">array-like</span></dt><dd><p>Points of timeline</p>
 </dd>
@@ -126,6 +141,50 @@ feature_name return aggregate statistic value for node</p>
 </section>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.split">
+<span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.split" title="Link to this definition">¶</a></dt>
+<dd><p>Find best split of df sample and create child nodes</p>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.tree.node.Rule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.tree.node.</span></span><span class="sig-name descname"><span class="pre">Rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Rule" title="Link to this definition">¶</a></dt>
+<dd><p>Node of decision tree.
+Allow to separate data into 2 child nodes</p>
+<section id="id1">
+<h2>Attributes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>feature<span class="classifier">str</span></dt><dd><p>Name of feature for splitting</p>
+</dd>
+<dt>condition<span class="classifier">str</span></dt><dd><p>Operation for splitting</p>
+</dd>
+<dt><a href="#id10"><span class="problematic" id="id11">has_nan_</span></a><span class="classifier">bool</span></dt><dd><p>Flag of the missing values in node</p>
+</dd>
+</dl>
+</section>
+<section id="id2">
+<h2>Methods<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p>get_feature : Return feature
+get_condition : Return condition
+translate: Replace rule by dictionary
+to_str : Transforming to linear form
+print : Print all attributes and descriptions</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Rule.print">
+<span class="sig-name descname"><span class="pre">print</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Rule.print" title="Link to this definition">¶</a></dt>
+<dd><p>Print all attributes and descriptions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Rule.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">describe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Rule.translate" title="Link to this definition">¶</a></dt>
+<dd><p>Rename feature in rule</p>
+</dd></dl>
+
 </section>
 </dd></dl>
 
@@ -133,8 +192,8 @@ feature_name return aggregate statistic value for node</p>
 <dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.tree.decision_tree.</span></span><span class="sig-name descname"><span class="pre">CRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">123</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID" title="Link to this definition">¶</a></dt>
 <dd><p>Survival decision tree model.</p>
-<section id="id1">
-<h2>Attributes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<section id="id3">
+<h2>Attributes<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>nodes<span class="classifier">dict</span></dt><dd><p>Dictionary of all tree’s nodes (numbers from hierarchy)</p>
 </dd>
@@ -152,22 +211,16 @@ feature_name return aggregate statistic value for node</p>
 </dd>
 <dt>name<span class="classifier">str</span></dt><dd><p>Model’s name</p>
 </dd>
-<dt>coxph<span class="classifier">CoxPHSurvivalAnalysis</span></dt><dd><p>Model for hazard prediction</p>
-</dd>
-<dt>ohenc<span class="classifier">OneHotEncoder</span></dt><dd><p>Encoding model from number of Node to indicators</p>
-</dd>
 <dt>bins<span class="classifier">array-like</span></dt><dd><p>Points of timeline.</p>
 </dd>
 <dt>info<span class="classifier">dict</span></dt><dd><p>Parameters for building nodes</p>
 </dd>
 </dl>
 </section>
-<section id="id2">
-<h2>Methods<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<section id="id4">
+<h2>Methods<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <p>fit : build decision tree with X, y data (iterative splitting node)
-fit_cox_hazard : fitting Cox model as aggregating model by leaf numbers
 predict : return values of features, rules or schemes
-predict_cox_hazard : return survival or hazard function from cox model
 predict_at_times : return survival or hazard function
 predict_schemes : return FilledSchemeStrategy or Scheme
 cut_tree : pruning function</p>
@@ -180,9 +233,9 @@ delete_leaves_by_span : set up pre-leaves from lists to leaves</p>
 <dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.cut_tree">
 <span class="sig-name descname"><span class="pre">cut_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_f=&lt;function</span> <span class="pre">roc_auc_score&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choose_f=&lt;built-in</span> <span class="pre">function</span> <span class="pre">max&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.cut_tree" title="Link to this definition">¶</a></dt>
 <dd><p>Method of pruning tree.
-Find best subtree, which reaches best value of metric “mode_f””</p>
-<section id="id3">
-<h3>Parameters<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+Find the best subtree that achieves the best value of the “mode_f” metric”.</p>
+<section id="id5">
+<h3>Parameters<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
 </dd>
@@ -200,8 +253,8 @@ Find best subtree, which reaches best value of metric “mode_f””</p>
 <dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'target'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.predict" title="Link to this definition">¶</a></dt>
 <dd><p>Return values by mode &amp; target</p>
-<section id="id4">
-<h3>Parameters<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<section id="id6">
+<h3>Parameters<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
 </dd>
@@ -219,8 +272,8 @@ Find best subtree, which reaches best value of metric “mode_f””</p>
 </dd>
 </dl>
 </section>
-<section id="id5">
-<h3>Returns<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<section id="id7">
+<h3>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <dl class="simple">
 <dt>res<span class="classifier">array-like</span></dt><dd><p>Values by mode &amp; target</p>
 </dd>
@@ -232,30 +285,23 @@ Find best subtree, which reaches best value of metric “mode_f””</p>
 <dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.predict_at_times">
 <span class="sig-name descname"><span class="pre">predict_at_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'surv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.predict_at_times" title="Link to this definition">¶</a></dt>
 <dd><p>Return survival or hazard function.</p>
-<section id="id6">
-<h3>Parameters<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
-<dl>
+<section id="id8">
+<h3>Parameters<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
 </dd>
 <dt>bins<span class="classifier">array-like</span></dt><dd><p>Points of timeline.</p>
 </dd>
 <dt>mode<span class="classifier">str, optional</span></dt><dd><p>Type of function. The default is “surv”.
 “surv” : send building function in nodes
-“hazard” : send building function in nodes
-“cox-hazard” : fit CoxPH model on node numbers (input)</p>
-<blockquote>
-<div><blockquote>
-<div><p>and time/cens (output)</p>
-</div></blockquote>
-<p>predict cumulative HF from model</p>
-</div></blockquote>
+“hazard” : send building function in nodes</p>
 </dd>
 </dl>
 </section>
-<section id="id7">
-<h3>Returns<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<section id="id9">
+<h3>Returns<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
 <dl class="simple">
-<dt>array-like</dt><dd><p>Vector of function values in times (bins)</p>
+<dt>res<span class="classifier">array-like</span></dt><dd><p>Vector of function values in times (bins)</p>
 </dd>
 </dl>
 </section>
