@@ -3,6 +3,7 @@ import scipy.stats as ss
 from .leaf_model import NonparamLeafModel, MixLeafModel, NormalizedLeafModel, MeaningLeafModel
 from lifelines import KaplanMeierFitter, NelsonAalenFitter
 
+
 def epanechnikov_kernel(t, T, bandwidth=1.0):
     M = 0.75 * (1 - ((t - T) / bandwidth) ** 2)
     M[abs((t - T)) >= bandwidth] = 0
@@ -30,7 +31,7 @@ class KaplanMeier:
         self.survival_function = np.hstack([1.0, np.cumprod((1.0 - self.hist_cens / (self.cumul_hist_dur)))])
 
     def count_confidence_interval(self):
-        ''' exponential Greenwood: https://www.math.wustl.edu/~sawyer/handouts/greenwood.pdf '''
+        """ Calculated by exponential Greenwood: https://www.math.wustl.edu/~sawyer/handouts/greenwood.pdf """
         z = ss.norm.ppf(1 - self.alpha / 2)
         cumulative_sq_ = np.sqrt(np.hstack(
             [0.0, np.cumsum(self.hist_cens / (self.cumul_hist_dur * (self.cumul_hist_dur - self.hist_cens)))]))
@@ -132,13 +133,14 @@ class KaplanMeierZeroAfter(KaplanMeier):
         return sf
 
 
-
 class BaseLeafModel(NonparamLeafModel):
     survival_class = KaplanMeier
     hazard_class = NelsonAalen
 
+
 class BaseLeafModelOnlySurv(NonparamLeafModel):
     survival_class = KaplanMeier
+
 
 class BaseLeafModelOnlyHazard(NonparamLeafModel):
     hazard_class = NelsonAalen
@@ -157,6 +159,7 @@ class BaseMeaningLeafModel(MeaningLeafModel):
 class BaseMixLeafModel(MixLeafModel):
     survival_class = KaplanMeierZeroAfter
     hazard_class = NelsonAalen
+
 
 class BaseLeafModeLL(NonparamLeafModel):
     survival_class = KaplanMeierFitter

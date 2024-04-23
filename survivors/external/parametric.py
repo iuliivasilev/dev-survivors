@@ -64,7 +64,7 @@ class ParametricLifelinesBase(LeafModel):
             ts = np.linspace(self.model.durations.min(), self.model.durations.max(), 100)
             sf = self.predict_survival_at_times(X=X, bins=ts)
             return np.trapz(sf, ts, axis=1)
-            #return self.model.predict_expectation(X).to_numpy()
+            # return self.model.predict_expectation(X).to_numpy()
         X = self.prepare_data(X)
         return super().predict_feature(X, feature_name)
 

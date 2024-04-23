@@ -50,7 +50,7 @@ def pd_to_xy(df):
     Parameters
     ----------
     df : pandas DataFrame
-        Must to have columns CENS_NAME and TIME_NAME.
+        Must contain columns CENS_NAME and TIME_NAME.
 
     Returns
     -------
@@ -61,7 +61,7 @@ def pd_to_xy(df):
         and time of event or time of censoring as second field.
 
     """
-    X = df.loc[:, list(set(df.columns) - {CENS_NAME, TIME_NAME})]
+    X = df[[list(set(df.columns) - {CENS_NAME, TIME_NAME})]]
     y = get_y(df[CENS_NAME], df[TIME_NAME])
     return X, y
 
@@ -86,10 +86,10 @@ def get_bins(time, cens=None, mode='a', num_bins=100):
     Returns
     -------
     bins : array
-        Array of time points in timeline
+        Timeline
 
     """
-    if not(cens is None):
+    if not (cens is None):
         time = time[np.where(cens)]
     time = time.astype(np.int32)
     bins = np.array([])

@@ -114,6 +114,7 @@ class NormalizedLeafModel(NonparamLeafModel):
         self.lists[cnt.TIME_NAME] = durs[durs > 0]
         self.weights = np.ones_like(self.lists[cnt.TIME_NAME])
 
+
 class MeaningLeafModel(NonparamLeafModel):
     def fit(self, *args, **kwargs):
         super().fit(*args, **kwargs)
