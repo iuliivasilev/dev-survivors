@@ -3,14 +3,39 @@ from .. import constants as cnt
 
 
 class LeafModel(object):
+    """
+    Unified wrapper for external models.
+    Can be used as leaf model in tree-based methods.
+    Supported in Experiments module.
 
+    Attributes
+    ----------
+    features : list
+        Covariates for fitting
+    features_predict : dict
+        Description values of features (mean by default)
+    lists: dict
+        Source values of target variables
+    weights_name : str
+        Name of the weighting column
+    kwargs : dict
+        Internal parameters for the leaf model
+
+    Methods
+    -------
+    fit : build ensemble on source X_node data
+    predict_list_feature : return full data of variables
+    predict_feature : return aggregated data of variables
+    predict_survival_at_times : return survival function by bins
+    predict_hazard_at_times : return hazard function by bins
+
+    """
     def __init__(self, features=[], weights_name=None, **kwargs):
         self.kwargs = kwargs
         self.features = features
         self.shape = None
         self.features_predict = dict()
         self.lists = dict()
-        self.default_bins = np.array([1, 10, 100, 1000])
         self.weights_name = weights_name
 
     def fit(self, X_node, *args, **kwargs):

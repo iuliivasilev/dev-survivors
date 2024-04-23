@@ -36,7 +36,6 @@ class Rule(object):
     -------
     get_feature : Return feature
     get_condition : Return condition
-    has_nan : Return has_nan_
     translate: Replace rule by dictionary
     to_str : Transforming to linear form
     print : Print all attributes and descriptions
@@ -320,12 +319,12 @@ class Node(object):
         target : str or function
             Column name, mode or aggregate function of a leaf sample
             Column name : must be in dataset.columns
-                Return mean of feature
+            - Return mean of feature
             Mode :
-                "surv" return survival function
-                "hazard" return cumulative hazard function
-                attribute_name return attribute value (e.g. depth, numb)
-                feature_name return aggregate statistic value for node
+            - "surv" return survival function
+            - "hazard" return cumulative hazard function
+            - attribute_name return attribute value (e.g. depth, numb)
+            - feature_name return aggregate statistic value for node
         bins : array-like
             Points of timeline
 
@@ -333,7 +332,6 @@ class Node(object):
         -------
         res : array-like
             Values by target
-
         """
         if target == "surv":
             return self.leaf_model.predict_survival_at_times(X, bins)
