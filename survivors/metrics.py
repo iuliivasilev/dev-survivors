@@ -103,6 +103,7 @@ def event_auprc(survival_train, survival_test, estimate, times, axis=-1):
                         estimate[survival_test["cens"]], times, axis=axis)
     return auprc_event
 
+
 def cens_auprc(survival_train, survival_test, estimate, times, axis=-1):
     auprc_cens = auprc(survival_train, survival_test[~survival_test["cens"]],
                        estimate[~survival_test["cens"]], times, axis=axis)
@@ -252,10 +253,8 @@ def ibs_remain(survival_train, survival_test, estimate, times, axis=-1):
                                       estim_before[:, i],
                                       estim_after[:, i])
                              for i, t in enumerate(times)])
-    N = np.sum(np.array([np.where(test_time < t,
-                                      test_event,
-                                      1)
-                             for i, t in enumerate(times)]), axis=1)
+    N = np.sum(np.array([np.where(test_time < t, test_event, 1)
+                         for i, t in enumerate(times)]), axis=1)
     # ind = np.digitize(test_time, times)
     # n_cens = np.bincount(ind[~test_event], minlength=times.shape[0])
     #
@@ -339,11 +338,11 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
     else:
         cens = sksurv.metrics.CensoringDistributionEstimator()
         cens.fit(survival_train)
-        Ghat = cens.predict_proba(test_time[test_event])
+        g_hat = cens.predict_proba(test_time[test_event])
         ipcw = np.zeros(test_time.shape[0])
-        Ghat[Ghat == 0] = np.inf
-        if not((Ghat == 0.0).any()):
-            ipcw[test_event] = 1.0 / Ghat
+        g_hat[g_hat == 0] = np.inf
+        if not ((g_hat == 0.0).any()):
+            ipcw[test_event] = 1.0 / g_hat
         else:
             ipcw = np.ones(test_time.shape[0])
 
@@ -541,7 +540,7 @@ def get_hazard_func(ddeath, cdeath, bins=None):
     """
     naf = NelsonAalenFitter()
     naf.fit(ddeath, cdeath)
-    if not(bins is None):
+    if not (bins is None):
         return naf.cumulative_hazard_at_times(bins).to_numpy()
     return naf
 
