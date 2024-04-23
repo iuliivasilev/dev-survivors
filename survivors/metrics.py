@@ -7,50 +7,50 @@ from lifelines.utils import concordance_index
 from .constants import TIME_NAME, CENS_NAME
 
 METRIC_DICT = {
-    "CI": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        concordance_index(y_tst[TIME_NAME], pr_time),
-    "CI_CENS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        concordance_index(y_tst[TIME_NAME], pr_time, y_tst[CENS_NAME]),
+    "CI": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        concordance_index(y_tst[TIME_NAME], pred_time),
+    "CI_CENS": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        concordance_index(y_tst[TIME_NAME], pred_time, y_tst[CENS_NAME]),
 
-    "IBS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        ibs(y_tr, y_tst, pr_surv, bins),
-    "BAL_IBS": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        bal_ibs(y_tr, y_tst, pr_surv, bins),
+    "IBS": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        ibs(y_tr, y_tst, pred_sf, bins),
+    "BAL_IBS": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        bal_ibs(y_tr, y_tst, pred_sf, bins),
 
-    "IBS_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        ibs_WW(y_tr, y_tst, pr_surv, bins),
-    "BAL_IBS_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        bal_ibs_WW(y_tr, y_tst, pr_surv, bins),
+    "IBS_WW": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        ibs_WW(y_tr, y_tst, pred_sf, bins),
+    "BAL_IBS_WW": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        bal_ibs_WW(y_tr, y_tst, pred_sf, bins),
 
-    "IBS_REMAIN": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        ibs_remain(y_tr, y_tst, pr_surv, bins),
-    "BAL_IBS_REMAIN": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        bal_ibs_remain(y_tr, y_tst, pr_surv, bins),
+    "IBS_REMAIN": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        ibs_remain(y_tr, y_tst, pred_sf, bins),
+    "BAL_IBS_REMAIN": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        bal_ibs_remain(y_tr, y_tst, pred_sf, bins),
 
-    "IAUC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        iauc(y_tr, y_tst, pr_haz, bins),
-    "IAUC_WW": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        iauc_WW(y_tr, y_tst, pr_haz, bins),
-    "IAUC_TI": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        iauc_TI(y_tr, y_tst, pr_haz, bins),
-    "IAUC_WW_TI": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        iauc_WW_TI(y_tr, y_tst, pr_haz, bins),
+    "IAUC": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        iauc(y_tr, y_tst, pred_hf, bins),
+    "IAUC_WW": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        iauc_WW(y_tr, y_tst, pred_hf, bins),
+    "IAUC_TI": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        iauc_TI(y_tr, y_tst, pred_hf, bins),
+    "IAUC_WW_TI": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        iauc_WW_TI(y_tr, y_tst, pred_hf, bins),
 
-    "AUPRC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        auprc(y_tr, y_tst, pr_surv, bins),
-    "AUPRC_by_obs": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        auprc(y_tr, y_tst, pr_surv, bins, axis=3),
-    "EVENT_AUPRC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        event_auprc(y_tr, y_tst, pr_surv, bins),
-    "CENS_AUPRC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        cens_auprc(y_tr, y_tst, pr_surv, bins),
-    "BAL_AUPRC": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        bal_auprc(y_tr, y_tst, pr_surv, bins),
+    "AUPRC": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        auprc(y_tr, y_tst, pred_sf, bins),
+    "AUPRC_by_obs": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        auprc(y_tr, y_tst, pred_sf, bins, axis=3),
+    "EVENT_AUPRC": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        event_auprc(y_tr, y_tst, pred_sf, bins),
+    "CENS_AUPRC": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        cens_auprc(y_tr, y_tst, pred_sf, bins),
+    "BAL_AUPRC": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        bal_auprc(y_tr, y_tst, pred_sf, bins),
 
-    "LOGLIKELIHOOD": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        loglikelihood(y_tst[TIME_NAME], y_tst[CENS_NAME], pr_surv, pr_haz, bins),
-    "KL": lambda y_tr, y_tst, pr_time, pr_surv, pr_haz, bins:
-        kl(y_tst[TIME_NAME], y_tst[CENS_NAME], pr_surv, pr_haz, bins)
+    "LOGLIKELIHOOD": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        loglikelihood(y_tst[TIME_NAME], y_tst[CENS_NAME], pred_sf, pred_hf, bins),
+    "KL": lambda y_tr, y_tst, pred_time, pred_sf, pred_hf, bins:
+        kl(y_tst[TIME_NAME], y_tst[CENS_NAME], pred_sf, pred_hf, bins)
 }
 """ dict: Available metrics in library and its realization """
 
@@ -66,7 +66,7 @@ def auprc(survival_train, survival_test, estimate, times, axis=-1):
     steps = np.linspace(1e-5, 1 - 1e-5, 100)
     before_time = np.dot(time[:, np.newaxis], steps[np.newaxis, :])
     after_time = np.dot(time[:, np.newaxis], 1 / steps[np.newaxis, :])  # TODO OLD
-    #after_time = time[:, np.newaxis] + np.dot(times[-1] - time[:, np.newaxis], steps[np.newaxis, :])
+
     before_ind = np.clip(np.searchsorted(times, before_time), 0, times.shape[0] - 1)
     after_ind = np.clip(np.searchsorted(times, after_time), 0, times.shape[0] - 1)
 
@@ -407,8 +407,10 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
 def iauc_WW(s_tr, s_tst, est, times, tied_tol=1e-8):
     return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=True)
 
+
 def iauc_TI(s_tr, s_tst, est, times, tied_tol=1e-8):
     return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=False, time_int=True)
+
 
 def iauc_WW_TI(s_tr, s_tst, est, times, tied_tol=1e-8):
     return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=True, time_int=True)
@@ -486,7 +488,8 @@ def aic(num_params, time, cens, sf, cumhf, bins):
 def bic(k, n, time, cens, sf, cumhf, bins):
     return k*np.log(n) - 2*loglikelihood(time, cens, sf, cumhf, bins)
 
-"""ESTIMATE FUNCTION"""
+
+""" ESTIMATE FUNCTION """
 
 
 def get_survival_func(ddeath, cdeath, bins=None):
@@ -511,7 +514,7 @@ def get_survival_func(ddeath, cdeath, bins=None):
     """
     kmf = KaplanMeierFitter()
     kmf.fit(ddeath, cdeath)
-    if not(bins is None):
+    if not (bins is None):
         return kmf.survival_function_at_times(bins).to_numpy()
     return kmf
 
@@ -542,38 +545,6 @@ def get_hazard_func(ddeath, cdeath, bins=None):
         return naf.cumulative_hazard_at_times(bins).to_numpy()
     return naf
 
-# def get_norm_hist(x, b):
-#     a = np.histogram(x,bins = b)[0]
-#     return a/sum(a)
-
-# def plot_predict_surv(surves, bins, true_time, cens = 1):
-#     """
-#     RUN:
-#         res = ssc.get_score_survival_methods(X_tv, X_tst, new_sign[:-9], bins, True)
-#         plot_predict_surv({i:j[0] for i,j in res.items()}, bins, 150.0, 1)
-#     """
-#     fig, ax = plt.subplots()
-    
-#     for name, surv in surves.items():
-#         ax.plot(bins, surv, 
-#                 label = f"{name}, prob:{round(min(surv[np.where(bins < true_time)]),3)}")
-#     ax.vlines(true_time, 0, 1, 
-#               color = 'k', 
-#               linestyles = ('dashed' if cens else 'solid'),
-#               linewidth = 2)
-#     ax.legend()
-#     plt.ylim(-0.1, 1.1)
-#     plt.show()
-
-# def print_importance(feature, importance):
-#     plt.subplots(figsize=(30, 8))
-#     res = {f:i for f,i in zip(feature, importance)}
-#     res = dict(sorted(res.items(), key = lambda x: x[1]))
-#     print(res)
-#     res = dict(sorted(res.items(), key = lambda x: abs(x[1]))[-15:])
-#     res = dict(sorted(res.items(), key = lambda x: x[1]))
-#     plt.bar(res.keys(), res.values())
-#     plt.show()
 
 IBS_DICT = {
     m.__name__.upper(): m
