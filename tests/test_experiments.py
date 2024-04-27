@@ -45,32 +45,30 @@ PARAMS_ = {
     "GBSG": SCHEME_PARAMS,
     "PBC": SCHEME_PARAMS,
     "WUHAN": SCHEME_PARAMS,
-    # "ONK": ONK_PARAMS,
-    # "COVID": COVID_PARAMS,
-
     "actg": SCHEME_PARAMS,
     "flchain": SCHEME_PARAMS,
     "smarto": SCHEME_PARAMS,
     "rott2": SCHEME_PARAMS,
     "support2": SCHEME_PARAMS,
     "Framingham": SCHEME_PARAMS,
-    "backblaze": SCHEME_PARAMS
+    # "backblaze": SCHEME_PARAMS
+    # "ONK": ONK_PARAMS,
+    # "COVID": COVID_PARAMS,
 }
 
 DATASETS_LOAD = {
     "GBSG": ds.load_gbsg_dataset,
     "PBC": ds.load_pbc_dataset,
     "WUHAN": ds.load_wuhan_dataset,
-    # "ONK": ds.load_onk_dataset,
-    # "COVID": ds.load_covid_dataset,
-
     "actg": ds.load_actg_dataset,
     "flchain": ds.load_flchain_dataset,
     "smarto": ds.load_smarto_dataset,
     "rott2": ds.load_rott2_dataset,
     "support2": ds.load_support2_dataset,
-    "backblaze": ds.load_backblaze_dataset
-    # "Framingham": ds.load_Framingham_dataset
+    "Framingham": ds.load_Framingham_dataset
+    # "backblaze": ds.load_backblaze_dataset
+    # "ONK": ds.load_onk_dataset,
+    # "COVID": ds.load_covid_dataset,
 }
 
 cox_param_grid = {
@@ -132,7 +130,7 @@ def get_best_by_full_name(df_full, by_metric="IAUC", choose="max"):
 def plot_boxplot_results(df_full, dir_path=None, metrics=[],
                          dataset_name="", all_best=False,
                          by_metric="IAUC", choose="max"):
-    if not(all_best):
+    if not all_best:
         df_ = get_best_by_full_name(df_full, by_metric, choose)
     for m in metrics:
         if all_best:
@@ -161,8 +159,7 @@ def import_tables(dirs):
 
 
 def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
-        with_external=True, except_stop="all", mode="CV", dir_path=None, bins_sch="",
-        best_metric="IBS", mode_wei=None):
+        with_external=True, dir_path=None, best_metric="IBS", mode_wei=None, **kwargs):
     """
     Conduct experiments for defined dataset and methods (self and external)
 
@@ -181,11 +178,6 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
                  SurvivalTree,
                  RandomSurvivalForest,
                  GradientBoostingSurvivalAnalysis
-    except_stop : str, optional
-        Mode of ending because of exception. The default is "all".
-        "all" - continue experiments
-        else - stop experiments with current method
-
     dir_path : str, optional
         Path to the final directory
 
@@ -212,7 +204,7 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
     if not (dataset in DATASETS_LOAD):
         print(f"DATASET {dataset} IS NOT DEFINED")
     X, y, features, categ, sch_nan = DATASETS_LOAD[dataset]()
-    experim = exp.Experiments(folds=5, except_stop=except_stop, dataset_name=dataset, mode=mode, bins_sch=bins_sch)
+    experim = exp.Experiments(folds=5, dataset_name=dataset, **kwargs)
     experim.set_metrics(lst_metrics)
     experim.add_metric_best(best_metric)
     if with_external:
