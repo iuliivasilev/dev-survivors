@@ -8,8 +8,7 @@ CRAID_param_grid = {
     'cut': [False],  # True,
     "woe": [True],
     "signif": [0.05, 0.1, 1.0],
-    "max_features": [1.0],
-    "n_jobs": [10]
+    "max_features": [1.0]
 }
 
 BSTR_param_grid = {
@@ -25,7 +24,7 @@ BSTR_param_grid = {
 
     "min_samples_leaf": [0.05, 0.01, 0.001],
     "max_features": [0.3, "sqrt"],
-    "n_jobs": [15]  # 15
+    "n_jobs": [20]  # 15
 }
 
 PAR_BSTR_param_grid = BSTR_param_grid
@@ -78,7 +77,6 @@ BOOST_param_grid = {
 
     "min_samples_leaf": [0.05, 0.01, 0.001],  # [0.01, 0.001]
     "max_features": [0.3, "sqrt"],
-    "n_jobs": [5],
     "with_arc": [False],
     'weighted_tree': [False],
     "all_weight": [False]  # [False, True]
