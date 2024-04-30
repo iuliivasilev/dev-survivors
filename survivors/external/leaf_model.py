@@ -37,6 +37,7 @@ class LeafModel(object):
         self.features_predict = dict()
         self.lists = dict()
         self.weights_name = weights_name
+        self.weights = None
 
     def fit(self, X_node, *args, **kwargs):
         if self.features == []:

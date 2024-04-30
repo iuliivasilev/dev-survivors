@@ -13,11 +13,11 @@ from .. import metrics as metr
 from ..external import LeafModel
 
 
-def to_str_from_dict_list(d, strat):
-    if isinstance(strat, str):
-        return str(d.get(strat, ""))
-    elif isinstance(strat, list):
-        return ";".join([str(d.get(e, "")) for e in strat])
+def to_str_from_dict_list(d, stratify):
+    if isinstance(stratify, str):
+        return str(d.get(stratify, ""))
+    elif isinstance(stratify, list):
+        return ";".join([str(d.get(e, "")) for e in stratify])
     return None
 
 
@@ -282,6 +282,7 @@ class Experiments(object):
         self.folds = folds
         self.except_stop = except_stop
         self.dataset_name = dataset_name
+        self.dir_path = None
 
         self.result_table = None
         self.mode = mode
