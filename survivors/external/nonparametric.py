@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.stats as ss
+from scipy.stats import norm
 from .leaf_model import NonparamLeafModel, MixLeafModel, NormalizedLeafModel, MeaningLeafModel
 from lifelines import KaplanMeierFitter, NelsonAalenFitter
 
@@ -32,7 +32,7 @@ class KaplanMeier:
 
     def count_confidence_interval(self):
         """ Calculated by exponential Greenwood: https://www.math.wustl.edu/~sawyer/handouts/greenwood.pdf """
-        z = ss.norm.ppf(1 - self.alpha / 2)
+        z = norm.ppf(1 - self.alpha / 2)
         cumulative_sq_ = np.sqrt(np.hstack(
             [0.0, np.cumsum(self.hist_cens / (self.cumul_hist_dur * (self.cumul_hist_dur - self.hist_cens)))]))
         np.nan_to_num(cumulative_sq_, copy=False, nan=0)
@@ -67,7 +67,7 @@ class FullProbKM(KaplanMeier):
         self.cumul_hist_dur = np.cumsum(self.hist_cens[::-1])[::-1]
         self.cumul_hist_dur[self.cumul_hist_dur == 0] = 1e-3  # Any cnt (in sf it becomes zero)
 
-        self.survival_function = np.hstack([1.0, np.cumprod((1.0 - self.hist_cens / (self.cumul_hist_dur)))])
+        self.survival_function = np.hstack([1.0, np.cumprod((1.0 - self.hist_cens / self.cumul_hist_dur))])
 
         N = right_censor.shape[0]
         Ncens = right_censor[~right_censor].shape[0]

@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from scipy import stats
+from scipy.stats import chi2
 from ..external import KaplanMeier, NelsonAalen, KaplanMeierZeroAfter, FullProbKM
 from ..metrics import ibs_WW, auprc
 from ..constants import get_y
@@ -245,7 +245,7 @@ def select_best_split_info(attr_dicts, type_attr, bonf=True, descr_woe=None):
     # attr_dicts = sorted(attr_dicts, key=lambda x: abs(x["stat_diff"]), reverse=True)[:max(1, len(attr_dicts)//2)]
     best_attr = max(attr_dicts, key=lambda x: x["stat_val"])
 
-    best_attr["p_value"] = stats.chi2.sf(best_attr["stat_val"], df=1)
+    best_attr["p_value"] = chi2.sf(best_attr["stat_val"], df=1)
     best_attr["sign_split"] = len(attr_dicts)
     if best_attr["sign_split"] > 0:
         if type_attr == "cont":

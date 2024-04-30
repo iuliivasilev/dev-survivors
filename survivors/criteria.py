@@ -1,6 +1,6 @@
 import numpy as np
 
-from scipy import stats
+from scipy.stats import chi2
 # from lifelines import CoxPHFitter
 # from lifelines.statistics import logrank_test
 # import fastlogranktest as flr
@@ -82,7 +82,7 @@ def logrank_self(durations_A, durations_B, event_observed_A=None, event_observed
         df = n_groups - 1
         zz = observed[:df] - expected[:df]
         chisq = np.linalg.solve(covar[:df, :df], zz).dot(zz)
-        pval = stats.chi2.sf(chisq, df)
+        pval = chi2.sf(chisq, df)
     except:
         pval = 1.0
     return pval
@@ -149,7 +149,7 @@ def iterate_weight_lr_fast(dur_A, dur_B, cens_A=None, cens_B=None, weightings=""
         #     times = np.unique(np.clip(np.union1d(a1,a2), 0, np.min([a1.max(), a2.max()])))
         times = np.union1d(np.unique(dur_A), np.unique(dur_B))
         logrank = lr_statistic(dur_A, dur_B, cens_A, cens_B, times, weightings)
-        pvalue = stats.chi2.sf(logrank, df=1)
+        pvalue = chi2.sf(logrank, df=1)
         return pvalue
     except:
         return 1.0
