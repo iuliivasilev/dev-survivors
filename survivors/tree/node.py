@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from joblib import Parallel, delayed
-from scipy import stats
+from scipy.stats import chi2
 
 from .find_split_hist import hist_best_attr_split
 from .. import constants as cnt
@@ -155,7 +155,7 @@ class Node(object):
         self.info.setdefault("bonf", True)
         self.info.setdefault("max_features", 1.0)
         self.info.setdefault("signif", 1.1)
-        self.info.setdefault("signif_stat", stats.chi2.isf(min(self.info["signif"], 1.0), df=1))
+        self.info.setdefault("signif_stat", chi2.isf(min(self.info["signif"], 1.0), df=1))
         self.info.setdefault("thres_cont_bin_max", 100)
         self.info.setdefault("normalize", True)
 
