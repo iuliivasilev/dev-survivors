@@ -3,11 +3,24 @@ import pytest
 import os
 import tempfile
 
+from scipy.stats import chi2
 from survivors.datasets import load_pbc_dataset
 from survivors.experiments.grid import generate_sample
 
+from survivors.criteria import chi2_sf, chi2_isf
 from survivors.tree import CRAID
 from survivors.ensemble import BoostingCRAID
+
+
+@pytest.mark.parametrize(
+    ("scipy_func", "self_func", "space"),
+    [(chi2.sf, chi2_sf, np.linspace(0.0, 10, 1000)),
+     (chi2.isf, chi2_isf, np.linspace(0.0, 1, 1000))]
+)
+def chi2_deviation(scipy_func, self_func, space):
+    for v in space:
+        deviation = abs(scipy_func(v, df=1) - self_func(v, df=1))
+        assert (deviation < 1e-10) or np.isnan(deviation)
 
 
 @pytest.fixture(scope="module")
