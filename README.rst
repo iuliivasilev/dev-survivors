@@ -56,7 +56,6 @@ Requirements
 - NumPy (>= 1.22)
 - Pandas (>=0.25)
 - Numba (>= 0.58.0)
-- SciPy
 - matplotlib (>= 3.5.0)
 - seaborn
 - graphviz (>= 2.50.0)
@@ -64,9 +63,12 @@ Requirements
 - pickle-mixin
 - python-dateutil
 - scikit-learn (>= 1.0.2)
+- openpyxl
+
+Optional for comprehensive experiments:
+
 - lifelines (>= 0.27.8)
 - scikit-survival (>= 0.17.2)
-- openpyxl
 
 User Installation
 ~~~~~~~~~~~~~~~~~
