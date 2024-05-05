@@ -72,7 +72,7 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
         if cens_hist_2 is None:
             cens_hist_2 = time_hist_2
         if weights_hist is None:
-            weights_hist = np.ones(time_hist_1.shape[0])
+            weights_hist = np.ones(time_hist_1.shape[0], dtype=np.float32)
         d = {"logrank": 1, "wilcoxon": 2, "tarone-ware": 3, "peto": 4, "weights": 5}
         d.update({"diff": 6, "maxcombo": 7, "symm_peto": 8})
         weightings = d.get(weightings, 1)
@@ -138,37 +138,28 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
 
 def optimal_criter_split_hist(left_time_hist, left_cens_hist,
                               right_time_hist, right_cens_hist,
-                              na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef,
-                              apr_t_distr, apr_e_distr, l_reg):
+                              na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef):
     none_to = 0
-    max_stat_val = 1.0
-
     # n1 = np.sum(left_time_hist)
     # n2 = np.sum(right_time_hist)
     # cf = n1 / (n1 + n2)
-    cf = 0.5
+    # cf = 0.5
 
     if na_time_hist.shape[0] > 0:
-        a = weight_hist_stat(left_time_hist + na_time_hist + l_reg * apr_t_distr * cf,
-                             right_time_hist + l_reg * apr_t_distr * (1 - cf),
-                             left_cens_hist + na_cens_hist + l_reg * apr_e_distr * cf,
-                             right_cens_hist + l_reg * apr_e_distr * (1 - cf),
+        a = weight_hist_stat(left_time_hist + na_time_hist, right_time_hist,
+                             left_cens_hist + na_cens_hist, right_cens_hist,
                              weights_hist, weightings=criterion)
-        b = weight_hist_stat(left_time_hist + l_reg * apr_t_distr * cf,
-                             right_time_hist + na_time_hist + l_reg * apr_t_distr * (1 - cf),
-                             left_cens_hist + l_reg * apr_e_distr * cf,
-                             right_cens_hist + na_cens_hist + l_reg * apr_e_distr * (1 - cf),
+        b = weight_hist_stat(left_time_hist, right_time_hist + na_time_hist,
+                             left_cens_hist, right_cens_hist + na_cens_hist,
                              weights_hist, weightings=criterion)
         # Nans move to a leaf with maximal statistical value
         none_to = int(a < b)
         max_stat_val = max(a, b)
     else:
-        max_stat_val = weight_hist_stat(left_time_hist + l_reg * apr_t_distr * cf,
-                                        right_time_hist + l_reg * apr_t_distr * (1 - cf),
-                                        left_cens_hist + l_reg * apr_e_distr * cf,
-                                        right_cens_hist + l_reg * apr_e_distr * (1 - cf),
+        max_stat_val = weight_hist_stat(left_time_hist, right_time_hist,
+                                        left_cens_hist, right_cens_hist,
                                         weights_hist, weightings=criterion)
-    return (max_stat_val, none_to)
+    return max_stat_val, none_to
 
 
 def split_time_to_bins(time, event=None, apr_times=None, apr_events=None):
@@ -389,11 +380,12 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         apr_t_distr = np.zeros(max_bin + 1)
         apr_e_distr = np.zeros(max_bin + 1)
     else:
-        # apr_time_1 = split_time_to_bins(apr_time, apr_time)
         apr_time_1 = split_time_to_bins(apr_time, apr_event, dur, cens)  # , apr_time)
         dur = split_time_to_bins(dur, cens)
         max_bin = apr_time_1.max()
         apr_t_distr, apr_e_distr = get_sa_hists(apr_time_1, apr_event, minlength=max_bin + 1)
+        apr_t_distr = apr_t_distr * l_reg * 0.5
+        apr_e_distr = apr_e_distr * l_reg * 0.5
 
     # dur = split_time_to_bins(dur)
     # max_bin = dur.max()
@@ -527,13 +519,9 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
             continue
 
         max_stat_val, none_to = optimal_criter_split_hist(
-            l_time_hist, l_cens_hist, r_time_hist, r_cens_hist,
-            na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef,
-            apr_t_distr, apr_e_distr, l_reg)
-
-        # max_stat_val, none_to = optimal_criter_split_hist(
-        #     l_time_hist, l_cens_hist, r_time_hist, r_cens_hist,
-        #     na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef)
+            l_time_hist + apr_t_distr, l_cens_hist + apr_e_distr,
+            r_time_hist + apr_t_distr, r_cens_hist + apr_e_distr,
+            na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef)
 
         if max_stat_val > signif_stat:
             stat_diff = 1
