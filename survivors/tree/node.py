@@ -190,15 +190,15 @@ class Node(object):
         """
         Create set of all triplets with two target variables and one splitting feature
         """
-        X = self.df[features + [cnt.CENS_NAME, cnt.TIME_NAME]].to_numpy().T
+        d_df = dict(zip(self.df.columns, self.df.values.T))
 
-        def create_params_f(v_feature, name):
+        def create_params_f(name):
             d = self.info.copy()
-            d["arr"] = np.vstack((v_feature, X[-2:]))
+            d["arr"] = np.vstack((d_df[name], d_df[cnt.CENS_NAME], d_df[cnt.TIME_NAME]))
             d["type_attr"] = ("woe" if self.woe else "categ") if name in self.categ else "cont"
             return d
 
-        return list(map(create_params_f, X[:-2], features))
+        return list(map(create_params_f, features))
 
     def find_best_split(self):
         """
