@@ -43,11 +43,16 @@ class LeafModel(object):
         if self.features == []:
             self.features = X_node.columns
         # self.features = sorted(list(set(self.features + [cnt.TIME_NAME, cnt.CENS_NAME])))
+        # X_sub = X_node[self.features]
+        # self.shape = X_sub.shape
+        # self.features_predict = X_sub.mean(axis=0).to_dict()
+        # self.lists = X_sub[[cnt.TIME_NAME, cnt.CENS_NAME]].to_dict(orient="list")
 
-        X_sub = X_node[self.features]
-        self.shape = X_sub.shape
-        self.features_predict = X_sub.mean(axis=0).to_dict()
-        self.lists = X_sub[[cnt.TIME_NAME, cnt.CENS_NAME]].to_dict(orient="list")
+        self.shape = (X_node.shape[0], len(self.features))
+        l = dict(zip(X_node.columns, X_node.values.T))
+        self.lists = {k: v for k, v in l.items() if k in ["time", "cens"]}
+        self.features_predict = {k: np.mean(v) for k, v in l.items() if k in self.features}
+
         if self.weights_name is None:
             self.weights = None
         else:

@@ -81,7 +81,7 @@ class ParallelBootstrapCRAID(BootstrapCRAID):
             params['n_jobs'] = 1
             p_s.append({"x_sub": x_sub, "params": params})
 
-        with Parallel(n_jobs=self.tree_kwargs.get("n_jobs", 10), verbose=False, batch_size=10) as parallel:
+        with Parallel(n_jobs=self.tree_kwargs.get("n_jobs", 10), verbose=False) as parallel:
             ml = parallel(delayed(self.fit_tree)(**p) for p in p_s)
 
         for model, x_sub_ind in zip(ml, x_sub_ind):
