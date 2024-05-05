@@ -1,5 +1,4 @@
 joblib >= 1.2.0
-pickle-mixin
 numpy >= 1.22
 numba >= 0.58.0
 matplotlib >= 3.5.0

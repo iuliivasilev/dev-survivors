@@ -60,8 +60,6 @@ Requirements
 - seaborn
 - graphviz (>= 2.50.0)
 - joblib
-- pickle-mixin
-- python-dateutil
 - scikit-learn (>= 1.0.2)
 - openpyxl
 

@@ -1,9 +1,14 @@
 import numpy as np
 import pandas as pd
-import re
+from re import sub
 from os.path import dirname, join
-from dateutil import parser  # python-dateutil
 from ..constants import TIME_NAME, CENS_NAME, get_y
+
+try:
+    from dateutil import parser
+except ImportError:
+    raise ImportError('Please, install python-dateutil: pip install python-dateutil')
+
 
 schemes_list = [
     'light_1', 'light_2', 'light_3',
@@ -210,7 +215,7 @@ def load_covid_dataset(dir_env=None):
     cyto['SUM_M'] = 0
     sec = cyto.loc[:, sign+important]
     
-    repl = {sc: re.sub("[^0-9A-Za-zА-Яа-я_]", "", sc) for sc in sec.columns}
+    repl = {sc: sub("[^0-9A-Za-zА-Яа-я_]", "", sc) for sc in sec.columns}
     sec = sec.rename(columns=repl)
     sec['idx'] = sec.index 
     sec = sec[sec[TIME_NAME] == sec[TIME_NAME]]
