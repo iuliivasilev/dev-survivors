@@ -246,7 +246,7 @@ def dir_path():
 #     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid"
 # )
 @pytest.mark.parametrize(
-    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG"]  # "flchain", "backblaze", "actg", "support2", "smarto"
+    "dataset",  ["support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG"]  # "flchain", "backblaze", "actg", "support2", "smarto"
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
     mode_wei = None
@@ -259,7 +259,7 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     # prefix = f"{best_metric}_STRATTIME+_EXT10_EQ_REG_TREE_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"
 
-    prefix = f"{best_metric}_PAR_BSTR_TEST_TIME"
+    prefix = f"{best_metric}_PAR_BSTR_TEST_OPTIMIZED_TIME"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_PAR_BSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_reg(0_01)_PART_BOOST_ALL_BINS_{bins_sch}"
