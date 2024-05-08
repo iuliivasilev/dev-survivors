@@ -7,6 +7,16 @@ sns.set_theme(style="ticks", rc=custom_params)
 
 
 def plot_func_comparison(y_true, y_preds, labels):
+    """
+    Plot multiple functions by method
+
+    Parameters
+    ----------
+    y_true: structured np.ndarray with shape=(n, 2)
+    y_preds: list of np.ndarray with shape=(n, n_bins)
+    labels: list of str
+
+    """
     linestyle = ('solid' if y_true["cens"] else 'dashed')
     fig, ax = plt.subplots(figsize=(8, 5))
 
@@ -27,6 +37,18 @@ def plot_func_comparison(y_true, y_preds, labels):
 
 
 def plot_metric_comparison(y_true, y_preds, labels, bins, metric):
+    """
+    Comparison quality metric in time
+
+    Parameters
+    ----------
+    y_true: structured np.ndarray with shape=(n, 2)
+    y_preds: list of np.ndarray with shape=(n, n_bins)
+    labels: list of str
+    bins: np.ndarray with shape=(n_bins)
+    metric: function of internal metric
+
+    """
     fig, ax = plt.subplots()
     m_name = metric.__name__
 
