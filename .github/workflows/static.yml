@@ -34,9 +34,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r ./requirements/docs-requirements.txt
-      - name: Sphinx build
-        run: |
-          sphinx-autobuild docs docs/_build/html
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
