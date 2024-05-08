@@ -30,11 +30,11 @@ from survivors.external import KaplanMeier
 km = KaplanMeier()
 km.fit(durations=y["time"], right_censor=y["cens"])
 sf_km = km.survival_function_at_times(times=bins)
-vis.plot_surival_function(sf_km, bins)
+vis.plot_survival_function(sf_km, bins)
 
 bins_short = [50, 100, 1000, 2000, 3000]
 sf_km_short = km.survival_function_at_times(times=bins_short)
-vis.plot_surival_function(sf_km_short, bins_short)
+vis.plot_survival_function(sf_km_short, bins_short)
 
 # %%
 # Build Tree

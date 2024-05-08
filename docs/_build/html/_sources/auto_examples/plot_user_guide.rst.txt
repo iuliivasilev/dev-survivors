@@ -84,11 +84,11 @@ Build Nonparametric KaplanMeier model and visualize survival function
     km = KaplanMeier()
     km.fit(durations=y["time"], right_censor=y["cens"])
     sf_km = km.survival_function_at_times(times=bins)
-    vis.plot_surival_function(sf_km, bins)
+    vis.plot_survival_function(sf_km, bins)
 
     bins_short = [50, 100, 1000, 2000, 3000]
     sf_km_short = km.survival_function_at_times(times=bins_short)
-    vis.plot_surival_function(sf_km_short, bins_short)
+    vis.plot_survival_function(sf_km_short, bins_short)
 
 
 
@@ -191,7 +191,7 @@ Individual prediction
  .. code-block:: none
 
     Target: (True, 400.)
-    847.4363403320312
+    847.4363636363636
     0.9272727272727272
     2.0
 
@@ -331,7 +331,7 @@ Quality comparison in time
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 18.552 seconds)
+   **Total running time of the script:** (0 minutes 10.627 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_user_guide.py:

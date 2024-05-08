@@ -1,61 +1,129 @@
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-<html lang="en" data-content_root="../">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criteria &mdash; survivors 1.6.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
 
-    <title>Criteria &#8212; survivors 1.6.2 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../_static/documentation_options.js?v=e15882dc"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=e15882dc"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Visualize" href="Visualize.html" />
-    <link rel="prev" title="Metrics" href="Metrics.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
+    <link rel="prev" title="Metrics" href="Metrics.html" /> 
+</head>
 
-  
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
 
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../index.html" class="icon icon-home">
+            survivors
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Component%20description.html">Component description</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../API%20Reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Constants.html">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Metrics.html">Metrics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Criteria</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#survivors.criteria.CRITERIA_DICT"><code class="docutils literal notranslate"><span class="pre">CRITERIA_DICT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#survivors.criteria.chi2_sf"><code class="docutils literal notranslate"><span class="pre">chi2_sf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#survivors.criteria.find_inverse_gamma"><code class="docutils literal notranslate"><span class="pre">find_inverse_gamma()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#survivors.criteria.polyval"><code class="docutils literal notranslate"><span class="pre">polyval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#survivors.criteria.weight_lr_fast"><code class="docutils literal notranslate"><span class="pre">weight_lr_fast()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Visualize.html">Visualize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="External.html">External</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tree.html">Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ensemble.html">Ensemble</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Datasets.html">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Experiments.html">Experiments</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About survivors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../AboutSA.html">About survival analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Why.html">Why survivors?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">survivors</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../API%20Reference.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Criteria</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/Criteria.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="module-survivors.criteria">
-<span id="criteria"></span><h1>Criteria<a class="headerlink" href="#module-survivors.criteria" title="Link to this heading">¶</a></h1>
+<span id="criteria"></span><h1>Criteria<a class="headerlink" href="#module-survivors.criteria" title="Link to this heading"></a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="survivors.criteria.CRITERIA_DICT">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">CRITERIA_DICT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'logrank':</span> <span class="pre">&lt;function</span> <span class="pre">logrank&gt;,</span> <span class="pre">'peto':</span> <span class="pre">&lt;function</span> <span class="pre">peto&gt;,</span> <span class="pre">'tarone-ware':</span> <span class="pre">&lt;function</span> <span class="pre">tarone_ware&gt;,</span> <span class="pre">'wilcoxon':</span> <span class="pre">&lt;function</span> <span class="pre">wilcoxon&gt;}</span></em><a class="headerlink" href="#survivors.criteria.CRITERIA_DICT" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">CRITERIA_DICT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'logrank':</span> <span class="pre">&lt;function</span> <span class="pre">logrank&gt;,</span> <span class="pre">'peto':</span> <span class="pre">&lt;function</span> <span class="pre">peto&gt;,</span> <span class="pre">'tarone-ware':</span> <span class="pre">&lt;function</span> <span class="pre">tarone_ware&gt;,</span> <span class="pre">'wilcoxon':</span> <span class="pre">&lt;function</span> <span class="pre">wilcoxon&gt;}</span></em><a class="headerlink" href="#survivors.criteria.CRITERIA_DICT" title="Link to this definition"></a></dt>
 <dd><p>dict: Available criteria in library and its realization</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.chi2_sf">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">chi2_sf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.chi2_sf" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">chi2_sf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.chi2_sf" title="Link to this definition"></a></dt>
 <dd><p>Probability value (1-tail) for the Chi^2 probability distribution.</p>
 <p>Broadcasting rules apply.</p>
 <section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
 <p>x : array_like or float &gt; 0
 df : array_like or float, probably int &gt;= 1</p>
 </section>
 <section id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt>chisqprob<span class="classifier">ndarray</span></dt><dd><p>The area from <cite>chisq</cite> to infinity under the Chi^2 probability
 distribution with degrees of freedom <cite>df</cite>.</p>
@@ -66,7 +134,7 @@ distribution with degrees of freedom <cite>df</cite>.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.find_inverse_gamma">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">find_inverse_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.find_inverse_gamma" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">find_inverse_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.find_inverse_gamma" title="Link to this definition"></a></dt>
 <dd><p>In order to understand what’s going on here, you will
 need to refer to:</p>
 <p>Computation of the Incomplete Gamma Function Ratios and their Inverse
@@ -77,16 +145,16 @@ December 1986, Pages 377-393.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.polyval">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">polyval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.polyval" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">polyval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.polyval" title="Link to this definition"></a></dt>
 <dd><p>Evaluate a polynomial by Horner’s scheme</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.weight_lr_fast">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">weight_lr_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dur_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weightings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.weight_lr_fast" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">weight_lr_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dur_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weightings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.weight_lr_fast" title="Link to this definition"></a></dt>
 <dd><p>Count weighted log-rank criteria</p>
 <section id="id1">
-<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt>dur_A<span class="classifier">array-like</span></dt><dd><p>Time of occurred events from first sample.</p>
 </dd>
@@ -107,7 +175,7 @@ Peto-peto :math:’w = fraq{1 - O_j}{N_j + 1}’</p>
 </dl>
 </section>
 <section id="id2">
-<h2>Returns<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>Returns<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt>logrank<span class="classifier">float</span></dt><dd><p>Chi2 statistic value of weighted log-rank test</p>
 </dd>
@@ -118,82 +186,34 @@ Peto-peto :math:’w = fraq{1 - O_j}{N_j + 1}’</p>
 </section>
 
 
+           </div>
           </div>
-          
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Metrics.html" class="btn btn-neutral float-left" title="Metrics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Visualize.html" class="btn btn-neutral float-right" title="Visualize" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Iulii Vasilev.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">survivors</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../Component%20description.html">Component description</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../API%20Reference.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">About survivors</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../AboutSA.html">About survival analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Why.html">Why survivors?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../API%20Reference.html">API Reference</a><ul>
-      <li>Previous: <a href="Metrics.html" title="previous chapter">Metrics</a></li>
-      <li>Next: <a href="Visualize.html" title="next chapter">Visualize</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &#169;2024, Iulii Vasilev.
-      
-      |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
-      
-      |
-      <a href="../_sources/modules/Criteria.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>
