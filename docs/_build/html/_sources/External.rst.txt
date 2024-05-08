@@ -1,5 +1,0 @@
-External
-========
-
-.. automodule:: survivors.external
-   :members:

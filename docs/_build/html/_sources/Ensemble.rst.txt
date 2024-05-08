@@ -1,5 +1,0 @@
-Ensemble
-========
-
-.. automodule:: survivors.ensemble
-   :members:

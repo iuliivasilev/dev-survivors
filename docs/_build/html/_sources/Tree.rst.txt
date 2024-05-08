@@ -1,5 +1,0 @@
-Tree
-====
-
-.. automodule:: survivors.tree
-   :members:
