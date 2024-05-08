@@ -27,6 +27,27 @@ def load_pickle(path):
 
 
 def load_scheme_dataset(name):
+    """
+    Base loader function for internal datasets
+
+    Parameters
+    ----------
+    name: str
+
+    Returns
+    -------
+    X: pd.DataFrame
+        Feature space
+    y: structured np.ndarray
+        Target variables
+    sign: list
+        All variables
+    categ: list
+        Categorical variables
+    sch_nan: list
+        Scheme variables (supported multiple prediction)
+
+    """
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, f'{name}.csv'))
     df = df.rename({"time": TIME_NAME, "event": CENS_NAME}, axis=1)
@@ -47,25 +68,46 @@ def load_scheme_dataset(name):
 
 
 def load_support2_dataset():
+    """
+    Full description: https://archive.ics.uci.edu/dataset/880/support2
+    """
     return load_scheme_dataset('support2')
 
 def load_rott2_dataset():
+    """
+    Full description: https://rdrr.io/cran/AF/man/rott2.html
+    """
     return load_scheme_dataset('rott2')
 
 def load_Framingham_dataset():
+    """
+    Full description: https://search.r-project.org/CRAN/refmans/riskCommunicator/html/framingham.html
+    """
     return load_scheme_dataset('Framingham')
 
 def load_flchain_dataset():
+    """
+    Full description: https://pmagunia.com/dataset/r-dataset-package-survival-flchain
+    """
     return load_scheme_dataset('flchain')
 
 def load_smarto_dataset():
+    """
+    Full description: https://pubmed.ncbi.nlm.nih.gov/36806141/
+    """
     return load_scheme_dataset('smarto')
 
 def load_actg_dataset():
+    """
+    Full description: https://rdrr.io/cran/mlr3proba/man/actg.html
+    """
     return load_scheme_dataset("actg")
 
 
 def load_gbsg_dataset():
+    """
+    Full description: https://paperswithcode.com/dataset/gbsg2
+    """
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, 'GBSG.csv'))
     df = df.rename({"rfst": TIME_NAME, "cens": CENS_NAME}, axis=1)
@@ -79,6 +121,9 @@ def load_gbsg_dataset():
 
 
 def load_pbc_dataset():
+    """
+    Full description: https://stat.ethz.ch/R-manual/R-patched/library/survival/html/pbc.html
+    """
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, 'pbc.csv'))
     df = df.rename({"time": TIME_NAME, "status": CENS_NAME, "alk.phos": "alk"}, axis=1)
@@ -94,6 +139,9 @@ def load_pbc_dataset():
 
 
 def load_wuhan_dataset(invert_death=False):
+    """
+    Full description: https://www.nature.com/articles/s42256-020-0180-7
+    """
     dir_env = join(dirname(__file__), "data")
     df = pd.read_excel(join(dir_env, 'covid_train.xlsx'))
     df['PATIENT_ID'] = df['PATIENT_ID'].fillna(method='ffill')
