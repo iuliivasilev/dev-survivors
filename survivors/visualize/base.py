@@ -5,7 +5,19 @@ custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.gr
 sns.set_theme(style="ticks", rc=custom_params)
 
 
-def plot_surival_function(sf, bins, title=""):
+def plot_survival_function(sf, bins, title=""):
+    """
+    Classic survival function plotting
+
+    Parameters
+    ----------
+    sf: iterable (with len(sf) == len(bins))
+        Survival probabilities
+    bins: iterable
+        Times of probabilities
+    title: str
+
+    """
     plt.step(bins, sf)
     plt.xlabel('Time')
     plt.ylabel('Survival probability')
