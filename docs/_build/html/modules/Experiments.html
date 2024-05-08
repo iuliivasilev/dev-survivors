@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Experiments &#8212; survivors 1.6.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=e15882dc"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="About Survival Analysis" href="../AboutSA.html" />
+    <link rel="prev" title="Datasets" href="Datasets.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-survivors.experiments.grid">
+<span id="experiments"></span><h1>Experiments<a class="headerlink" href="#module-survivors.experiments.grid" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="survivors.experiments.grid.Experiments">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">Experiments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE_NAME'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins_sch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.Experiments" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Class receives methods, metrics and grids,</dt><dd><p>produces cross-validation experiments,
+stores table of results : name, params, time, metrics (by sample and mean)</p>
+</dd>
+</dl>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>methods<span class="classifier">list</span></dt><dd><dl class="simple">
+<dt>Must have predicting methods according to metrics:</dt><dd><p>IBS - survival func
+IAUC - cumulative hazard func
+CI - occurred time
+CI_CENS - occurred time</p>
+</dd>
+</dl>
+</dd>
+<dt>methods_grid<span class="classifier">list</span></dt><dd><p>Each grid is dictionary: key - param name, values - list</p>
+</dd>
+<dt>metrics<span class="classifier">list</span></dt><dd><p>Each metric is string, which must be in METRIC_DICT</p>
+</dd>
+<dt>is_table<span class="classifier">boolean</span></dt><dd><p>Flag of calculation ending</p>
+</dd>
+<dt>folds<span class="classifier">int</span></dt><dd><p>Quantity of cross-validate folds.</p>
+</dd>
+<dt>except_stop<span class="classifier">str</span></dt><dd><p>Mode of ending because of exception
+“all” - continue experiments
+else - stop experiments with current method</p>
+</dd>
+<dt>dataset_name<span class="classifier">str</span></dt><dd><p>Unique name of current dataset (used for saving)</p>
+</dd>
+</dl>
+</section>
+<section id="methods">
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
+<p>add_method : append method and its grid
+set_metrics : check and set list of metric name 
+run : start experiments with data X, y
+get_agg_results : choose for each method aggregated params by metric and aggreg
+save : export table as xlsx</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="survivors.experiments.grid.generate_sample">
+<span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">generate_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.generate_sample" title="Link to this definition">¶</a></dt>
+<dd><p>Generate cross-validate samples with StratifiedKFold.</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
+</dd>
+<dt>y<span class="classifier">structured array</span></dt><dd><p>Contain censuring flag and time of events.</p>
+</dd>
+<dt>folds<span class="classifier">int</span></dt><dd><p>Quantity of cross-validate folds.</p>
+</dd>
+<dt>mode<span class="classifier">str</span></dt><dd><p>Validation scenario.</p>
+</dd>
+</dl>
+</section>
+<section id="yields">
+<h2>Yields<a class="headerlink" href="#yields" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>X_train<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of train sample.</p>
+</dd>
+<dt>y_train<span class="classifier">array-like</span></dt><dd><p>Contain censuring flag and time of train sample.</p>
+</dd>
+<dt>X_test<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of test sample.</p>
+</dd>
+<dt>y_test<span class="classifier">array-like</span></dt><dd><p>Contain censuring flag and time of test sample.</p>
+</dd>
+<dt>bins<span class="classifier">array-like</span></dt><dd><p>Points of timeline.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="survivors.experiments.grid.get_fit_eval_func">
+<span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">get_fit_eval_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['CI']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.get_fit_eval_func" title="Link to this definition">¶</a></dt>
+<dd><p>Return function, which on sample X, y apply cross-validation and calculate 
+metrics for each fold.</p>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>method<span class="classifier">class</span></dt><dd><p>Must have methods for fitting, predicting time, hazard and survival func</p>
+</dd>
+<dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
+</dd>
+<dt>y<span class="classifier">structured array</span></dt><dd><p>Contain censuring flag and time of events.</p>
+</dd>
+<dt>folds<span class="classifier">int</span></dt><dd><p>Quantity of cross-validate folds.</p>
+</dd>
+<dt>metrics_names<span class="classifier">TYPE, optional</span></dt><dd><p>DESCRIPTION. The default is [‘CI’].</p>
+</dd>
+<dt>mode<span class="classifier">str</span></dt><dd><p>Validation scenario.</p>
+</dd>
+<dt>dir_path<span class="classifier">str</span></dt><dd><p>Path to cache directory (for loading pretrained models).</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>functions</dt><dd><p>Recieve hyperparameters and return list of metrics arrays.
+Allow to use in ParameterGrid.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">survivors</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Component%20description.html">Component description</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../API%20Reference.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About survivors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../AboutSA.html">About survival analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Why.html">Why survivors?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../API%20Reference.html">API Reference</a><ul>
+      <li>Previous: <a href="Datasets.html" title="previous chapter">Datasets</a></li>
+      <li>Next: <a href="../AboutSA.html" title="next chapter">About Survival Analysis</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Iulii Vasilev.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="../_sources/modules/Experiments.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
