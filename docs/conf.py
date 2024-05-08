@@ -43,7 +43,7 @@ autosummary_generate = True
 
 html_theme = "alabaster"  # "sphinx_rtd_theme"  # 'alabaster'
 # html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 sphinx_gallery_conf = {
     "doc_module": "survivors",
