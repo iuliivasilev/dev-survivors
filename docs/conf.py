@@ -19,8 +19,8 @@ import sphinx_rtd_theme
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "sphinx.ext.githubpages",
-    "sphinxcontrib.jquery",
+    # "sphinx.ext.githubpages",
+    # "sphinxcontrib.jquery",
     "sphinx_gallery.gen_gallery",
     "sphinx_rtd_theme",
 ]
@@ -34,15 +34,8 @@ autosummary_generate = True
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme"  # 'alabaster'
-# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
-
-html_context = {
-    'display_github': False,  # Add 'Edit on Github' link instead of 'View page source'
-    'last_updated': True,
-    'commit': False,
-    'css_files': ['_static/css/theme.css',],
-}
 
 sphinx_gallery_conf = {
     "doc_module": "survivors",
