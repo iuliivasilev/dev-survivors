@@ -33,6 +33,14 @@ autosummary_generate = True
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+
+# First error: https://github.com/readthedocs/sphinx_rtd_theme/issues/1452
+# https://blog.finxter.com/fixed-modulenotfounderror-no-module-named-sphinxcontrib-jquery/
+# Does not work: https://github.com/readthedocs/readthedocs-sphinx-ext/issues/27
+# https://github.com/Koverse/connections-documentation/blob/dc7466ab9001c7d478993b4ecbeeb66d1165d84e/conf.py#L116
+# Similar problem: https://stackoverflow.com/questions/59486442/python-sphinx-css-not-working-on-github-pages
+# Example: https://coderefinery.github.io/documentation/gh_workflow/
+
 html_theme = "alabaster"  # "sphinx_rtd_theme"  # 'alabaster'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
