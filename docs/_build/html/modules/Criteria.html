@@ -45,11 +45,48 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="survivors.criteria.chi2_sf">
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">chi2_sf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.chi2_sf" title="Link to this definition">¶</a></dt>
+<dd><p>Probability value (1-tail) for the Chi^2 probability distribution.</p>
+<p>Broadcasting rules apply.</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<p>x : array_like or float &gt; 0
+df : array_like or float, probably int &gt;= 1</p>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>chisqprob<span class="classifier">ndarray</span></dt><dd><p>The area from <cite>chisq</cite> to infinity under the Chi^2 probability
+distribution with degrees of freedom <cite>df</cite>.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="survivors.criteria.find_inverse_gamma">
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">find_inverse_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.find_inverse_gamma" title="Link to this definition">¶</a></dt>
+<dd><p>In order to understand what’s going on here, you will
+need to refer to:</p>
+<p>Computation of the Incomplete Gamma Function Ratios and their Inverse
+ARMIDO R. DIDONATO and ALFRED H. MORRIS, JR.
+ACM Transactions on Mathematical Software, Vol. 12, No. 4,
+December 1986, Pages 377-393.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="survivors.criteria.polyval">
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">polyval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.polyval" title="Link to this definition">¶</a></dt>
+<dd><p>Evaluate a polynomial by Horner’s scheme</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.weight_lr_fast">
 <span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">weight_lr_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dur_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weightings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.weight_lr_fast" title="Link to this definition">¶</a></dt>
 <dd><p>Count weighted log-rank criteria</p>
-<section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>dur_A<span class="classifier">array-like</span></dt><dd><p>Time of occurred events from first sample.</p>
 </dd>
@@ -69,8 +106,8 @@ Peto-peto :math:’w = fraq{1 - O_j}{N_j + 1}’</p>
 </dd>
 </dl>
 </section>
-<section id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<section id="id2">
+<h2>Returns<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>logrank<span class="classifier">float</span></dt><dd><p>Chi2 statistic value of weighted log-rank test</p>
 </dd>

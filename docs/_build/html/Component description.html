@@ -50,8 +50,8 @@
 The numba and joblib libraries were used to parallelize and vectorize calculations.</p>
 </li>
 <li><p><strong>Statistical criteria module</strong> (<a class="reference internal" href="modules/Criteria.html"><span class="doc">Criteria</span></a>):</p>
-<p>The module contains vectorized implementations of statistical criteria: Log-rank, Wilcoxon, Tarone-Ware, Peto-Peto, MaxCombo, etc. Computations are accelerated by using JIT compilation of source code into bytecode using the Numba library.</p>
-<p>Used libraries: numpy, scipy, numba; length - 600 lines.</p>
+<p>The module contains vectorized implementations of statistical criteria: Log-rank, Wilcoxon, Tarone-Ware, Peto-Peto, MaxCombo, etc. Computations are accelerated by using JIT-compilation of source code into bytecode using the Numba library.</p>
+<p>Used libraries: numpy, numba; length - 600 lines.</p>
 </li>
 <li><p><strong>Visualization module</strong> (<a class="reference internal" href="modules/Visualize.html"><span class="doc">Visualize</span></a>):</p>
 <p>The module contains functions for demonstrating the results of algorithms in a user-friendly format. The following groups of functions can be distinguished: display of survival analysis forecasts, analysis of the behavior of quality metrics, and visualization of data characteristics.</p>
@@ -66,15 +66,15 @@ The module implements non-parametric Kaplan-Meier, and Nelson-Aalen models and t
 <p>The module contains a description of the main entities (Node vertex class, CRAID survival tree class), implementation of the proposed methods for selecting the best partitioning of the sample, and constructing tree models.
 The Node class is responsible for the individual structural elements of the survival tree (using the LeafModel class) and for finding the optimal splitting rule of the node.
 The CRAID class defines the structure of a survival tree (with hyperparameter-based control of tree growth) and contains methods for pruning the tree and aggregating leaf model predictions.</p>
-<p>Used libraries: pandas, sklearn, scipy, numba, and joblib; length - 1800 lines.</p>
+<p>Used libraries: pandas, sklearn, numba, and joblib; length - 1800 lines.</p>
 </li>
 <li><p><strong>Module for constructing ensembles of decision trees</strong> (<a class="reference internal" href="modules/Ensemble.html"><span class="doc">Ensemble</span></a>):</p>
-<p>The module contains a base class for ensembling survival trees, BaseEnsemble, and an implementation of the interface in the form of a model for an ensemble of independent survival trees, BootstrapCRAID. The models contain methods for calculating the ensemble error, aggregating the responses of the base models, and selecting the best ensemble size.</p>
-<p>Used libraries: pandas, sklearn, scipy; length - 1000 lines.</p>
+<p>The module contains a base class of ensemble survival trees, BaseEnsemble, and an implementation of the interface in the form of a model for an ensemble of independent survival trees, BootstrapCRAID. The models contain methods for calculating the ensemble error, aggregating the responses of the base models, and selecting the best ensemble size.</p>
+<p>Used libraries: pandas, sklearn; length - 1000 lines.</p>
 </li>
 <li><p><strong>Dataset collection module</strong> (<a class="reference internal" href="modules/Datasets.html"><span class="doc">Datasets</span></a>):</p>
 <p>The module is designed for loading and preprocessing 9 open data sets: “gbsg”, “pbc”, “wuhan”, “actg”, “flchain”, “smarto”, “rott2 “, “support2”, “Framingham”. At the preprocessing stage, the source data is reduced to a unified structure: X (feature space, pandas DataFrame), y (ordered numpy array with two target variables), features (initial names of observation features), categ (a subset of categorical features).</p>
-<p>Used libraries: pandas, sklearn, scipy, re, math, lxml; length - 1000 lines.</p>
+<p>Used libraries: pandas, sklearn, re, math, lxml; length - 1000 lines.</p>
 </li>
 <li><p><strong>Experiments Layer module</strong> (<a class="reference internal" href="modules/Experiments.html"><span class="doc">Experiments</span></a>):</p>
 <p>The module contains the Experiments class for setting up and running experiments with various characteristics. The class provides a flexible interface for working with built-in and external survival models, and their hyperparameters. There are several experimental strategies: hold-out validation, cross-validation (CV), Grid-Search cross-validation with sampling (CV+ sampling), and time-aware cross-validation.
