@@ -20,9 +20,9 @@ Component description
 
 3. **Statistical criteria module** (:doc:`modules/Criteria`):
 
-   The module contains vectorized implementations of statistical criteria: Log-rank, Wilcoxon, Tarone-Ware, Peto-Peto, MaxCombo, etc. Computations are accelerated by using JIT compilation of source code into bytecode using the Numba library.
+   The module contains vectorized implementations of statistical criteria: Log-rank, Wilcoxon, Tarone-Ware, Peto-Peto, MaxCombo, etc. Computations are accelerated by using JIT-compilation of source code into bytecode using the Numba library.
 
-   Used libraries: numpy, scipy, numba; length - 600 lines.
+   Used libraries: numpy, numba; length - 600 lines.
 
 4. **Visualization module** (:doc:`modules/Visualize`):
 
@@ -43,19 +43,19 @@ Component description
    The Node class is responsible for the individual structural elements of the survival tree (using the LeafModel class) and for finding the optimal splitting rule of the node.
    The CRAID class defines the structure of a survival tree (with hyperparameter-based control of tree growth) and contains methods for pruning the tree and aggregating leaf model predictions.
 
-   Used libraries: pandas, sklearn, scipy, numba, and joblib; length - 1800 lines.
+   Used libraries: pandas, sklearn, numba, and joblib; length - 1800 lines.
 
 7. **Module for constructing ensembles of decision trees** (:doc:`modules/Ensemble`):
 
-   The module contains a base class for ensembling survival trees, BaseEnsemble, and an implementation of the interface in the form of a model for an ensemble of independent survival trees, BootstrapCRAID. The models contain methods for calculating the ensemble error, aggregating the responses of the base models, and selecting the best ensemble size.
+   The module contains a base class of ensemble survival trees, BaseEnsemble, and an implementation of the interface in the form of a model for an ensemble of independent survival trees, BootstrapCRAID. The models contain methods for calculating the ensemble error, aggregating the responses of the base models, and selecting the best ensemble size.
 
-   Used libraries: pandas, sklearn, scipy; length - 1000 lines.
+   Used libraries: pandas, sklearn; length - 1000 lines.
 
 8. **Dataset collection module** (:doc:`modules/Datasets`):
 
    The module is designed for loading and preprocessing 9 open data sets: "gbsg", "pbc", "wuhan", "actg", "flchain", "smarto", "rott2 ", "support2", "Framingham". At the preprocessing stage, the source data is reduced to a unified structure: X (feature space, pandas DataFrame), y (ordered numpy array with two target variables), features (initial names of observation features), categ (a subset of categorical features).
 
-   Used libraries: pandas, sklearn, scipy, re, math, lxml; length - 1000 lines.
+   Used libraries: pandas, sklearn, re, math, lxml; length - 1000 lines.
 
 9. **Experiments Layer module** (:doc:`modules/Experiments`):
 

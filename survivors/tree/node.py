@@ -30,7 +30,7 @@ class Rule(object):
         Name of feature for splitting
     condition : str
         Operation for splitting
-    has_nan_ : bool
+    has_nan : bool
         Flag of the missing values in node
 
     Methods
