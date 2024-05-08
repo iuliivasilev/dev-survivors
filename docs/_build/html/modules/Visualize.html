@@ -12,8 +12,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=e15882dc"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -39,13 +37,13 @@
           <div class="body" role="main">
             
   <section id="module-survivors.visualize.base">
-<span id="visualize"></span><h1>Visualize<a class="headerlink" href="#module-survivors.visualize.base" title="Link to this heading"></a></h1>
+<span id="visualize"></span><h1>Visualize<a class="headerlink" href="#module-survivors.visualize.base" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.visualize.base.plot_survival_function">
-<span class="sig-prename descclassname"><span class="pre">survivors.visualize.base.</span></span><span class="sig-name descname"><span class="pre">plot_survival_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.visualize.base.plot_survival_function" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.visualize.base.</span></span><span class="sig-name descname"><span class="pre">plot_survival_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.visualize.base.plot_survival_function" title="Link to this definition">¶</a></dt>
 <dd><p>Classic survival function plotting</p>
 <section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>sf: iterable (with len(sf) == len(bins))</dt><dd><p>Survival probabilities</p>
 </dd>
@@ -58,10 +56,10 @@
 
 <dl class="py function" id="module-survivors.visualize.comparison">
 <dt class="sig sig-object py" id="survivors.visualize.comparison.plot_func_comparison">
-<span class="sig-prename descclassname"><span class="pre">survivors.visualize.comparison.</span></span><span class="sig-name descname"><span class="pre">plot_func_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.visualize.comparison.plot_func_comparison" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.visualize.comparison.</span></span><span class="sig-name descname"><span class="pre">plot_func_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.visualize.comparison.plot_func_comparison" title="Link to this definition">¶</a></dt>
 <dd><p>Plot multiple functions by method</p>
 <section id="id1">
-<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>y_true: structured np.ndarray with shape=(n, 2)
 y_preds: list of np.ndarray with shape=(n, n_bins)
 labels: list of str</p>
@@ -70,10 +68,10 @@ labels: list of str</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.visualize.comparison.plot_metric_comparison">
-<span class="sig-prename descclassname"><span class="pre">survivors.visualize.comparison.</span></span><span class="sig-name descname"><span class="pre">plot_metric_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.visualize.comparison.plot_metric_comparison" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.visualize.comparison.</span></span><span class="sig-name descname"><span class="pre">plot_metric_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.visualize.comparison.plot_metric_comparison" title="Link to this definition">¶</a></dt>
 <dd><p>Comparison quality metric in time</p>
 <section id="id2">
-<h2>Parameters<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>y_true: structured np.ndarray with shape=(n, 2)
 y_preds: list of np.ndarray with shape=(n, n_bins)
 labels: list of str

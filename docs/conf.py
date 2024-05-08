@@ -14,7 +14,7 @@ release = '1.6.2'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-import sphinx_rtd_theme
+# import sphinx_rtd_theme
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -22,7 +22,7 @@ extensions = [
     # "sphinx.ext.githubpages",
     # "sphinxcontrib.jquery",
     "sphinx_gallery.gen_gallery",
-    "sphinx_rtd_theme",
+    # "sphinx_rtd_theme",
 ]
 
 templates_path = ['_templates']
@@ -42,7 +42,7 @@ autosummary_generate = True
 # Example: https://coderefinery.github.io/documentation/gh_workflow/
 
 html_theme = "alabaster"  # "sphinx_rtd_theme"  # 'alabaster'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
 
 sphinx_gallery_conf = {

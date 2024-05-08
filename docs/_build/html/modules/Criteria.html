@@ -12,8 +12,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=e15882dc"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -39,25 +37,25 @@
           <div class="body" role="main">
             
   <section id="module-survivors.criteria">
-<span id="criteria"></span><h1>Criteria<a class="headerlink" href="#module-survivors.criteria" title="Link to this heading"></a></h1>
+<span id="criteria"></span><h1>Criteria<a class="headerlink" href="#module-survivors.criteria" title="Link to this heading">¶</a></h1>
 <dl class="py data">
 <dt class="sig sig-object py" id="survivors.criteria.CRITERIA_DICT">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">CRITERIA_DICT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'logrank':</span> <span class="pre">&lt;function</span> <span class="pre">logrank&gt;,</span> <span class="pre">'peto':</span> <span class="pre">&lt;function</span> <span class="pre">peto&gt;,</span> <span class="pre">'tarone-ware':</span> <span class="pre">&lt;function</span> <span class="pre">tarone_ware&gt;,</span> <span class="pre">'wilcoxon':</span> <span class="pre">&lt;function</span> <span class="pre">wilcoxon&gt;}</span></em><a class="headerlink" href="#survivors.criteria.CRITERIA_DICT" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">CRITERIA_DICT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'logrank':</span> <span class="pre">&lt;function</span> <span class="pre">logrank&gt;,</span> <span class="pre">'peto':</span> <span class="pre">&lt;function</span> <span class="pre">peto&gt;,</span> <span class="pre">'tarone-ware':</span> <span class="pre">&lt;function</span> <span class="pre">tarone_ware&gt;,</span> <span class="pre">'wilcoxon':</span> <span class="pre">&lt;function</span> <span class="pre">wilcoxon&gt;}</span></em><a class="headerlink" href="#survivors.criteria.CRITERIA_DICT" title="Link to this definition">¶</a></dt>
 <dd><p>dict: Available criteria in library and its realization</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.chi2_sf">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">chi2_sf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.chi2_sf" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">chi2_sf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.chi2_sf" title="Link to this definition">¶</a></dt>
 <dd><p>Probability value (1-tail) for the Chi^2 probability distribution.</p>
 <p>Broadcasting rules apply.</p>
 <section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
 <p>x : array_like or float &gt; 0
 df : array_like or float, probably int &gt;= 1</p>
 </section>
 <section id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>chisqprob<span class="classifier">ndarray</span></dt><dd><p>The area from <cite>chisq</cite> to infinity under the Chi^2 probability
 distribution with degrees of freedom <cite>df</cite>.</p>
@@ -68,7 +66,7 @@ distribution with degrees of freedom <cite>df</cite>.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.find_inverse_gamma">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">find_inverse_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.find_inverse_gamma" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">find_inverse_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.find_inverse_gamma" title="Link to this definition">¶</a></dt>
 <dd><p>In order to understand what’s going on here, you will
 need to refer to:</p>
 <p>Computation of the Incomplete Gamma Function Ratios and their Inverse
@@ -79,16 +77,16 @@ December 1986, Pages 377-393.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.polyval">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">polyval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.polyval" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">polyval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.polyval" title="Link to this definition">¶</a></dt>
 <dd><p>Evaluate a polynomial by Horner’s scheme</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.criteria.weight_lr_fast">
-<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">weight_lr_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dur_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weightings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.weight_lr_fast" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.criteria.</span></span><span class="sig-name descname"><span class="pre">weight_lr_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dur_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_A</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cens_B</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weightings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.criteria.weight_lr_fast" title="Link to this definition">¶</a></dt>
 <dd><p>Count weighted log-rank criteria</p>
 <section id="id1">
-<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>dur_A<span class="classifier">array-like</span></dt><dd><p>Time of occurred events from first sample.</p>
 </dd>
@@ -109,7 +107,7 @@ Peto-peto :math:’w = fraq{1 - O_j}{N_j + 1}’</p>
 </dl>
 </section>
 <section id="id2">
-<h2>Returns<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>logrank<span class="classifier">float</span></dt><dd><p>Chi2 statistic value of weighted log-rank test</p>
 </dd>

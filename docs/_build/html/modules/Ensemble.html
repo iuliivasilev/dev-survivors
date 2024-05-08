@@ -12,8 +12,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=e15882dc"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -39,13 +37,13 @@
           <div class="body" role="main">
             
   <section id="module-survivors.ensemble.base_ensemble">
-<span id="ensemble"></span><h1>Ensemble<a class="headerlink" href="#module-survivors.ensemble.base_ensemble" title="Link to this heading"></a></h1>
+<span id="ensemble"></span><h1>Ensemble<a class="headerlink" href="#module-survivors.ensemble.base_ensemble" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.ensemble.base_ensemble.BaseEnsemble">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.base_ensemble.</span></span><span class="sig-name descname"><span class="pre">BaseEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'roc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tree_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.base_ensemble.BaseEnsemble" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.base_ensemble.</span></span><span class="sig-name descname"><span class="pre">BaseEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'roc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tree_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.base_ensemble.BaseEnsemble" title="Link to this definition">¶</a></dt>
 <dd><p>Base ensemble of survival decision tree.</p>
 <section id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>size_sample<span class="classifier">float</span></dt><dd><p>Size of generated subsample</p>
 </dd>
@@ -76,7 +74,7 @@
 </dl>
 </section>
 <section id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
 <p>update_params : attributes preparation
 fit : build ensemble with X, y data (abstract)
 add_model : updating ensemble with new model and oob
@@ -90,30 +88,30 @@ predict_at_times : return survival or hazard function</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.ensemble.base_ensemble.FastBaseEnsemble">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.base_ensemble.</span></span><span class="sig-name descname"><span class="pre">FastBaseEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'roc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tree_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.base_ensemble.FastBaseEnsemble" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.base_ensemble.</span></span><span class="sig-name descname"><span class="pre">FastBaseEnsemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_estimators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'roc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggreg_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tree_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.base_ensemble.FastBaseEnsemble" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class" id="module-survivors.ensemble.bootstrap">
 <dt class="sig sig-object py" id="survivors.ensemble.bootstrap.BootstrapCRAID">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.bootstrap.</span></span><span class="sig-name descname"><span class="pre">BootstrapCRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.bootstrap.BootstrapCRAID" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.bootstrap.</span></span><span class="sig-name descname"><span class="pre">BootstrapCRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.bootstrap.BootstrapCRAID" title="Link to this definition">¶</a></dt>
 <dd><p>Bootstrap aggregation (Bagging) ensemble of survival decision tree.
 On each iteration probabilities of observations change by scheme.</p>
 <section id="id1">
-<h2>Attributes<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>Attributes<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>kwargs<span class="classifier">dict</span></dt><dd><p>Parameters for building base ensemble (look at BaseEnsemble)</p>
 </dd>
 </dl>
 </section>
 <section id="id2">
-<h2>Methods<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>Methods<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>fit : build ensemble with X, y data</p>
 </section>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.ensemble.bootstrap.ParallelBootstrapCRAID">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.bootstrap.</span></span><span class="sig-name descname"><span class="pre">ParallelBootstrapCRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.bootstrap.ParallelBootstrapCRAID" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.bootstrap.</span></span><span class="sig-name descname"><span class="pre">ParallelBootstrapCRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.bootstrap.ParallelBootstrapCRAID" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>

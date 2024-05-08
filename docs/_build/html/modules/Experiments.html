@@ -12,8 +12,6 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../_static/jquery.js?v=5d32c60e"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=e15882dc"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -39,17 +37,17 @@
           <div class="body" role="main">
             
   <section id="module-survivors.experiments.grid">
-<span id="experiments"></span><h1>Experiments<a class="headerlink" href="#module-survivors.experiments.grid" title="Link to this heading"></a></h1>
+<span id="experiments"></span><h1>Experiments<a class="headerlink" href="#module-survivors.experiments.grid" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.experiments.grid.Experiments">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">Experiments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE_NAME'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins_sch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.Experiments" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">Experiments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE_NAME'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins_sch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.Experiments" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Class receives methods, metrics and grids,</dt><dd><p>produces cross-validation experiments,
 stores table of results : name, params, time, metrics (by sample and mean)</p>
 </dd>
 </dl>
 <section id="attributes">
-<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>methods<span class="classifier">list</span></dt><dd><dl class="simple">
 <dt>Must have predicting methods according to metrics:</dt><dd><p>IBS - survival func
@@ -76,7 +74,7 @@ else - stop experiments with current method</p>
 </dl>
 </section>
 <section id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading"></a></h2>
+<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
 <p>add_method : append method and its grid
 set_metrics : check and set list of metric name 
 run : start experiments with data X, y
@@ -87,10 +85,10 @@ save : export table as xlsx</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.experiments.grid.generate_sample">
-<span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">generate_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.generate_sample" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">generate_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.generate_sample" title="Link to this definition">¶</a></dt>
 <dd><p>Generate cross-validate samples with StratifiedKFold.</p>
 <section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
 </dd>
@@ -103,7 +101,7 @@ save : export table as xlsx</p>
 </dl>
 </section>
 <section id="yields">
-<h2>Yields<a class="headerlink" href="#yields" title="Link to this heading"></a></h2>
+<h2>Yields<a class="headerlink" href="#yields" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>X_train<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of train sample.</p>
 </dd>
@@ -121,11 +119,11 @@ save : export table as xlsx</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.experiments.grid.get_fit_eval_func">
-<span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">get_fit_eval_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['CI']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.get_fit_eval_func" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">get_fit_eval_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['CI']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.get_fit_eval_func" title="Link to this definition">¶</a></dt>
 <dd><p>Return function, which on sample X, y apply cross-validation and calculate 
 metrics for each fold.</p>
 <section id="id1">
-<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>method<span class="classifier">class</span></dt><dd><p>Must have methods for fitting, predicting time, hazard and survival func</p>
 </dd>
@@ -144,7 +142,7 @@ metrics for each fold.</p>
 </dl>
 </section>
 <section id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
 <dl class="simple">
 <dt>functions</dt><dd><p>Recieve hyperparameters and return list of metrics arrays.
 Allow to use in ParameterGrid.</p>

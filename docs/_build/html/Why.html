@@ -12,8 +12,6 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="_static/jquery.js?v=5d32c60e"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="_static/documentation_options.js?v=e15882dc"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
@@ -39,7 +37,7 @@
           <div class="body" role="main">
             
   <section id="why-survivors">
-<h1>Why <em>survivors</em>?<a class="headerlink" href="#why-survivors" title="Link to this heading"></a></h1>
+<h1>Why <em>survivors</em>?<a class="headerlink" href="#why-survivors" title="Link to this heading">¶</a></h1>
 <p>While designing and implementing the <strong>survivors</strong> library, we aimed to achieve the following four goals: broad functionality, applicability to real-world data, ease of use, and priority of experiments.</p>
 <p>The broad functionality of the library’s models is achieved through the continuity of their predicted functions. Discrete survival analysis models take into account the time scale before training and calculate the probability of an event occurring within a specified time. Continuous models, on the other hand, are scale-independent and can predict function values at any point in time. Additionally, the library’s models allow users to predict both point values (i.e., the probability and time of an event) as well as survival and hazard functions.</p>
 <p>The library provides an interface for building tree-based survival analysis models that do not require data preprocessing. These models are capable of handling categorical features, missing values, informative censoring, and multimodal time distributions. They also have increased sensitivity to data features, as weighted log-rank criteria are used to evaluate the significance of partitions under different time distributions. Regularization approaches are used to reduce the hazard of overfitting, making the models more suitable for real-world data.</p>
