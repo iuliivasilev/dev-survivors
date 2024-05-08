@@ -36,7 +36,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r ./requirements/docs-requirements.txt
-          python -m pip install sphinx-rtd-theme
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

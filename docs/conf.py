@@ -20,6 +20,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.githubpages",
+    "sphinxcontrib.jquery",
     "sphinx_gallery.gen_gallery",
     "sphinx_rtd_theme",
 ]
