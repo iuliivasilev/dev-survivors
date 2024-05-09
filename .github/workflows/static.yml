@@ -33,9 +33,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-#      - name: Install dependencies
-#        run: |
-#          pip install -r ./requirements/docs-requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install -r ./requirements/docs-requirements.txt
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
