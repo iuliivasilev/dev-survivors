@@ -6,6 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import sphinx_rtd_theme
+
 project = 'survivors'
 copyright = '2024, Iulii Vasilev'
 author = 'Iulii Vasilev'
@@ -14,13 +16,9 @@ release = '1.6.2'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-import sphinx_rtd_theme
-
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    # "sphinx.ext.githubpages",
-    # "sphinxcontrib.jquery",
     "sphinx_gallery.gen_gallery",
     "sphinx_rtd_theme",
 ]
