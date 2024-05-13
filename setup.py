@@ -31,12 +31,15 @@ def parse_requirements(filename):
 # 3. (test) twine upload --skip-existing --repository-url https://test.pypi.org/legacy/ dist/* -u **** -p ****
 # 4. (release) twine upload --skip-existing --repository-url https://upload.pypi.org/legacy/ dist/* -u **** -p ****
 
+# New twine method
+# 1. python setup.py sdist bdist_wheel
+# 2. twine upload --repository survivors dist/* (see in .pypirc file)
 
 install_requires = parse_requirements("requirements/requirements.txt")
 
 setup(
     name='survivors',
-    version='1.6.2',
+    version='1.7.0',
     license='BSD 3-Clause License',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',

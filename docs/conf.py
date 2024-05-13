@@ -11,7 +11,7 @@ import sphinx_rtd_theme
 project = 'survivors'
 copyright = '2024, Iulii Vasilev'
 author = 'Iulii Vasilev'
-release = '1.6.2'
+release = '1.7.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
