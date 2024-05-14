@@ -3,7 +3,6 @@ import pandas as pd
 import time
 import os
 import pickle
-import mgzip  # Custom
 
 from sklearn.model_selection import StratifiedKFold, ParameterGrid, train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -12,6 +11,11 @@ from .. import constants as cnt
 from .. import metrics as metr
 from ..external import LeafModel
 
+try:
+    import mgzip  # Custom
+    open_file = mgzip.open
+except ImportError:
+    open_file = open
 
 def to_str_from_dict_list(d, stratify):
     if isinstance(stratify, str):
@@ -165,10 +169,11 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                     if not os.path.exists(name):
                         print("Fitted from scratch")
                         est.fit(X_train, y_train)
-                        with mgzip.open(name, 'wb') as out:  # Custom
+
+                        with open_file(name, 'wb') as out:  # Custom
                             pickle.dump(est, out, pickle.HIGHEST_PROTOCOL)
 
-                    with mgzip.open(name, 'rb') as inp:
+                    with open_file(name, 'rb') as inp:
                         est = pickle.load(inp)
                         est.aggreg_func = kwargs.get("aggreg_func", None)
                         est.tolerance_find_best(kwargs["ens_metric_name"])
