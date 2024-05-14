@@ -51,6 +51,9 @@ PARAMS_ = {
     "rott2": SCHEME_PARAMS,
     "support2": SCHEME_PARAMS,
     "Framingham": SCHEME_PARAMS,
+    "backblaze16_18": SCHEME_PARAMS,
+    "backblaze18_21": SCHEME_PARAMS,
+    "backblaze21_23": SCHEME_PARAMS,
     # "backblaze": SCHEME_PARAMS
     # "ONK": ONK_PARAMS,
     # "COVID": COVID_PARAMS,
@@ -65,7 +68,10 @@ DATASETS_LOAD = {
     "smarto": ds.load_smarto_dataset,
     "rott2": ds.load_rott2_dataset,
     "support2": ds.load_support2_dataset,
-    "Framingham": ds.load_Framingham_dataset
+    "Framingham": ds.load_Framingham_dataset,
+    "backblaze16_18": ds.load_backblaze_2016_2018,
+    "backblaze18_21": ds.load_backblaze_2018_2021,
+    "backblaze21_23": ds.load_backblaze_2021_2023,
     # "backblaze": ds.load_backblaze_dataset
     # "ONK": ds.load_onk_dataset,
     # "COVID": ds.load_covid_dataset,
@@ -246,7 +252,8 @@ def dir_path():
 #     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid"
 # )
 @pytest.mark.parametrize(
-    "dataset",  ["support2", "smarto"]  # "rott2", "PBC", "WUHAN", "GBSG"]  # "flchain", "backblaze", "actg", "support2", "smarto"
+    "dataset",  ["backblaze16_18", "backblaze18_21", "backblaze21_23"]
+    # ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "flchain", "actg"
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
     mode_wei = None
@@ -259,7 +266,7 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     # prefix = f"{best_metric}_STRATTIME+_EXT10_EQ_REG_TREE_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"
 
-    prefix = f"{best_metric}_PAR_BSTR_TEST_OPTIMIZED_TIME"
+    prefix = f"{best_metric}_PAR_BSTR"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_PAR_BSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_reg(0_01)_PART_BOOST_ALL_BINS_{bins_sch}"

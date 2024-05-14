@@ -23,7 +23,7 @@ BSTR_param_grid = {
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
 
     "min_samples_leaf": [0.05, 0.01, 0.001],
-    "max_features": [0.3, "sqrt"],
+    "max_features": ["sqrt"],  # [0.3, "sqrt"]
     "n_jobs": [20]  # 15
 }
 
