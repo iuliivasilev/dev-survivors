@@ -199,9 +199,9 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 X_train = X_train[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
                 X_test = X_test[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
 
-                scaler = StandardScaler()
-                X_train = scaler.fit_transform(X_train)
-                X_test = scaler.transform(X_test)
+                # scaler = StandardScaler()
+                # X_train = scaler.fit_transform(X_train)
+                # X_test = scaler.transform(X_test)
 
                 est = est.fit(X_train, y_train)
                 survs = est.predict_survival_function(X_test)
