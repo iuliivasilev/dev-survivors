@@ -83,14 +83,14 @@ cox_param_grid = {
 }
 
 RSF_param_grid = {
-    'n_estimators': [30, 50],  # 100],
+    'n_estimators': [50],  # [30, 50], 100],
     'max_depth': [None, 20],
-    'min_samples_leaf': [1, 10, 20],  # [500, 1000, 3000],
+    'min_samples_leaf': [0.001, 0.01, 0.1],  # [20],  # [1, 10, 20] [500, 1000, 3000],
     # 'max_features': ["sqrt"],
     "random_state": [123]
 }
 ST_param_grid = {
-    'splitter': ["best", "random"],
+    'splitter': ["random"],  # ["best", "random"]
     'max_depth': [None, 20, 30],
     'min_samples_leaf': [1, 10, 20],
     'max_features': [None, "sqrt"],
@@ -98,10 +98,10 @@ ST_param_grid = {
 }
 GBSA_param_grid = {
     'loss': ["coxph"],
-    'learning_rate': [0.01, 0.05, 0.1, 0.5],
-    'n_estimators': [30, 50],  # 100],
-    'max_depth': [20, 30],
-    'min_samples_leaf': [1, 10, 20],
+    'learning_rate': [0.01, 0.05, 0.1, 0.5],  # [0.01, 0.05, 0.1, 0.5]
+    'n_estimators': [50],  # [30, 50], 100],
+    'max_depth': [20],  # [20, 30]
+    'min_samples_leaf': [1, 10, 50, 100],  # [20],  # [1, 10, 20]
     'max_features': ["sqrt"],
     "random_state": [123]
 }
@@ -245,14 +245,15 @@ def dir_path():
 #     "bins_sch", ["origin", "rank", "quantile", "log+scale"]
 # )
 
-@pytest.mark.parametrize(  # , "IBS", "IBS_WW"
-    "best_metric", ["IBS_REMAIN"]  # ["CI", "CI_CENS", "LOGLIKELIHOOD", "IBS", "IBS_WW", "IBS_REMAIN", "IAUC_WW_TI", "AUPRC"]  # "AUPRC", "CI_CENS"
+@pytest.mark.parametrize(
+    "best_metric", ["LOGLIKELIHOOD"]  # ["IBS_REMAIN"], ["CI", "CI_CENS", "LOGLIKELIHOOD", "IBS", "IBS_WW", "IBS_REMAIN", "IAUC_WW_TI", "AUPRC"]
 )
 # @pytest.mark.parametrize(
 #     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid"
 # )
 @pytest.mark.parametrize(
-    "dataset",  ["backblaze16_18", "backblaze18_21", "backblaze21_23"]
+    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]
+    # ["backblaze16_18", "backblaze18_21", "backblaze21_23"]
     # ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]  # "flchain", "actg"
 )
 def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
@@ -266,22 +267,22 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     # prefix = f"{best_metric}_STRATTIME+_EXT10_EQ_REG_TREE_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"
 
-    prefix = f"{best_metric}_PAR_BSTR"
+    # prefix = f"{best_metric}_PARBSTR"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_PAR_BSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_{mode_wei}_reg(0_01)_PART_BOOST_ALL_BINS_{bins_sch}"
 
-    # prefix = f"{best_metric}_STRATTIME+_scsurv_mean"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
-    # res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
-    #               # dir_path=dir_path+"\\",
-    #               bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
+    prefix = f"{best_metric}_STRATTIME+_scsurv_extended_no_scale"  # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
+    res_exp = run(dataset, with_self=[], with_external=True, mode=mode,
+                  # dir_path=dir_path+"\\",
+                  bins_sch=bins_sch, best_metric=best_metric)  # Only scikit-survival
 
-    storage_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset)
-    if not os.path.exists(storage_path):
-        os.makedirs(storage_path)
-    res_exp = run(dataset, with_self=["PARBSTR"], with_external=False, mode=mode,  # CLEVERBOOST
-                  #  dir_path=storage_path+"\\",
-                  bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "BSTR", "BOOST"]
+    # storage_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset)
+    # if not os.path.exists(storage_path):
+    #     os.makedirs(storage_path)
+    # res_exp = run(dataset, with_self=["PARBSTR"], with_external=False, mode=mode,  # CLEVERBOOST
+    #               #  dir_path=storage_path+"\\",
+    #               bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "BSTR", "BOOST"]
 
     df_full = res_exp.get_result()
     df_criterion = res_exp.get_best_by_mode(stratify="criterion")
