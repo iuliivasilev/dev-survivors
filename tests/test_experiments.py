@@ -81,11 +81,10 @@ cox_param_grid = {
     'alpha': [100, 10, 1, 0.1, 0.01, 0.001],
     'ties': ["breslow"]
 }
-
 RSF_param_grid = {
-    'n_estimators': [50],  # [30, 50], 100],
+    'n_estimators': [50],  # [30, 50]
     'max_depth': [None, 20],
-    'min_samples_leaf': [0.001, 0.01, 0.1],  # [20],  # [1, 10, 20] [500, 1000, 3000],
+    'min_samples_leaf': [0.001, 0.01, 0.1, 0.25],  # [20],  # [1, 10, 20] [500, 1000, 3000],
     # 'max_features': ["sqrt"],
     "random_state": [123]
 }
@@ -99,7 +98,7 @@ ST_param_grid = {
 GBSA_param_grid = {
     'loss': ["coxph"],
     'learning_rate': [0.01, 0.05, 0.1, 0.5],  # [0.01, 0.05, 0.1, 0.5]
-    'n_estimators': [50],  # [30, 50], 100],
+    'n_estimators': [50],  # [30, 50]
     'max_depth': [20],  # [20, 30]
     'min_samples_leaf': [1, 10, 50, 100],  # [20],  # [1, 10, 20]
     'max_features': ["sqrt"],
@@ -108,7 +107,7 @@ GBSA_param_grid = {
 CWGBSA_param_grid = {
     'loss': ["coxph"],
     'learning_rate': [0.01, 0.05, 0.1, 0.5],
-    'n_estimators': [30, 50],  # 100],
+    'n_estimators': [30, 50],
     'subsample': [0.7, 1.0],
     'dropout_rate': [0.0, 0.1, 0.5],
     "random_state": [123]
