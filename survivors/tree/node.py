@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from joblib import Parallel, delayed
-# from scipy.stats import chi2
 from ..criteria import chi2_isf
 
 from .find_split_hist import hist_best_attr_split
@@ -11,10 +10,9 @@ from .. import constants as cnt
 from ..external import LEAF_MODEL_DICT, LeafModel
 from ..scheme import Scheme
 
-# custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
-# sns.set_theme(style="ticks", rc=custom_params)
-custom_params = {"font.size": 20, "axes.labelsize": 20, "xtick.labelsize": 20, "ytick.labelsize": 20,
-                 "axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
+custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
+# custom_params = {"font.size": 20, "axes.labelsize": 20, "xtick.labelsize": 20, "ytick.labelsize": 20,
+#                  "axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
 sns.set_theme(style="ticks", rc=custom_params)
 
 """ Auxiliary functions """
@@ -346,16 +344,46 @@ class Node(object):
         return self.leaf_model.predict_feature(X, target)
 
     def predict_scheme(self, X, scheme_feats):
+        """
+        Predict target values for X data
+
+        Parameters
+        ----------
+        X : Pandas dataframe
+            Contain input features of events
+        scheme_feats : list
+            Needed features from node
+
+        Returns
+        -------
+        res : Scheme
+            Aggregation entity of node information
+        """
         feat_means = np.array([self.leaf_model.features_predict.get(s_f, np.nan)
                                for s_f in scheme_feats])
         times = self.leaf_model.predict_list_feature(cnt.TIME_NAME)
         cens = self.leaf_model.predict_list_feature(cnt.CENS_NAME)
-
         return Scheme(self.get_full_rule(), times, cens, feat_means)
 
     """ GROUP FUNCTIONS: VISUALIZATION """
 
     def get_figure(self, mode="hist", bins=None, target=cnt.CENS_NAME, save_path=""):
+        """
+        Save background image for graphviz node
+
+        Parameters
+        ----------
+        target : str
+            Described feature
+        mode : string
+            - "hist" plot histogram of target
+            - "kde" plot smooth density of target
+            - "surv" plot survival function (doesn't use target)
+        bins : list
+            Points for survival function
+        save_path : str
+            External path to save image
+        """
         plt.ioff()
         fig, ax = plt.subplots(figsize=(7, 5))
         if mode == "hist":
@@ -379,6 +407,14 @@ class Node(object):
         plt.close(fig)
 
     def get_description(self):
+        """
+        Build description for graphviz node
+
+        Returns
+        -------
+        label : str
+            multiline string of description
+        """
         m_cens = self.leaf_model.predict_feature(X=None, feature_name=cnt.CENS_NAME)
         m_time = self.leaf_model.predict_feature(X=None, feature_name=cnt.TIME_NAME)
         if isinstance(m_cens, np.ndarray):
@@ -392,6 +428,9 @@ class Node(object):
         return label
 
     def set_dot_node(self, dot, path_dir="", depth=None, **args):
+        """
+        Set node for graphviz dot with image and label
+        """
         if not (depth is None) and depth < self.depth:
             return dot
         img_path = path_dir + str(self.numb) + '.png'
@@ -401,6 +440,9 @@ class Node(object):
         return dot
 
     def set_dot_edges(self, dot):
+        """
+        Set edges for graphviz by node structure
+        """
         if not self.is_leaf:
             for e in range(len(self.rule_edges)):
                 s = self.rule_edges[e].to_str()
@@ -408,6 +450,9 @@ class Node(object):
         return dot
 
     def translate(self, describe):
+        """
+        Rename features in node by dictionary
+        """
         self.features = [describe.get(f, f) for f in self.features]
         self.categ = [describe.get(c, c) for c in self.categ]
         for e in range(len(self.rule_edges)):
