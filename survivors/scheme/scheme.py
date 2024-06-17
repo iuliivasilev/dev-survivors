@@ -39,7 +39,7 @@ class Scheme(object):
         return self.rule
 
     def get_description(self):
-        descr = "\nКОЛ-ВО:{self.shape} "
+        descr = f"\nКОЛ-ВО:{self.shape} "
         descr += f"ВЕРОЯТНОСТЬ СОБЫТИЯ:{self.predict_proba()} "
         descr += f"ВРЕМЯ СОБЫТИЯ:{self.predict_time()} "
         descr += "\n" + self.get_str_rules()
