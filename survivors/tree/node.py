@@ -11,10 +11,11 @@ from .. import constants as cnt
 from ..external import LEAF_MODEL_DICT, LeafModel
 from ..scheme import Scheme
 
-custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
+# custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
+# sns.set_theme(style="ticks", rc=custom_params)
+custom_params = {"font.size": 20, "axes.labelsize": 20, "xtick.labelsize": 20, "ytick.labelsize": 20,
+                 "axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
 sns.set_theme(style="ticks", rc=custom_params)
-# custom_params = {"font.size": 25, "axes.labelsize": 25, "xtick.labelsize": 25, "ytick.labelsize": 25,
-#                  "axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
 
 """ Auxiliary functions """
 
@@ -365,8 +366,8 @@ class Node(object):
         elif mode == "kde":
             lst = self.leaf_model.predict_list_feature(target)
             # lst = self.leaf_model.old_durs
-            sns.kdeplot(lst, ax=ax)
-            ax.set_xlabel(f'{target}', fontsize=25)
+            sns.kdeplot(lst, ax=ax, linewidth=3, fill=True, alpha=0.3)
+            ax.set_xlabel(f'{target}', fontsize=20)
         elif mode == "surv":
             sf = self.leaf_model.predict_survival_at_times(X=None, bins=bins)
             if len(sf.shape) > 1:
