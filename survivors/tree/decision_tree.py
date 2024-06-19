@@ -12,9 +12,7 @@ from sklearn.metrics import roc_auc_score
 from .node import Node
 from ..scheme import FilledSchemeStrategy
 from .. import constants as cnt
-
 import matplotlib.pyplot as plt
-from imblearn.over_sampling import RandomOverSampler
 
 
 def format_to_pandas(X, columns):
@@ -27,6 +25,8 @@ def format_to_pandas(X, columns):
 
 
 def get_oversample(df, target=cnt.CENS_NAME):
+    from imblearn.over_sampling import RandomOverSampler
+
     oversample = RandomOverSampler(sampling_strategy='minority', random_state=42)
     df_over, _ = oversample.fit_resample(df, df[target])
     return df_over
@@ -352,6 +352,19 @@ class CRAID(object):
         self.nodes = cutted_tree(self, X, target, mode_f, choose_f).nodes
 
     def visualize(self, path_dir=None, **kwargs):
+        """
+        Build graphviz representation of the tree
+
+        Parameters
+        ----------
+        path_dir : str
+        kwargs : dict
+            Keyword arguments for nodes
+
+        Returns
+        -------
+        dot : graphviz.Digraph
+        """
         if path_dir is None:
             path_dir = os.getcwd()
         kwargs["bins"] = self.bins
@@ -367,6 +380,9 @@ class CRAID(object):
         return dot
 
     def translate(self, describe):
+        """
+        Rename features for each node by dictionary
+        """
         self.features = [describe.get(f, f) for f in self.features]
         self.categ = [describe.get(c, c) for c in self.categ]
         for i in self.nodes.keys():
@@ -378,11 +394,17 @@ class CRAID(object):
         return np.array([i for i in self.nodes.keys() if self.nodes[i].is_leaf])
 
     def get_spanning_leaf_numbers(self):
+        """
+        Get pre-termination nodes (have two leaves in edges)
+        """
         leaves = self.get_leaf_numbers()
         return np.array([i for i in self.nodes.keys()
                          if np.intersect1d(self.nodes[i].edges, leaves).shape[0] == 2])
 
     def delete_leaves_by_span(self, list_span_leaf):
+        """
+        Set pre-termination nodes as leaves
+        """
         for i in list_span_leaf:
             for e in self.nodes[i].edges:
                 del self.nodes[e]
