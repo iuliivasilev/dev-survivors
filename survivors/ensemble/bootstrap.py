@@ -50,9 +50,16 @@ class BootstrapCRAID(FastBaseEnsemble):
 
 
 class ParallelBootstrapCRAID(BootstrapCRAID):
+    """
+    Parallel realization of BootstrapCRAID.
+    Trees are built in parallel, and the number of processes is specified via n_jobs.
+    """
 
     @staticmethod
     def fit_tree(x_sub, params):
+        """
+        An atomic out-of-class tree construction operation for parallelization.
+        """
         X_tr, y_tr = cnt.pd_to_xy(x_sub)
         model = CRAID(**params)
         model.fit(X_tr, y_tr)
