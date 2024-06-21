@@ -26,6 +26,9 @@ def to_str_from_dict_list(d, stratify):
 
 
 def prepare_sample(X, y, train_index, test_index):
+    """
+    Constructing a set of bins on target variables and clipping.
+    """
     X_train, X_test = X.iloc[train_index, :], X.iloc[test_index, :]
     y_train, y_test = y[train_index], y[test_index]
 
@@ -114,6 +117,9 @@ def count_metric(y_train, y_test, pred_time, pred_sf, pred_hf, bins, metrics_nam
 
 
 def get_name_file(method, params, mode, fold):
+    """
+    Creating a name to cache the model without considering variables independent for reproducibility.
+    """
     filter_params = ["categ", "ens_metric_name", "aggreg_func", "n_jobs"]
     name_lst = [method.__name__]
     name_lst += [v for k, v in params.items() if not (k in filter_params)]
