@@ -11,6 +11,24 @@ def epanechnikov_kernel(t, T, bandwidth=1.0):
 
 
 class KaplanMeier:
+    """
+    Modification of classic Kaplan-Meier model
+
+    Attributes
+    ----------
+    timeline : numpy ndarray
+        Bins of event time
+    survival_function : numpy ndarray
+        Survival probability for all points of timeline
+    cumul_hist_dur : numpy ndarray
+        Cumulative hazard probability for all points of timeline
+
+    Methods
+    -------
+    fit : Build nonparametric model
+    get_confidence_interval_ : predict confidence interval by times
+    survival_function_at_times : predict survival probability by times
+    """
     def __init__(self):
         self.timeline = None
         self.survival_function = None
@@ -53,6 +71,9 @@ class KaplanMeier:
 
 
 class FullProbKM(KaplanMeier):
+    """
+    A KM model predicting the survival function using the full probability formula
+    """
     def fit(self, durations, right_censor, weights=None):
         durations = np.array(durations)
         right_censor = np.array(right_censor)
@@ -75,6 +96,24 @@ class FullProbKM(KaplanMeier):
 
 
 class NelsonAalen:
+    """
+    Modification of classic Nelson-Aalen model
+
+    Attributes
+    ----------
+    timeline : numpy ndarray
+        Bins of event time
+    survival_function : numpy ndarray
+        Survival probability for all points of timeline
+    smoothing : bool
+        Flag the need for density smoothing
+
+    Methods
+    -------
+    fit : Build nonparametric model
+    cumulative_hazard_at_times : predict hazard probability by times
+    get_smoothed_hazard_at_times : predict smoothed hazard probability by times
+    """
     def __init__(self, smoothing=True):
         self.timeline = None
         self.survival_function = None
@@ -124,6 +163,9 @@ class NelsonAalen:
 
 
 class KaplanMeierZeroAfter(KaplanMeier):
+    """
+    External pre-definition of the left and right KM estimation bounds with one and zero.
+    """
     def survival_function_at_times(self, times):
         place_bin = np.searchsorted(self.timeline, times)
         # place_bin = np.digitize(times, self.timeline)  # -1
