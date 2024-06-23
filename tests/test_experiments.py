@@ -16,7 +16,7 @@ from survivors.ensemble import IBSBoostingCRAID, IBSProbBoostingCRAID  # SumBoos
 from survivors.ensemble import IBSCleverBoostingCRAID
 
 from survivors.experiments import grid as exp
-from survivors import datasets as ds
+from survivors.datasets import DATASETS_LOAD
 
 from survivors.external import LEAF_MODEL_DICT
 
@@ -57,24 +57,6 @@ PARAMS_ = {
     # "backblaze": SCHEME_PARAMS
     # "ONK": ONK_PARAMS,
     # "COVID": COVID_PARAMS,
-}
-
-DATASETS_LOAD = {
-    "GBSG": ds.load_gbsg_dataset,
-    "PBC": ds.load_pbc_dataset,
-    "WUHAN": ds.load_wuhan_dataset,
-    "actg": ds.load_actg_dataset,
-    "flchain": ds.load_flchain_dataset,
-    "smarto": ds.load_smarto_dataset,
-    "rott2": ds.load_rott2_dataset,
-    "support2": ds.load_support2_dataset,
-    "Framingham": ds.load_Framingham_dataset,
-    "backblaze16_18": ds.load_backblaze_2016_2018,
-    "backblaze18_21": ds.load_backblaze_2018_2021,
-    "backblaze21_23": ds.load_backblaze_2021_2023,
-    # "backblaze": ds.load_backblaze_dataset
-    # "ONK": ds.load_onk_dataset,
-    # "COVID": ds.load_covid_dataset,
 }
 
 cox_param_grid = {
