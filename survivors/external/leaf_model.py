@@ -146,6 +146,21 @@ class NormalizedLeafModel(NonparamLeafModel):
         self.weights = np.ones_like(self.lists[cnt.TIME_NAME])
 
 
+class StableLeafModel(NonparamLeafModel):
+    def fit(self, *args, **kwargs):
+        super().fit(*args, **kwargs)
+
+        durs = np.random.normal(np.median(self.lists[cnt.TIME_NAME]),
+                                np.std(self.lists[cnt.TIME_NAME]) / np.sqrt(2), 10000)
+        events = np.random.choice(self.lists[cnt.CENS_NAME], size=10000, replace=True)
+        durs = np.hstack([self.lists[cnt.TIME_NAME], durs])
+        events = np.hstack([self.lists[cnt.CENS_NAME], events])
+
+        self.lists[cnt.CENS_NAME] = events[durs > 0]
+        self.lists[cnt.TIME_NAME] = durs[durs > 0]
+        self.weights = np.ones_like(self.lists[cnt.TIME_NAME])
+
+
 class MeaningLeafModel(NonparamLeafModel):
     def fit(self, *args, **kwargs):
         super().fit(*args, **kwargs)

@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.stats import norm
-from .leaf_model import NonparamLeafModel, MixLeafModel, NormalizedLeafModel, MeaningLeafModel
+from .leaf_model import NonparamLeafModel, MixLeafModel, NormalizedLeafModel, MeaningLeafModel, StableLeafModel
 from lifelines import KaplanMeierFitter, NelsonAalenFitter
 
 
@@ -193,6 +193,11 @@ class BaseNormalizedLeafModel(NormalizedLeafModel):
     hazard_class = NelsonAalen
 
 
+class StableLeafModel(StableLeafModel):
+    survival_class = KaplanMeierZeroAfter
+    hazard_class = NelsonAalen
+
+
 class BaseMeaningLeafModel(MeaningLeafModel):
     survival_class = KaplanMeierZeroAfter
     hazard_class = NelsonAalen
@@ -214,6 +219,7 @@ LEAF_NONPARAM_DICT = {
     "only_hazard": BaseLeafModelOnlyHazard,
     "only_survive": BaseLeafModelOnlySurv,
     "base_zero_after": BaseNormalizedLeafModel,
+    "stable_zero_after": StableLeafModel,
     "base_normal": BaseNormalizedLeafModel,
     "base_meaning": BaseMeaningLeafModel,
     "base_mix": BaseMixLeafModel
