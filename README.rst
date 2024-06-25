@@ -22,7 +22,7 @@ Event analysis has many applications: healthcare, hardware, social science, bioi
 In particular, there are three functions: the survival function *S(t)*, the density function *f(t)*, and the hazard function *h(t)*:
 
 .. math::
-    S(t)=P(T>t), f(t)=P(T=t), h(t)=P(T=t|T>=t)
+    S(t)=P(T>t), f(t)=(1 - S(t))', h(t)=f(t)/S(t)
 
 The open-source **survivors** library aims to fit accurate data-sensitive tree-based models. 
 These models handle categorical features and deal with missing values,overcoming the limitations of existing `lifelines <https://github.com/lifelines/lifelines?ysclid=lta0m13i2b832399887>`_, `scikit-survival <https://github.com/sebp/scikit-survival>`_, and `pycox <https://github.com/havakv/pycox>`_ models.
