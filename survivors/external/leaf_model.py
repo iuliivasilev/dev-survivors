@@ -151,8 +151,8 @@ class StableLeafModel(NonparamLeafModel):
         super().fit(*args, **kwargs)
 
         durs = np.random.normal(np.median(self.lists[cnt.TIME_NAME]),
-                                np.std(self.lists[cnt.TIME_NAME]) / np.sqrt(2), 10000)
-        events = np.random.choice(self.lists[cnt.CENS_NAME], size=10000, replace=True)
+                                np.std(self.lists[cnt.TIME_NAME]) / np.sqrt(2), self.shape[0]*5)
+        events = np.random.choice(self.lists[cnt.CENS_NAME], size=self.shape[0]*5, replace=True)
         durs = np.hstack([self.lists[cnt.TIME_NAME], durs])
         events = np.hstack([self.lists[cnt.CENS_NAME], events])
 
