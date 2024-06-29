@@ -6,13 +6,13 @@
    :target: https://github.com/iuliivasilev/dev-survivors/blob/master/LICENSE
 
 .. |PyPi| image:: https://img.shields.io/pypi/v/survivors
-.. _PyPi: https://pypi.org/project/survivors/
+    :target: https://pypi.org/project/survivors/
 
 .. |License| image:: https://img.shields.io/badge/license-BSD%203--Clause-blue.svg
    :target: https://github.com/iuliivasilev/dev-survivors/blob/master/LICENSE
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10649986.svg
-.. _DOI: https://zenodo.org/doi/10.5281/zenodo.10649777
+    :target: https://zenodo.org/doi/10.5281/zenodo.10649777
 
 =========
 survivors
