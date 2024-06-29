@@ -1,6 +1,6 @@
 .. -*- mode: rst -*-
 
-|Price| |License| |PyPi|_ |DOI|_
+|Price| |License| |PyPi| |DOI|
 
 .. |Price| image:: https://img.shields.io/badge/price-FREE-0098f7.svg
    :target: https://github.com/iuliivasilev/dev-survivors/blob/master/LICENSE
