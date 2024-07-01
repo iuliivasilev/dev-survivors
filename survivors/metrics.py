@@ -197,6 +197,7 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
 
 
 def bal_ibs(survival_train, survival_test, estimate, times, axis=-1):
+    """ IBS with equal impact of each event type """
     ibs_event = ibs(survival_train, survival_test[survival_test["cens"]],
                     estimate[survival_test["cens"]], times, axis=axis)
     ibs_cens = ibs(survival_train, survival_test[~survival_test["cens"]],
@@ -205,6 +206,7 @@ def bal_ibs(survival_train, survival_test, estimate, times, axis=-1):
 
 
 def ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
+    """ IBS with equal impact of partial observation """
     test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored=True)
     estimate = np.array(estimate)
     if estimate.ndim == 1 and times.shape[0] == 1:
@@ -232,6 +234,7 @@ def ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
 
 
 def bal_ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
+    """ IBS with equal impact of each event type and partial observation """
     ibs_event = ibs_WW(survival_train, survival_test[survival_test["cens"]],
                        estimate[survival_test["cens"]], times, axis=axis)
     ibs_cens = ibs_WW(survival_train, survival_test[~survival_test["cens"]],
@@ -240,6 +243,7 @@ def bal_ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
 
 
 def ibs_remain(survival_train, survival_test, estimate, times, axis=-1):
+    """ IBS with equal impact of partial observation with controlled quantity """
     test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored=True)
     estimate = np.array(estimate)
     if estimate.ndim == 1 and times.shape[0] == 1:
@@ -276,6 +280,7 @@ def ibs_remain(survival_train, survival_test, estimate, times, axis=-1):
 
 
 def bal_ibs_remain(survival_train, survival_test, estimate, times, axis=-1):
+    """ IBS with equal impact of each event type and partial observation with controlled quantity """
     ibs_event = ibs_remain(survival_train, survival_test[survival_test["cens"]],
                            estimate[survival_test["cens"]], times, axis=axis)
     ibs_cens = ibs_remain(survival_train, survival_test[~survival_test["cens"]],
@@ -404,14 +409,17 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
 
 
 def iauc_WW(s_tr, s_tst, est, times, tied_tol=1e-8):
+    """ IAUC without weighting for each observation """
     return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=True)
 
 
 def iauc_TI(s_tr, s_tst, est, times, tied_tol=1e-8):
+    """ IAUC with integration by time (instead of S(t)) """
     return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=False, time_int=True)
 
 
 def iauc_WW_TI(s_tr, s_tst, est, times, tied_tol=1e-8):
+    """ IAUC with equal weight for each observation and integration by time """
     return iauc(s_tr, s_tst, est, times, tied_tol=tied_tol, no_wei=True, time_int=True)
 
 
@@ -464,6 +472,7 @@ def ipa(survival_train, survival_test, estimate, times, axis=-1):
 
 
 def kl(time, cens, sf, cumhf, bins):
+    """ Kullback-Leibler divergence in terms of survival analysis """
     eq_sf = np.array([np.where(time > t, 1, 0)
                       for i, t in enumerate(bins)]).T
 
@@ -472,6 +481,7 @@ def kl(time, cens, sf, cumhf, bins):
 
 
 def loglikelihood(time, cens, sf, cumhf, bins):
+    """ Likelihood in terms of survival analysis (without PH) """
     index_times = np.digitize(time, bins, right=True) - 1
     hf = np.hstack((cumhf[:, 0][np.newaxis].T, np.diff(cumhf)))
     sf_by_times = np.take_along_axis(sf, index_times[:, np.newaxis], axis=1)[:, 0] + 1e-10
