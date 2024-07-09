@@ -5,7 +5,6 @@ from os.path import dirname, join
 
 dir_env = join(dirname(__file__), "data", "BACKBLAZE")
 
-### Функции скачивания датасета
 
 def str_to_categ(df_col):
     uniq = df_col.unique()
@@ -26,6 +25,7 @@ def load_backblaze_2016_2018(threshold=0.99):
     X = df.loc[:, sign]
     return X, y, sign, categ, []
 
+
 def load_backblaze_2018_2021(threshold=0.99):
     df = pd.read_csv(join(dir_env, 'backblaze_drop_truncated_2018_2021.csv'))
     df['time'] = pd.to_timedelta(df['time']).dt.days
@@ -39,6 +39,7 @@ def load_backblaze_2018_2021(threshold=0.99):
     y = get_y(df[CENS_NAME], df[TIME_NAME] + 1)
     X = df.loc[:, sign]
     return X, y, sign, categ, []
+
 
 def load_backblaze_2021_2023(threshold=0.99):
     df = pd.read_csv(join(dir_env, 'backblaze_drop_truncated_2021_2023.csv'))

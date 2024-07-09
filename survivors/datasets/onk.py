@@ -123,15 +123,13 @@ def load_pickle(path):
     return pickle.load(open(path, 'rb'))
 
 
-def load_onk_dataset(diag={'C20', 'C50.4', 'C61'},
-                     save_name="",
-                     invert_death=False,  # TODO return to FALSE
-                     descript=True):
+def load_onk_dataset(diag={'C20', 'C50.4', 'C61'}, save_name="",
+                     invert_death=False, descript=True):
     dir_env = join(dirname(__file__), "data", "ONK")
     STAD_MAP = pd.read_excel(join(dir_env, 'STAD_MAP.xlsx'))
     STAD_MAP['KOD_St'] = STAD_MAP['KOD_St'].apply(lambda x: STAD_MAP_DICT.get(re.sub(r'[^IV0]', '', x), np.nan))
     STAD_MAP = STAD_MAP.set_index('ID_St')['KOD_St'].to_dict()
-    ### ONK PREP
+    ### ONK PREPARATION
     ONK_T = prep_ONK('ID_T', 'KOD_T', join(dir_env, 'ONK_T.xlsx'))
     ONK_N = prep_ONK('ID_N', 'KOD_N', join(dir_env, 'ONK_N.xlsx'))
     ONK_M = prep_ONK('ID_M', 'KOD_M', join(dir_env, 'ONK_M.xlsx'))
@@ -160,15 +158,14 @@ def load_onk_dataset(diag={'C20', 'C50.4', 'C61'},
     for i in categ:
         dict_encoder = {v_u: i_u for i_u, v_u in enumerate(sorted([y for y in sourceDF[i].unique() if y == y]))}
         # SAVE DICT
-        #crl.save_pickle(dict_encoder, namespace.out + i + '.pickle')
-        print(i, dict_encoder)
+        # crl.save_pickle(dict_encoder, namespace.out + i + '.pickle')
+        # print(i, dict_encoder)
         sourceDF[i] = sourceDF[i].map(dict_encoder)
     
     if invert_death:
         sourceDF[CENS_NAME] = 1 - sourceDF['DEATH']
     else:
         sourceDF[CENS_NAME] = sourceDF['DEATH']
-        
     sourceDF[TIME_NAME] = sourceDF['DAYS']
     
     ret_sign = sign

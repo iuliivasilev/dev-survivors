@@ -230,7 +230,7 @@ def load_covid_dataset(dir_env=None):
     X = sec.loc[:, new_sign]
     return X, y, new_sign, new_categ, new_important
 
-#### ADD SCHEMES
+### ADD SCHEMES
 
 # def add_schemes():
 #     cyto = pd.read_csv(dir_env + 'cyto_train_16.csv')
