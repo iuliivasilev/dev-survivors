@@ -150,12 +150,12 @@ def polyval(p, x):
 
 @njit
 def ratevl(x, num, denom):  # N = M = 12
-    absx = np.abs(x);
+    absx = np.abs(x)
     if (absx > 1):
         '''Evaluate as a polynomial in 1/x.'''
         num_ans = polyval(num[::-1], 1 / x)
         denom_ans = polyval(denom[::-1], 1 / x)
-        return np.power(x, 0) * num_ans / denom_ans;
+        return np.power(x, 0) * num_ans / denom_ans
     else:
         num_ans = polyval(num, x)
         denom_ans = polyval(denom, x)
@@ -205,12 +205,12 @@ def find_inverse_gamma(a, p, q):
     ACM Transactions on Mathematical Software, Vol. 12, No. 4,
     December 1986, Pages 377-393.
     """
-    if (a == 1):
-        if (q > 0.9):
+    if a == 1:
+        if q > 0.9:
             result = -np.log1p(-p)
         else:
             result = -np.log(q)
-    elif (a < 1):
+    elif a < 1:
         g = math.gamma(a)
         b = q * g
 
@@ -277,7 +277,7 @@ def igam(a, x):
         return 1 if (x > 0) else np.nan
     elif (x == 0):
         '''Zero integration limit'''
-        return 0;
+        return 0
     elif np.isinf(a):
         return np.nan if np.isinf(x) else 0
     elif np.isinf(x):
@@ -291,23 +291,23 @@ def igam(a, x):
 def igami(a, p):
     if (np.isnan(a) or np.isnan(p)):
         return np.nan
-    elif (p == 0.0):
+    elif p == 0.0:
         return 0.0
-    elif (p == 1.0):
+    elif p == 1.0:
         return np.inf
-    elif (p > 0.9):
+    elif p > 0.9:
         return igamci(a, 1 - p)
 
-    x = find_inverse_gamma(a, p, 1 - p);
+    x = find_inverse_gamma(a, p, 1 - p)
     '''Halley's method'''
     for i in range(0, 3):
-        fac = igam_fac(a, x);
-        if (fac == 0.0):
+        fac = igam_fac(a, x)
+        if fac == 0.0:
             return x
         f_fp = (igam(a, x) - p) * x / fac
         '''The ratio of the first and second derivatives simplifies'''
         fpp_fp = -1.0 + (a - 1) / x
-        if (np.isinf(fpp_fp)):
+        if np.isinf(fpp_fp):
             '''Resort to Newton's method in the case of overflow'''
             x = x - f_fp
         else:
@@ -317,17 +317,17 @@ def igami(a, p):
 
 @njit
 def igamci(a, q):
-    if (q == 0.0):
+    if q == 0.0:
         return np.inf
-    elif (q == 1.0):
+    elif q == 1.0:
         return 0.0
-    elif (q > 0.9):
+    elif q > 0.9:
         return igami(a, 1 - q)
 
     x = find_inverse_gamma(a, 1 - q, q)
     for i in range(0, 3):
         fac = igam_fac(a, x)
-        if (fac == 0.0):
+        if fac == 0.0:
             return x
         f_fp = (_igamc(a, x) - q) * x / (-fac)
         fpp_fp = -1.0 + (a - 1) / x
