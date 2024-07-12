@@ -7,7 +7,7 @@ from numba import njit, jit
 # from lifelines.statistics import logrank_test
 # import fastlogranktest as flr
 
-""" 
+"""
 SIGNIFICANCE EVALUATION (chi2.sf, chi2.isf)
 MODIFIED CODE FROM 
 1. https://github.com/etal/biofrills/blob/36684bb6c7632f96215e8b2b4ebc86640f331bcd/biofrills/stats/chisq.py
@@ -84,16 +84,14 @@ def power_series(a, x):
         r += 1.0
         c *= x / r
         ans += c
-        if (c <= MACHEP * ans):
+        if c <= MACHEP * ans:
             break
     return ans / a
 
 
 @njit
 def _igam(a, x):
-    """
-    Left tail of incomplete Gamma function
-    """
+    """ Left tail of incomplete Gamma function """
     # Compute  x**a * exp(-x) / Gamma(a)
     ax = math.exp(a * math.log(x) - x - LGAMMA_05)
     return power_series(a, x) * ax
@@ -102,7 +100,7 @@ def _igam(a, x):
 @njit
 def igam_series(a, x):
     ax = igam_fac(a, x)
-    if (ax == 0.0):
+    if ax == 0.0:
         return 0.0
     return power_series(a, x) * ax
 
@@ -151,7 +149,7 @@ def polyval(p, x):
 @njit
 def ratevl(x, num, denom):  # N = M = 12
     absx = np.abs(x)
-    if (absx > 1):
+    if absx > 1:
         '''Evaluate as a polynomial in 1/x.'''
         num_ans = polyval(num[::-1], 1 / x)
         denom_ans = polyval(denom[::-1], 1 / x)
@@ -177,7 +175,7 @@ def lanczos_sum_expg_scaled(x):
 
 @njit
 def igam_fac(a, x):
-    if (np.abs(a - x) > 0.4 * np.abs(a)):
+    if np.abs(a - x) > 0.4 * np.abs(a):
         ax = a * np.log(x) - x - LGAMMA_05
         if (ax < -MAXLOG):
             return 0.0
@@ -186,7 +184,7 @@ def igam_fac(a, x):
     fac = a + LANCZOS_G - 0.5
     res = np.sqrt(fac / np.exp(1)) / lanczos_sum_expg_scaled(a)
 
-    if ((a < 200) and (x < 200)):
+    if (a < 200) and (x < 200):
         res *= np.exp(a - x) * pow(x / fac, a)
     else:
         num = x - a - LANCZOS_G + 0.5
@@ -223,29 +221,29 @@ def find_inverse_gamma(a, p, q):
             making it impossible to compute the inverse of Q(a,x) for small
             q. Fortunately the second form works perfectly well in this case.
             '''
-            if ((b * q > 1e-8) and (q > 1e-5)):
+            if (b * q > 1e-8) and (q > 1e-5):
                 u = np.power(p * g * a, 1 / a)
             else:
                 u = np.exp((-q / a) - EULER)
             result = u / (1 - (u / (a + 1)))
-        elif ((a < 0.3) and (b >= 0.35)):
+        elif (a < 0.3) and (b >= 0.35):
             '''DiDonato & Morris Eq 22:'''
             t = np.exp(-EULER - b)
             u = t * np.exp(t)
             result = t * np.exp(u)
-        elif ((b > 0.15) or (a >= 0.3)):
-            '''DiDonato & Morris Eq 23:'''
+        elif (b > 0.15) or (a >= 0.3):
+            ''' DiDonato & Morris Eq 23: '''
             y = -np.log(b)
             u = y - (1 - a) * np.log(y)
             result = y - (1 - a) * np.log(u) - np.log(1 + (1 - a) / (1 + u))
-        elif (b > 0.1):
-            '''DiDonato & Morris Eq 24:'''
+        elif b > 0.1:
+            ''' DiDonato & Morris Eq 24: '''
             y = -np.log(b)
             u = y - (1 - a) * np.log(y)
             result = y - (1 - a) * np.log(u) - np.log(
                 (u * u + 2 * (3 - a) * u + (2 - a) * (3 - a)) / (u * u + (5 - a) * u + 2))
         else:
-            '''DiDonato & Morris Eq 25:'''
+            ''' DiDonato & Morris Eq 25: '''
             y = -np.log(b)
             c1 = (a - 1) * np.log(y)
             c1_2 = c1 * c1
@@ -273,23 +271,23 @@ def find_inverse_gamma(a, p, q):
 
 @njit
 def igam(a, x):
-    if (a == 0):
+    if a == 0:
         return 1 if (x > 0) else np.nan
-    elif (x == 0):
+    elif x == 0:
         '''Zero integration limit'''
         return 0
     elif np.isinf(a):
         return np.nan if np.isinf(x) else 0
     elif np.isinf(x):
         return 1
-    if ((x > 1.0) and (x > a)):
-        return (1.0 - _igamc(a, x))
+    if (x > 1.0) and (x > a):
+        return 1.0 - _igamc(a, x)
     return igam_series(a, x)
 
 
 @njit
 def igami(a, p):
-    if (np.isnan(a) or np.isnan(p)):
+    if np.isnan(a) or np.isnan(p):
         return np.nan
     elif p == 0.0:
         return 0.0
