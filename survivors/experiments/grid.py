@@ -5,7 +5,7 @@ import os
 import pickle
 
 from sklearn.model_selection import StratifiedKFold, ParameterGrid, train_test_split
-from sklearn.preprocessing import StandardScaler
+# from sklearn.preprocessing import StandardScaler
 
 from .. import constants as cnt
 from .. import metrics as metr
@@ -17,6 +17,7 @@ try:
 except ImportError:
     open_file = open
 
+
 def to_str_from_dict_list(d, stratify):
     if isinstance(stratify, str):
         return str(d.get(stratify, ""))
@@ -25,10 +26,15 @@ def to_str_from_dict_list(d, stratify):
     return None
 
 
+def stratify_by_time_cens(y):
+    qs = np.quantile(y[cnt.TIME_NAME], np.linspace(0.2, 0.8, 4))
+    time_discr = np.searchsorted(qs, y[cnt.TIME_NAME])
+    discr = np.char.add(time_discr.astype(str), y[cnt.CENS_NAME].astype(str))
+    return discr
+
+
 def prepare_sample(X, y, train_index, test_index):
-    """
-    Constructing a set of bins on target variables and clipping.
-    """
+    """ Constructing a set of bins on target variables and clipping """
     X_train, X_test = X.iloc[train_index, :], X.iloc[test_index, :]
     y_train, y_test = y[train_index], y[test_index]
 
@@ -78,11 +84,7 @@ def generate_sample(X, y, folds, mode="CV"):
 
     """
 
-    # (TIME + CENS) STRATIFICATION
-    qs = np.quantile(y[cnt.TIME_NAME], np.linspace(0.2, 0.8, 4))
-    time_discr = np.searchsorted(qs, y[cnt.TIME_NAME])
-    discr = np.char.add(time_discr.astype(str), y[cnt.CENS_NAME].astype(str))
-
+    discr = stratify_by_time_cens(y)
     if mode != "HOLD-OUT":
         skf = StratifiedKFold(n_splits=folds)
 
@@ -296,6 +298,7 @@ class Experiments(object):
         self.dir_path = None
 
         self.result_table = None
+        self.sample_table = None
         self.mode = mode
         self.bins_sch = bins_sch
 
@@ -372,11 +375,7 @@ class Experiments(object):
 
         folds = 20 if self.mode == "CV+SAMPLE" else 1
 
-        # (TIME + CENS) STRATIFICATION
-        qs = np.quantile(y[cnt.TIME_NAME], np.linspace(0.2, 0.8, 4))
-        time_discr = np.searchsorted(qs, y[cnt.TIME_NAME])
-        discr = np.char.add(time_discr.astype(str), y[cnt.CENS_NAME].astype(str))
-
+        discr = stratify_by_time_cens(y)
         X_TR, X_HO = train_test_split(X, stratify=discr,  # y[cnt.CENS_NAME],
                                       test_size=0.33, random_state=42)
         X_tr, y_tr, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
