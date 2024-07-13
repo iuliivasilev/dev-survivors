@@ -4,15 +4,15 @@ import os
 import copy
 import tempfile
 
-from graphviz import Digraph, set_jupyter_format
-set_jupyter_format('png')
-
 from sklearn.metrics import roc_auc_score
 
 from .node import Node
 from ..scheme import FilledSchemeStrategy
 from .. import constants as cnt
 import matplotlib.pyplot as plt
+
+from graphviz import Digraph, set_jupyter_format
+set_jupyter_format('png')
 
 
 def format_to_pandas(X, columns):

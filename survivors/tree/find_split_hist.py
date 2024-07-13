@@ -92,6 +92,7 @@ def weight_hist_stat(time_hist_1, time_hist_2, cens_hist_1=None, cens_hist_2=Non
     return logrank
 
 
+# """ Optimal criter splitting with balancing """
 # def optimal_criter_split_hist(left_time_hist, left_cens_hist,
 #                               right_time_hist, right_cens_hist,
 #                               na_time_hist, na_cens_hist, weights_hist, criterion, dis_coef):
@@ -163,9 +164,9 @@ def optimal_criter_split_hist(left_time_hist, left_cens_hist,
 
 
 def split_time_to_bins(time, event=None, apr_times=None, apr_events=None):
-#     if apr_times is None:
-#         return np.searchsorted(np.unique(time), time)
-#     return np.searchsorted(np.unique(apr_times), time)
+    # if apr_times is None:
+    #     return np.searchsorted(np.unique(time), time)
+    # return np.searchsorted(np.unique(apr_times), time)
     if apr_times is None:
         return np.searchsorted(np.arange(int(time.min() - 1), int(time.max() + 1)), time)
     return np.searchsorted(np.arange(int(apr_times.min() - 1), int(apr_times.max() + 1)), time)
@@ -221,7 +222,7 @@ def transform_woe_np(x_feat, y):
     woe_x_feat = np.vectorize(features_woe.get)(x_feat)
     # calculate information value
     # iv = ((p_bd - p_bd_)*woe_pl).sum()
-    return (woe_x_feat, descr_np)
+    return woe_x_feat, descr_np
 
 
 def get_sa_hists(time, cens, minlength=1, weights=None):
@@ -262,6 +263,7 @@ def ranksums_hist(x, y):
     z = (s - expected) / np.sqrt(n1*n2*(n1+n2+1)/12.0)
     return z
 
+
 def mw_hist(x, y):
     n1 = np.sum(x)
     n2 = np.sum(y)
@@ -283,6 +285,7 @@ def mw_hist(x, y):
 #         res = max(res, diptest.dipstat(t2))
 #     return res
 
+
 def stdtest_hist(x, y):
     res = 0
     if np.sum(x) > 0:
@@ -299,6 +302,7 @@ def count_sf_diff(time, cens):
     sf = np.cumprod((1.0 - cens / (c_time + 1)))
     sf[c_time == 0] = 0.0
     return np.sum((sf - 0.5)**2) / sf.shape[0]  # max(1, bins[-1] - bins[0])
+
 
 def cnttest_hist(time_1, cens_1, time_2, cens_2):
     d1 = count_sf_diff(time_1, cens_1)
