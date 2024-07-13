@@ -229,12 +229,10 @@ class Node(object):
 
         # if attrs[attr]["sign_split"] > 0 and self.info["bonf"]:  # suffix for simple p-value
         #     attrs[attr]["p_value"] = attrs[attr]["p_value"] / attrs[attr]["sign_split"]
-        return (attr, attrs[attr])
+        return attr, attrs[attr]
 
     def ind_for_nodes(self, X_attr, best_split, is_categ):
-        """
-        Map the number of the according child node by rule and sample features.
-        """
+        """ Map the number of the according child node by rule and sample features """
         rule_id = best_split["pos_nan"].index(0)
         query = best_split["values"][rule_id]
         if is_categ:
@@ -244,9 +242,7 @@ class Node(object):
         return np.where(values, rule_id, 1 - rule_id)
 
     def split(self):
-        """
-        Find best split of df sample and create child nodes
-        """
+        """ Find best split of df sample and create child nodes """
         node_edges = np.array([], dtype=int)
         self.rule_edges = np.array([], dtype=Rule)
 
