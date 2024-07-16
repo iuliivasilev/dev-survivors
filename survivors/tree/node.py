@@ -424,9 +424,7 @@ class Node(object):
         return label
 
     def set_dot_node(self, dot, path_dir="", depth=None, **args):
-        """
-        Set node for graphviz dot with image and label
-        """
+        """ Set node for graphviz dot with image and label """
         if not (depth is None) and depth < self.depth:
             return dot
         img_path = path_dir + str(self.numb) + '.png'
@@ -436,9 +434,7 @@ class Node(object):
         return dot
 
     def set_dot_edges(self, dot):
-        """
-        Set edges for graphviz by node structure
-        """
+        """ Set edges for graphviz by node structure """
         if not self.is_leaf:
             for e in range(len(self.rule_edges)):
                 s = self.rule_edges[e].to_str()
@@ -446,9 +442,7 @@ class Node(object):
         return dot
 
     def translate(self, describe):
-        """
-        Rename features in node by dictionary
-        """
+        """ Rename features in node by dictionary """
         self.features = [describe.get(f, f) for f in self.features]
         self.categ = [describe.get(c, c) for c in self.categ]
         for e in range(len(self.rule_edges)):
