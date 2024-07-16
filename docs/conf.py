@@ -39,6 +39,11 @@ autosummary_generate = True
 # Similar problem: https://stackoverflow.com/questions/59486442/python-sphinx-css-not-working-on-github-pages
 # Example: https://coderefinery.github.io/documentation/gh_workflow/
 
+
+# Compile from ./dev-survivors/docs
+# make clean html
+# make html
+
 html_theme = "sphinx_rtd_theme"  # 'alabaster'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # html_static_path = ['_static']
