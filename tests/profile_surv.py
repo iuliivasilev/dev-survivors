@@ -41,6 +41,7 @@ BOOST_PARAMS = {
             'min_samples_leaf': 100, 'mode_wei': 'square', 'n_estimators': 30, 'size_sample': 0.5, "n_jobs": 1}
 }
 
+
 def get_samples(dataset="PBC"):
     X, y, features, categ, sch_nan = DATASETS_LOAD[dataset]()
     a = generate_sample(X, y, 5)
@@ -106,8 +107,9 @@ def profile_exp(dataset="ONK"):
     # stats.print_stats()
     # stats.dump_stats(f"profile_reports/{dataset}_after_optimize.pstats")
 
+
 if __name__ == '__main__':
-    # Visualize in browser html with command prompt "snakeviz file.pstats"
+    """ P.S. Visualize in browser html with command prompt 'snakeviz file.pstats' """
     # for n in [2**i for i in range(5)]:
     #     profile_tree(dataset="PBC", n_jobs=n)
     #     profile_tree(dataset="ONK", n_jobs=n)
