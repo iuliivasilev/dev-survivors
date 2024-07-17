@@ -172,7 +172,7 @@ class Node(object):
         self.info.setdefault("leaf_model", "base_zero_after")  # base
         if isinstance(self.info["leaf_model"], str):
             self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base_zero_after")(**leaf_kwargs)  # base
-        elif isinstance(self.info["leaf_model"], type):  # Check is class
+        elif callable(self.info["leaf_model"]):  # Check is class
             self.leaf_model = self.info["leaf_model"](**leaf_kwargs)
             if not (isinstance(self.leaf_model, LeafModel)):
                 self.leaf_model = None
