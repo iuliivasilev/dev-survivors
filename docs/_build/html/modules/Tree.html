@@ -61,9 +61,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#survivors.tree.node.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.find_best_split"><code class="docutils literal notranslate"><span class="pre">Node.find_best_split()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.get_comb_fast"><code class="docutils literal notranslate"><span class="pre">Node.get_comb_fast()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.get_description"><code class="docutils literal notranslate"><span class="pre">Node.get_description()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.get_figure"><code class="docutils literal notranslate"><span class="pre">Node.get_figure()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.ind_for_nodes"><code class="docutils literal notranslate"><span class="pre">Node.ind_for_nodes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.predict"><code class="docutils literal notranslate"><span class="pre">Node.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.predict_scheme"><code class="docutils literal notranslate"><span class="pre">Node.predict_scheme()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.set_dot_edges"><code class="docutils literal notranslate"><span class="pre">Node.set_dot_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.set_dot_node"><code class="docutils literal notranslate"><span class="pre">Node.set_dot_node()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.split"><code class="docutils literal notranslate"><span class="pre">Node.split()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.node.Node.translate"><code class="docutils literal notranslate"><span class="pre">Node.translate()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#survivors.tree.node.Rule"><code class="docutils literal notranslate"><span class="pre">Rule</span></code></a><ul>
@@ -73,8 +79,12 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#survivors.tree.decision_tree.CRAID"><code class="docutils literal notranslate"><span class="pre">CRAID</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#survivors.tree.decision_tree.CRAID.cut_tree"><code class="docutils literal notranslate"><span class="pre">CRAID.cut_tree()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.decision_tree.CRAID.delete_leaves_by_span"><code class="docutils literal notranslate"><span class="pre">CRAID.delete_leaves_by_span()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.decision_tree.CRAID.get_spanning_leaf_numbers"><code class="docutils literal notranslate"><span class="pre">CRAID.get_spanning_leaf_numbers()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#survivors.tree.decision_tree.CRAID.predict"><code class="docutils literal notranslate"><span class="pre">CRAID.predict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#survivors.tree.decision_tree.CRAID.predict_at_times"><code class="docutils literal notranslate"><span class="pre">CRAID.predict_at_times()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.decision_tree.CRAID.translate"><code class="docutils literal notranslate"><span class="pre">CRAID.translate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.tree.decision_tree.CRAID.visualize"><code class="docutils literal notranslate"><span class="pre">CRAID.visualize()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -187,6 +197,42 @@ Find a split with the highest statistical value.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.get_description">
+<span class="sig-name descname"><span class="pre">get_description</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.get_description" title="Link to this definition"></a></dt>
+<dd><p>Build description for graphviz node</p>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>label<span class="classifier">str</span></dt><dd><p>multiline string of description</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.get_figure">
+<span class="sig-name descname"><span class="pre">get_figure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hist'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cens'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.get_figure" title="Link to this definition"></a></dt>
+<dd><p>Save background image for graphviz node</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>target<span class="classifier">str</span></dt><dd><p>Described feature</p>
+</dd>
+<dt>mode<span class="classifier">string</span></dt><dd><ul class="simple">
+<li><p>“hist” plot histogram of target</p></li>
+<li><p>“kde” plot smooth density of target</p></li>
+<li><p>“surv” plot survival function (doesn’t use target)</p></li>
+</ul>
+</dd>
+<dt>bins<span class="classifier">list</span></dt><dd><p>Points for survival function</p>
+</dd>
+<dt>save_path<span class="classifier">str</span></dt><dd><p>External path to save image</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="survivors.tree.node.Node.ind_for_nodes">
 <span class="sig-name descname"><span class="pre">ind_for_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_categ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.ind_for_nodes" title="Link to this definition"></a></dt>
 <dd><p>Map the number of the according child node by rule and sample features.</p>
@@ -196,8 +242,8 @@ Find a split with the highest statistical value.</p>
 <dt class="sig sig-object py" id="survivors.tree.node.Node.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.predict" title="Link to this definition"></a></dt>
 <dd><p>Predict target values for X data</p>
-<section id="parameters">
-<h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events</p>
 </dd>
@@ -214,8 +260,8 @@ Mode :
 </dd>
 </dl>
 </section>
-<section id="returns">
-<h3>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<section id="id2">
+<h3>Returns<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <dl class="simple">
 <dt>res<span class="classifier">array-like</span></dt><dd><p>Values by target</p>
 </dd>
@@ -224,9 +270,49 @@ Mode :
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.predict_scheme">
+<span class="sig-name descname"><span class="pre">predict_scheme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme_feats</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.predict_scheme" title="Link to this definition"></a></dt>
+<dd><p>Predict target values for X data</p>
+<section id="id3">
+<h3>Parameters<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events</p>
+</dd>
+<dt>scheme_feats<span class="classifier">list</span></dt><dd><p>Needed features from node</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Returns<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>res<span class="classifier">Scheme</span></dt><dd><p>Aggregation entity of node information</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.set_dot_edges">
+<span class="sig-name descname"><span class="pre">set_dot_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.set_dot_edges" title="Link to this definition"></a></dt>
+<dd><p>Set edges for graphviz by node structure</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.set_dot_node">
+<span class="sig-name descname"><span class="pre">set_dot_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.set_dot_node" title="Link to this definition"></a></dt>
+<dd><p>Set node for graphviz dot with image and label</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="survivors.tree.node.Node.split">
 <span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.split" title="Link to this definition"></a></dt>
 <dd><p>Find best split of df sample and create child nodes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.node.Node.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">describe</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.translate" title="Link to this definition"></a></dt>
+<dd><p>Rename features in node by dictionary</p>
 </dd></dl>
 
 </section>
@@ -237,8 +323,8 @@ Mode :
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.tree.node.</span></span><span class="sig-name descname"><span class="pre">Rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_nan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Rule" title="Link to this definition"></a></dt>
 <dd><p>Node of decision tree.
 Allow to separate data into 2 child nodes</p>
-<section id="id1">
-<h2>Attributes<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="id5">
+<h2>Attributes<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt>feature<span class="classifier">str</span></dt><dd><p>Name of feature for splitting</p>
 </dd>
@@ -248,8 +334,8 @@ Allow to separate data into 2 child nodes</p>
 </dd>
 </dl>
 </section>
-<section id="id2">
-<h2>Methods<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id6">
+<h2>Methods<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
 <p>get_feature : Return feature
 get_condition : Return condition
 translate: Replace rule by dictionary
@@ -274,8 +360,8 @@ print : Print all attributes and descriptions</p>
 <dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.tree.decision_tree.</span></span><span class="sig-name descname"><span class="pre">CRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">123</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID" title="Link to this definition"></a></dt>
 <dd><p>Survival decision tree model.</p>
-<section id="id3">
-<h2>Attributes<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id7">
+<h2>Attributes<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt>nodes<span class="classifier">dict</span></dt><dd><p>Dictionary of all tree’s nodes (numbers from hierarchy)</p>
 </dd>
@@ -299,8 +385,8 @@ print : Print all attributes and descriptions</p>
 </dd>
 </dl>
 </section>
-<section id="id4">
-<h2>Methods<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id8">
+<h2>Methods<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
 <p>fit : build decision tree with X, y data (iterative splitting node)
 predict : return values of features, rules or schemes
 predict_at_times : return survival or hazard function
@@ -316,8 +402,8 @@ delete_leaves_by_span : set up pre-leaves from lists to leaves</p>
 <span class="sig-name descname"><span class="pre">cut_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_f=&lt;function</span> <span class="pre">roc_auc_score&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choose_f=&lt;built-in</span> <span class="pre">function</span> <span class="pre">max&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.cut_tree" title="Link to this definition"></a></dt>
 <dd><p>Method of pruning tree.
 Find the best subtree that achieves the best value of the “mode_f” metric”.</p>
-<section id="id5">
-<h3>Parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>Parameters<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
 </dd>
@@ -332,11 +418,23 @@ Find the best subtree that achieves the best value of the “mode_f” metric”
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.delete_leaves_by_span">
+<span class="sig-name descname"><span class="pre">delete_leaves_by_span</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_span_leaf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.delete_leaves_by_span" title="Link to this definition"></a></dt>
+<dd><p>Set pre-termination nodes as leaves</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.get_spanning_leaf_numbers">
+<span class="sig-name descname"><span class="pre">get_spanning_leaf_numbers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.get_spanning_leaf_numbers" title="Link to this definition"></a></dt>
+<dd><p>Get pre-termination nodes (have two leaves in edges)</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'target'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.predict" title="Link to this definition"></a></dt>
 <dd><p>Return values by mode &amp; target</p>
-<section id="id6">
-<h3>Parameters<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id10">
+<h3>Parameters<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
 </dd>
@@ -354,8 +452,8 @@ Find the best subtree that achieves the best value of the “mode_f” metric”
 </dd>
 </dl>
 </section>
-<section id="id7">
-<h3>Returns<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id11">
+<h3>Returns<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
 <dl class="simple">
 <dt>res<span class="classifier">array-like</span></dt><dd><p>Values by mode &amp; target</p>
 </dd>
@@ -367,8 +465,8 @@ Find the best subtree that achieves the best value of the “mode_f” metric”
 <dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.predict_at_times">
 <span class="sig-name descname"><span class="pre">predict_at_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'surv'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.predict_at_times" title="Link to this definition"></a></dt>
 <dd><p>Return survival or hazard function.</p>
-<section id="id8">
-<h3>Parameters<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<section id="id12">
+<h3>Parameters<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
 <dl class="simple">
 <dt>X<span class="classifier">Pandas dataframe</span></dt><dd><p>Contain input features of events.</p>
 </dd>
@@ -380,12 +478,36 @@ Find the best subtree that achieves the best value of the “mode_f” metric”
 </dd>
 </dl>
 </section>
-<section id="id9">
-<h3>Returns<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<section id="id13">
+<h3>Returns<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
 <dl class="simple">
 <dt>res<span class="classifier">array-like</span></dt><dd><p>Vector of function values in times (bins)</p>
 </dd>
 </dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">describe</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.translate" title="Link to this definition"></a></dt>
+<dd><p>Rename features for each node by dictionary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.tree.decision_tree.CRAID.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.decision_tree.CRAID.visualize" title="Link to this definition"></a></dt>
+<dd><p>Build graphviz representation of the tree</p>
+<section id="id14">
+<h3>Parameters<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p>path_dir : str
+kwargs : dict</p>
+<blockquote>
+<div><p>Keyword arguments for nodes</p>
+</div></blockquote>
+</section>
+<section id="id15">
+<h3>Returns<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p>dot : graphviz.Digraph</p>
 </section>
 </dd></dl>
 

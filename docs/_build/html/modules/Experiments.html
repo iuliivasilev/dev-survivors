@@ -64,6 +64,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#survivors.experiments.grid.Experiments"><code class="docutils literal notranslate"><span class="pre">Experiments</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#survivors.experiments.grid.generate_sample"><code class="docutils literal notranslate"><span class="pre">generate_sample()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#survivors.experiments.grid.get_fit_eval_func"><code class="docutils literal notranslate"><span class="pre">get_fit_eval_func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#survivors.experiments.grid.get_name_file"><code class="docutils literal notranslate"><span class="pre">get_name_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#survivors.experiments.grid.prepare_sample"><code class="docutils literal notranslate"><span class="pre">prepare_sample()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -215,6 +217,18 @@ Allow to use in ParameterGrid.</p>
 </dd>
 </dl>
 </section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="survivors.experiments.grid.get_name_file">
+<span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">get_name_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fold</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.get_name_file" title="Link to this definition"></a></dt>
+<dd><p>Creating a name to cache the model without considering variables independent for reproducibility.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="survivors.experiments.grid.prepare_sample">
+<span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">prepare_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.prepare_sample" title="Link to this definition"></a></dt>
+<dd><p>Constructing a set of bins on target variables and clipping.</p>
 </dd></dl>
 
 </section>

@@ -62,7 +62,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#survivors.ensemble.base_ensemble.BaseEnsemble"><code class="docutils literal notranslate"><span class="pre">BaseEnsemble</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#survivors.ensemble.base_ensemble.FastBaseEnsemble"><code class="docutils literal notranslate"><span class="pre">FastBaseEnsemble</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#survivors.ensemble.bootstrap.BootstrapCRAID"><code class="docutils literal notranslate"><span class="pre">BootstrapCRAID</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#survivors.ensemble.bootstrap.ParallelBootstrapCRAID"><code class="docutils literal notranslate"><span class="pre">ParallelBootstrapCRAID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#survivors.ensemble.bootstrap.ParallelBootstrapCRAID"><code class="docutils literal notranslate"><span class="pre">ParallelBootstrapCRAID</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#survivors.ensemble.bootstrap.ParallelBootstrapCRAID.fit_tree"><code class="docutils literal notranslate"><span class="pre">ParallelBootstrapCRAID.fit_tree()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Datasets.html">Datasets</a></li>
@@ -179,7 +182,15 @@ On each iteration probabilities of observations change by scheme.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.ensemble.bootstrap.ParallelBootstrapCRAID">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.ensemble.bootstrap.</span></span><span class="sig-name descname"><span class="pre">ParallelBootstrapCRAID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.bootstrap.ParallelBootstrapCRAID" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Parallel realization of BootstrapCRAID.
+Trees are built in parallel, and the number of processes is specified via n_jobs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="survivors.ensemble.bootstrap.ParallelBootstrapCRAID.fit_tree">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_sub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.ensemble.bootstrap.ParallelBootstrapCRAID.fit_tree" title="Link to this definition"></a></dt>
+<dd><p>An atomic out-of-class tree construction operation for parallelization.</p>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 
