@@ -307,7 +307,7 @@ class CRAID(object):
             ind = np.where(node_bin[:, i_num])[0]
             ind_x = X.index[ind]
             if ind.shape[0] > 0:
-                if not (self.nodes[i].is_leaf):
+                if not self.nodes[i].is_leaf:
                     if self.nodes[i].rule_edges[0].get_feature() in scheme_feats:
                         for e in self.nodes[i].edges:
                             node_bin[ind, num_node_to_key[e]] = 1
@@ -380,9 +380,7 @@ class CRAID(object):
         return dot
 
     def translate(self, describe):
-        """
-        Rename features for each node by dictionary
-        """
+        """ Rename features for each node by dictionary """
         self.features = [describe.get(f, f) for f in self.features]
         self.categ = [describe.get(c, c) for c in self.categ]
         for i in self.nodes.keys():
@@ -394,17 +392,13 @@ class CRAID(object):
         return np.array([i for i in self.nodes.keys() if self.nodes[i].is_leaf])
 
     def get_spanning_leaf_numbers(self):
-        """
-        Get pre-termination nodes (have two leaves in edges)
-        """
+        """ Get pre-termination nodes (have two leaves in edges) """
         leaves = self.get_leaf_numbers()
         return np.array([i for i in self.nodes.keys()
                          if np.intersect1d(self.nodes[i].edges, leaves).shape[0] == 2])
 
     def delete_leaves_by_span(self, list_span_leaf):
-        """
-        Set pre-termination nodes as leaves
-        """
+        """ Set pre-termination nodes as leaves """
         for i in list_span_leaf:
             for e in self.nodes[i].edges:
                 del self.nodes[e]
