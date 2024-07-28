@@ -4,7 +4,7 @@ CRAID_param_grid = {
     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei", "maxcombo",
     "min_samples_leaf": [0.05, 0.01, 0.001],
     "l_reg": [0, 0.01, 0.1, 0.5, 0.9],  # [0, 0.001, 0.01, 0.1, 0.2]
-    "leaf_model": ["base_meaning"],  # , "base_zero_after"
+    "leaf_model": ["base", "base_zero_after"],  # , "base_zero_after"
     'cut': [False],  # True,
     "woe": [True],
     "signif": [0.05, 0.1, 1.0],
@@ -13,13 +13,13 @@ CRAID_param_grid = {
 
 BSTR_param_grid = {
     "aggreg_func": ["mean"],
-    "size_sample": [0.3, 0.5, 0.7, 1.0],  # 0.7
+    "size_sample": [0.3, 0.5, 0.7, 1.0],  # [0.3, 0.5, 0.7, 1.0]
     "n_estimators": [50],
     "depth": [7],  # 15
-    "l_reg": [0],  # 0.01, 0.1, 0.5, 0.9],
+    "l_reg": [0, 0.01, 0.1, 0.5, 0.9],  # 0.01, 0.1, 0.5, 0.9],
     "ens_metric_name": ["IBS_REMAIN"],  # ["bic", "roc", "ibs"], "IBS_WW", "IBS_REMAIN"
     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei",
-    "leaf_model": ["base_zero_after"],  # ["base_fast", "base_zero_after"]
+    "leaf_model": ["base", "base_zero_after"],
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
 
     "min_samples_leaf": [0.05, 0.01, 0.001],
@@ -36,7 +36,7 @@ PAR_BSTR_param_grid = BSTR_param_grid
 #     "depth": [7],  # 15
 #     "ens_metric_name": ["IBS"],  # ["bic", "roc", "ibs"], "IBS_WW", "IBS_REMAIN"
 #     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei",
-#     "leaf_model": ["base_zero_after"],  # ["base_fast", "base_zero_after"]
+#     "leaf_model": ["base_zero_after"],  # ["base", "base_zero_after"]
 #     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
 #
 #     "min_samples_leaf": [0.05, 0.01, 0.001],
@@ -52,7 +52,7 @@ PAR_BSTR_param_grid = BSTR_param_grid
 #     "mode_wei": ['exp', 'square'],  # 'exp', 'square', "sigmoid", "softmax"],
 #     "ens_metric_name": ["IBS"],  # ["bic", "roc", "ibs"], , "IBS_WW", "IBS_REMAIN"
 #     "criterion": ["maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
-#     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
+#     "leaf_model": ["base_zero_after"],  # "base_zero_after", "base"
 #     "balance": [None],  #, "balance", "only_log_rank"],  # [None, "balance", "balance+correct", "only_log_rank"]
 #
 #     "min_samples_leaf": [0.05, 0.001],
@@ -72,7 +72,7 @@ BOOST_param_grid = {
     "mode_wei": ['linear'],  # 'linear', 'exp', 'square', "sigmoid", "softmax"],
     "ens_metric_name": ["IBS_REMAIN"],  # ["bic", "roc", "ibs", "IBS_WW", "IBS_REMAIN"
     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],
-    "leaf_model": ["base_zero_after"],  # "base_zero_after", "base_fast"
+    "leaf_model": ["base_zero_after"],  # "base_zero_after", "base"
     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
 
     "min_samples_leaf": [0.05, 0.01, 0.001],  # [0.01, 0.001]
@@ -90,7 +90,7 @@ CL_BOOST_param_grid = {
     "l_reg": [0],  # 0.01, 0.1, 0.5, 0.9],
     "ens_metric_name": ["IBS"],
     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "symm_peto",
-    "leaf_model": ["base_zero_after"],  # "base_fast"
+    "leaf_model": ["base_zero_after"],  # "base"
     "balance": [None],
 
     "min_samples_leaf": [0.01, 0.001],  # 0.001,
@@ -109,7 +109,7 @@ CL_BOOST_param_grid = {
 #     "depth": [10],
 #     "ens_metric_name": ["IBS"],
 #     "criterion": ["ibswei", "maxcombo", "peto", "tarone-ware", "wilcoxon", "logrank"],
-#     "leaf_model": ["base_zero_after", "base_fast"],  # "base_zero_after", "base_fast"
+#     "leaf_model": ["base_zero_after", "base"],
 #     "balance": [None],
 #
 #     "min_samples_leaf": [0.05, 0.001],
