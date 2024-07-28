@@ -229,20 +229,20 @@ def dir_path():
 @pytest.mark.parametrize(
     "best_metric", ["IBS_REMAIN"]  # ["CI", "CI_CENS", "LOGLIKELIHOOD", "IBS", "IBS_REMAIN", "IAUC_WW_TI", "AUPRC"]
 )
-# @pytest.mark.parametrize(
-#     "mode_wei", ["exp", "sigmoid", "linear"]  # "exp", "sigmoid"
-# )
+@pytest.mark.parametrize(
+    "mode_wei", ["linear"]  # "exp", "sigmoid"
+)
 @pytest.mark.parametrize(
     "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]
     # ["backblaze16_18", "backblaze18_21", "backblaze21_23"]
 )
-def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
-    mode_wei = None
-    # NORMAL_SHORT_QUANTILE_TIME_
+def test_dataset_exp(dir_path, dataset, mode_wei, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
+    # mode_wei = None
+    # NORMAL_SHORT_QUANTILE_TIME _
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_SUM_ALL_BINS_{bins_sch}"
     # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
 
-    prefix = f"{best_metric}_TREE"
+    prefix = f"{best_metric}_BOOST_linear"
     # prefix = f"{best_metric}_STRATTIME+_PARBSTR_test_wide_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_STABLE_EQ_REG_PARBSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"
@@ -260,7 +260,7 @@ def test_dataset_exp(dir_path, dataset, best_metric, bins_sch="origin", mode="CV
     storage_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset)
     if not os.path.exists(storage_path):
         os.makedirs(storage_path)
-    res_exp = run(dataset, with_self=["TREE"], with_external=False, mode=mode,  # CLEVERBOOST
+    res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode=mode,  # CLEVERBOOST
                   #  dir_path=storage_path+"\\",
                   bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "PARBSTR", "BSTR", "BOOST"]
 
