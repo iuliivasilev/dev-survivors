@@ -2,7 +2,7 @@ import sksurv.metrics
 import numpy as np
 from numba import njit, jit
 from lifelines import KaplanMeierFitter, NelsonAalenFitter
-from lifelines.utils import concordance_index
+# from lifelines.utils import concordance_index
 
 from .constants import TIME_NAME, CENS_NAME
 
@@ -496,6 +496,45 @@ def aic(num_params, time, cens, sf, cumhf, bins):
 
 def bic(k, n, time, cens, sf, cumhf, bins):
     return k*np.log(n) - 2*loglikelihood(time, cens, sf, cumhf, bins)
+
+
+@njit
+def count_pairs(T, P, E):
+    n = len(T)
+    concordant_pairs = 0
+    total_pairs = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            if E[i] == 1 and T[i] <= T[j]:
+                total_pairs += 1
+                concordant_pairs += P[i] < P[j]
+                concordant_pairs += 0.5 * (P[i] == P[j])
+    return concordant_pairs, total_pairs
+
+
+def concordance_index_self(event_times, predicted_scores, event_observed=None):
+    """
+    Calculates the concordance index (C-index) for survival analysis.
+
+    Args:
+    event_times: Array of true event times.
+    predicted_scores: Array of predicted event times.
+    event_observed: Array of event indicators (1 if event occurred, 0 if censored).
+
+    Returns:
+    The concordance index.
+    """
+    if event_observed is None:
+        event_observed = np.ones(len(event_times))
+    order = np.argsort(event_times)
+    predicted_scores = np.asarray(predicted_scores)[order]
+    event_times = np.asarray(event_times)[order]
+    event_observed = np.asarray(event_observed)[order]
+    concordant_pairs, total_pairs = count_pairs(event_times, predicted_scores, event_observed)
+
+    if total_pairs == 0:
+        return 0
+    return concordant_pairs / total_pairs
 
 
 """ ESTIMATE FUNCTION """
