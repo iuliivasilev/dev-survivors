@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from lifelines.utils import concordance_index
+# from lifelines.utils import concordance_index
 from sklearn.metrics import roc_auc_score
 
 from .. import metrics as metr
@@ -157,7 +157,7 @@ class BaseEnsemble(object):
             X_v = self.oob[i]
             if self.ens_metric_name == "CI":
                 pred = self.models[i].predict(X_v, target=cnt.TIME_NAME)
-                score = concordance_index(X_v[cnt.TIME_NAME], pred)
+                score = metr.concordance_index(X_v[cnt.TIME_NAME], pred)
             else:
                 pred = self.models[i].predict_at_times(X_v, bins=self.bins, mode="surv")
                 y_true = cnt.get_y(X_v[cnt.CENS_NAME], X_v[cnt.TIME_NAME])
@@ -178,7 +178,7 @@ class BaseEnsemble(object):
         if self.ens_metric_name in ["CI", "roc"]:
             pred = pd.concat(self.list_pred_oob, axis=1).mean(axis=1)
             if self.ens_metric_name == "CI":
-                return concordance_index(target_time, pred)
+                return metr.concordance_index(target_time, pred)
             return roc_auc_score(target_cens, pred)
 
         if is_ibs:
@@ -246,7 +246,7 @@ class FastBaseEnsemble(BaseEnsemble):
         target_cens = join_oob[cnt.CENS_NAME]
 
         if self.ens_metric_name == "CI":
-            return concordance_index(target_time, pred)
+            return metr.concordance_index(target_time, pred)
         elif self.ens_metric_name == "roc":
             return roc_auc_score(target_cens, pred)
         elif is_ibs:
