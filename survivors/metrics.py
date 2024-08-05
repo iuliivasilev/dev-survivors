@@ -1,4 +1,4 @@
-import sksurv.metrics
+from sksurv.metrics import check_y_survival, CensoringDistributionEstimator
 import numpy as np
 from numba import njit, jit
 from lifelines import KaplanMeierFitter, NelsonAalenFitter
@@ -160,7 +160,7 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
             None
 
     """
-    test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored=True)
+    test_event, test_time = check_y_survival(survival_test, allow_all_censored=True)
     # estimate, times = _check_estimate_2d(estimate, test_time, times)
     estimate = np.array(estimate)
     if estimate.ndim == 1 and times.shape[0] == 1:
@@ -168,7 +168,7 @@ def ibs(survival_train, survival_test, estimate, times, axis=-1):
     estimate[estimate == -np.inf] = 0
     estimate[estimate == np.inf] = 0
     # fit IPCW estimator
-    cens = sksurv.metrics.CensoringDistributionEstimator().fit(survival_train)
+    cens = CensoringDistributionEstimator().fit(survival_train)
     # calculate inverse probability of censoring weight at current time point t.
     prob_cens_t = cens.predict_proba(times)
     prob_cens_t[prob_cens_t == 0] = np.inf
@@ -207,7 +207,7 @@ def bal_ibs(survival_train, survival_test, estimate, times, axis=-1):
 
 def ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
     """ IBS with equal impact of partial observation """
-    test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored=True)
+    test_event, test_time = check_y_survival(survival_test, allow_all_censored=True)
     estimate = np.array(estimate)
     if estimate.ndim == 1 and times.shape[0] == 1:
         estimate = estimate.reshape(-1, 1)
@@ -244,7 +244,7 @@ def bal_ibs_WW(survival_train, survival_test, estimate, times, axis=-1):
 
 def ibs_remain(survival_train, survival_test, estimate, times, axis=-1):
     """ IBS with equal impact of partial observation with controlled quantity """
-    test_event, test_time = sksurv.metrics.check_y_survival(survival_test, allow_all_censored=True)
+    test_event, test_time = check_y_survival(survival_test, allow_all_censored=True)
     estimate = np.array(estimate)
     if estimate.ndim == 1 and times.shape[0] == 1:
         estimate = estimate.reshape(-1, 1)
@@ -329,7 +329,7 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
         survival_test[CENS_NAME] = 1 - survival_test[CENS_NAME]
     if survival_test[CENS_NAME].sum() == 0:
         survival_test[CENS_NAME] = 1
-    test_event, test_time = sksurv.metrics.check_y_survival(survival_test)
+    test_event, test_time = check_y_survival(survival_test)
     # estimate, times = _check_estimate_2d(estimate, test_time, times)
     estimate = np.array(estimate)
     n_samples = estimate.shape[0]
@@ -341,7 +341,7 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
     if no_wei:
         ipcw = np.ones(test_time.shape[0])
     else:
-        cens = sksurv.metrics.CensoringDistributionEstimator()
+        cens = CensoringDistributionEstimator()
         cens.fit(survival_train)
         g_hat = cens.predict_proba(test_time[test_event])
         ipcw = np.zeros(test_time.shape[0])
@@ -512,9 +512,12 @@ def count_pairs(T, P, E):
     return concordant_pairs, total_pairs
 
 
-def concordance_index_self(event_times, predicted_scores, event_observed=None):
+def concordance_index(event_times, predicted_scores, event_observed=None):
     """
     Calculates the concordance index (C-index) for survival analysis.
+    Previous speed: 684 ms ± 4.06 ms per loop (mean ± std. dev. of 7 runs, 1 loop each).
+    Current speed: 22.7 ms ± 128 µs per loop (mean ± std. dev. of 7 runs, 10 loops each).
+    Speed has increased by ~30 times
 
     Args:
     event_times: Array of true event times.
