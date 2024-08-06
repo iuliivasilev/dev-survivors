@@ -519,13 +519,24 @@ def concordance_index(event_times, predicted_scores, event_observed=None):
     Current speed: 22.7 ms ± 128 µs per loop (mean ± std. dev. of 7 runs, 10 loops each).
     Speed has increased by ~30 times
 
-    Args:
+    Parameters
+    ----------
     event_times: Array of true event times.
     predicted_scores: Array of predicted event times.
     event_observed: Array of event indicators (1 if event occurred, 0 if censored).
 
-    Returns:
-    The concordance index.
+    Returns
+    -------
+    The concordance index: float
+
+    Examples
+    --------
+    .. code:: python
+
+        from survivors.metrics import concordance_index
+        concordance_index(np.array([10, 20, 30, 40]),
+                          np.array([20, 19, 29, 39]),
+                          np.array([1, 0, 1, 0]))
     """
     if event_observed is None:
         event_observed = np.ones(len(event_times))
