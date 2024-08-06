@@ -1,13 +1,26 @@
+#CRAID_param_grid = {
+#     "depth": [10],  # 10
+#     "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
+#     "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei", "maxcombo",
+#     "min_samples_leaf": [0.05, 0.01, 0.001],
+#     "l_reg": [0, 0.01, 0.1, 0.5, 0.9],  # [0, 0.001, 0.01, 0.1, 0.2]
+#     "leaf_model": ["base", "base_zero_after"],  # , "base_zero_after"
+#     'cut': [False],  # True,
+#     "woe": [True],
+#     "signif": [0.05, 0.1, 1.0],
+#     "max_features": [1.0]
+# }
+
 CRAID_param_grid = {
-    "depth": [10],  # 10
-    "balance": [None],  # [None, "balance", "balance+correct", "only_log_rank"]
-    "criterion": ["peto", "tarone-ware", "wilcoxon", "logrank"],  # "ibswei", "maxcombo",
-    "min_samples_leaf": [0.05, 0.01, 0.001],
-    "l_reg": [0, 0.01, 0.1, 0.5, 0.9],  # [0, 0.001, 0.01, 0.1, 0.2]
-    "leaf_model": ["base", "base_zero_after"],  # , "base_zero_after"
+    "depth": [0, 1, 2, 5, 7, 10],  # 10
+    "balance": [None],
+    "criterion": ["logrank"],  # ["peto", "tarone-ware", "wilcoxon", "logrank"],
+    "min_samples_leaf": [0.3, 0.1, 0.05, 0.01, 0.001],
+    "l_reg": [0],
+    "leaf_model": ["base", "WeibullAFT", "LogNormalAFT", "LogLogisticAFT", "CoxPH"],
     'cut': [False],  # True,
     "woe": [True],
-    "signif": [0.05, 0.1, 1.0],
+    "signif": [0.05],
     "max_features": [1.0]
 }
 

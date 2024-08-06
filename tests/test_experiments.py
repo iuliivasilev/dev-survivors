@@ -210,7 +210,8 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
         for alg in with_self:
             PARAMS_[dataset][alg]["categ"] = [categ]
             PARAMS_[dataset][alg]["ens_metric_name"] = [best_metric]
-            PARAMS_[dataset][alg]["mode_wei"] = [mode_wei]
+            if not (mode_wei is None):
+                PARAMS_[dataset][alg]["mode_wei"] = [mode_wei]
             experim.add_method(SELF_ALGS[alg], PARAMS_[dataset][alg])
     experim.run_effective(X, y, dir_path=dir_path, verbose=1)
     return experim
@@ -218,7 +219,8 @@ def run(dataset="GBSG", with_self=["TREE", "BSTR", "BOOST"],
 
 @pytest.fixture(scope="module")
 def dir_path():
-    return os.path.join(os.getcwd(), "experiment_results", "phd_normal_res_with_jit")  # "many_ds")
+    return os.path.join(os.getcwd(), "experiment_results", "Backblaze")  # "many_ds")
+    # return os.path.join(os.getcwd(), "experiment_results", "phd_normal_res_with_jit")  # "many_ds")
 
 
 # @pytest.mark.skip(reason="no way of currently testing this")
@@ -233,16 +235,18 @@ def dir_path():
     "mode_wei", ["linear"]  # "exp", "sigmoid"
 )
 @pytest.mark.parametrize(
-    "dataset",  ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]
+    "dataset",  ["backblaze16_18", "backblaze18_21", "backblaze21_23"]
+    # ["rott2", "PBC", "WUHAN", "GBSG", "support2", "smarto"]
     # ["backblaze16_18", "backblaze18_21", "backblaze21_23"]
 )
-def test_dataset_exp(dir_path, dataset, mode_wei, best_metric, bins_sch="origin", mode="CV+SAMPLE"):  # CV+SAMPLE
+def test_dataset_exp(dir_path, dataset, mode_wei, best_metric, bins_sch="origin", mode="CV"):  # CV+SAMPLE
     # mode_wei = None
     # NORMAL_SHORT_QUANTILE_TIME _
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_CLEVERBOOST_SUM_ALL_BINS_{bins_sch}"
     # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
 
-    prefix = f"{best_metric}_BOOST_linear"
+    # prefix = f"{best_metric}_BOOST_linear"
+    prefix = f"{best_metric}_STRAT_TREE"
     # prefix = f"{best_metric}_STRATTIME+_PARBSTR_test_wide_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_STABLE_EQ_REG_PARBSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"
@@ -260,7 +264,7 @@ def test_dataset_exp(dir_path, dataset, mode_wei, best_metric, bins_sch="origin"
     storage_path = os.path.join("D:", os.sep, "Vasilev", "SA", dataset)
     if not os.path.exists(storage_path):
         os.makedirs(storage_path)
-    res_exp = run(dataset, with_self=["BOOST"], with_external=False, mode=mode,  # CLEVERBOOST
+    res_exp = run(dataset, with_self=["TREE"], with_external=False, mode=mode,  # CLEVERBOOST
                   #  dir_path=storage_path+"\\",
                   bins_sch=bins_sch, best_metric=best_metric, mode_wei=mode_wei)  # ["TREE", "PARBSTR", "BSTR", "BOOST"]
 
