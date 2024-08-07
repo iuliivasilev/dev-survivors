@@ -246,7 +246,7 @@ def test_dataset_exp(dir_path, dataset, mode_wei, best_metric, bins_sch="origin"
     # "scsurv", "bstr_full_WB", SHORT_CNT_DIFF_
 
     # prefix = f"{best_metric}_BOOST_linear"
-    prefix = f"{best_metric}_STRAT_TREE"
+    prefix = f"{best_metric}_STRAT_TREE_ALL"
     # prefix = f"{best_metric}_STRATTIME+_PARBSTR_test_wide_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_STABLE_EQ_REG_PARBSTR_ALL_BINS_{bins_sch}"
     # prefix = f"{best_metric}_STRATTIME+_EXT10_NORMAL_EQ_REG_TREE_ALL_BINS_{bins_sch}"

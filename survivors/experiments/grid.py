@@ -267,10 +267,10 @@ class Experiments(object):
         Flag of calculation ending
     folds : int
         Quantity of cross-validate folds.
-    except_stop : str
-        Mode of ending because of exception
-        "all" - continue experiments
-        else - stop experiments with current method
+    except_stop : bool
+        Mode of ending because of exception.
+        True - stop experiments with current method
+        False - continue experiments
     dataset_name : str
         Unique name of current dataset (used for saving)
 
@@ -284,7 +284,7 @@ class Experiments(object):
     save : export table as xlsx
     
     """
-    def __init__(self, folds=5, except_stop="all", dataset_name="NONE_NAME", mode="CV", bins_sch=""):
+    def __init__(self, folds=5, except_stop=False, dataset_name="NONE_NAME", mode="CV", bins_sch=""):
         self.methods = []
         self.methods_grid = []
         self.metrics = ["CI"]
@@ -347,7 +347,7 @@ class Experiments(object):
                     break
                 except Exception as e:
                     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                    if self.except_stop == "all":
+                    if self.except_stop:
                         break
                     curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
                                  "PARAMS": str(p), "TIME": -1}
