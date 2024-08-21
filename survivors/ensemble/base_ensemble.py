@@ -241,11 +241,11 @@ class FastBaseEnsemble(BaseEnsemble):
             dim = (self.X_train.shape[0], self.bins.shape[0])
         else:
             dim = (self.X_train.shape[0])
-        self.oob_prediction = np.zeros(dim, dtype=np.float)
+        self.oob_prediction = np.zeros(dim, dtype=float)
 
         if self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
-            self.oob_prediction_hf = np.zeros(dim, dtype=np.float)
-        self.oob_count = np.zeros((self.X_train.shape[0]), dtype=np.int)
+            self.oob_prediction_hf = np.zeros(dim, dtype=float)
+        self.oob_count = np.zeros((self.X_train.shape[0]), dtype=int)
 
     def predict_by_i(self, ind_model):
         model = self.models[ind_model]

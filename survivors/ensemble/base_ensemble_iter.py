@@ -203,11 +203,11 @@ class FastBaseEnsemble(BaseEnsemble):
             dim = (self.X_train.shape[0], self.bins.shape[0])
         else:
             dim = (self.X_train.shape[0])
-        self.oob_prediction = np.zeros(dim, dtype=np.float)
+        self.oob_prediction = np.zeros(dim, dtype=float)
 
         if self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
-            self.oob_prediction_hf = np.zeros(dim, dtype=np.float)
-        self.oob_count = np.zeros((self.X_train.shape[0]), dtype=np.int)
+            self.oob_prediction_hf = np.zeros(dim, dtype=float)
+        self.oob_count = np.zeros((self.X_train.shape[0]), dtype=int)
 
         cnt.set_seed(10)
 
@@ -221,7 +221,7 @@ class FastBaseEnsemble(BaseEnsemble):
         elif self.ens_metric_name == "roc":
             self.oob_prediction[oob_index] += model.predict(x_oob, target=cnt.CENS_NAME)
         elif self.ens_metric_name in ["LOGLIKELIHOOD", "bic"]:
-            self.oob_count = np.ones((self.X_train.shape[0]), dtype=np.int)
+            self.oob_count = np.ones((self.X_train.shape[0]), dtype=int)
             self.oob_prediction_hf += model.predict_at_times(self.X_train, bins=self.bins, mode="hazard")
             self.oob_prediction += model.predict_at_times(self.X_train, bins=self.bins, mode="surv")
         else:
