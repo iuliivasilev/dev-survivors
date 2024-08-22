@@ -29,7 +29,7 @@ class KaplanMeier:
     get_confidence_interval_ : predict confidence interval by times
     survival_function_at_times : predict survival probability by times
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.timeline = None
         self.survival_function = None
         self.confidence_interval_ = None
@@ -114,7 +114,7 @@ class NelsonAalen:
     cumulative_hazard_at_times : predict hazard probability by times
     get_smoothed_hazard_at_times : predict smoothed hazard probability by times
     """
-    def __init__(self, smoothing=True):
+    def __init__(self, smoothing=True, **kwargs):
         self.timeline = None
         self.survival_function = None
         self.smoothing = smoothing
