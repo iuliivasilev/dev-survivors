@@ -13,9 +13,12 @@ from ..external import LeafModel
 
 try:
     import mgzip  # Custom
+    from memory_profiler import memory_usage
     open_file = mgzip.open
+    check_memory = lambda: memory_usage()[0]
 except ImportError:
     open_file = open
+    check_memory = lambda: np.nan
 
 
 def to_str_from_dict_list(d, stratify):
@@ -162,10 +165,12 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
     def f(**kwargs):
         metr_lst = []
         exec_times = []
+        exec_mem = []
         fold = 0
         for X_train, y_train, X_test, y_test, bins in generate_sample(X, y, folds, mode):
             # print("X_train.shape:", X_train.shape)
             s_time = time.time()
+            s_mem = [check_memory()]
             est = method(**kwargs)
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 if dir_path is None:
@@ -185,7 +190,7 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                         est = pickle.load(inp)
                         est.aggreg_func = kwargs.get("aggreg_func", None)
                         est.tolerance_find_best(kwargs["ens_metric_name"])
-
+                s_mem.append(check_memory())
                 pred_sf = est.predict_at_times(X_test, bins=bins, mode="surv")
                 pred_sf[:, -1] = 0
                 pred_sf[:, 0] = 1
@@ -212,6 +217,7 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 # X_test = scaler.transform(X_test)
 
                 est = est.fit(X_train, y_train)
+                s_mem.append(check_memory())
                 survs = est.predict_survival_function(X_test)
                 hazards = est.predict_cumulative_hazard_function(X_test)
                 pred_sf = np.array(list(map(lambda x: x(bins), survs)))
@@ -220,12 +226,13 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 # pred_time = np.trapz(pred_sf, bins)
                 # Integral version from: https://lifelines.readthedocs.io/en/latest/fitters/regression/CoxPHFitter.html
 
+            exec_mem.append(max(s_mem) - min(s_mem))
             exec_times.append(time.time() - s_time)
             metr_lst.append(count_metric(y_train, y_test, pred_time,
                                          pred_sf, pred_hf, bins, metrics_names))
             fold += 1
             del est
-        return np.vstack(metr_lst), np.array(exec_times)
+        return np.vstack(metr_lst), np.array(exec_times), np.array(exec_mem)
     return f
 
 
@@ -331,28 +338,29 @@ class Experiments(object):
             grid_params = ParameterGrid(grid)
             p_size = len(grid_params)
             for i_p, p in enumerate(grid_params):
-                try:
-                    eval_metr, exec_times = fit_eval_func(**p)
-                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                                 "PARAMS": str(p), "TIMES": exec_times, "TIME": np.sum(exec_times)}
+                # try:
+                    eval_metr, exec_times, exec_mem = fit_eval_func(**p)
+                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""), "PARAMS": str(p),
+                                 "TIMES": exec_times, "TIME": np.sum(exec_times),
+                                 "MEMS": exec_mem, "MEM": np.sum(exec_mem)}
                     eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
                     curr_dict.update(eval_metr)
                     self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
                     if verbose > 0:
                         print(f"Iteration: {i_p + 1}/{p_size}")
-                        print(f"EXECUTION TIME OF {method.__name__}: {exec_times}",
+                        print(f"EXECUTION TIME OF {method.__name__}: {exec_times}, MEM {exec_mem}",
                               {k: [np.mean(v), np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
-                except KeyboardInterrupt:
-                    print("Handled KeyboardInterrupt")
-                    break
-                except Exception as e:
-                    print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                    if self.except_stop:
-                        break
-                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                                 "PARAMS": str(p), "TIME": -1}
-                    curr_dict.update({m: np.array([np.nan, np.nan]) for i, m in enumerate(self.metrics)})
-                    self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
+                # except KeyboardInterrupt:
+                #     print("Handled KeyboardInterrupt")
+                #     break
+                # except Exception as e:
+                #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
+                #     if self.except_stop:
+                #         break
+                #     curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
+                #                  "PARAMS": str(p), "TIME": -1}
+                #     curr_dict.update({m: np.array([np.nan, np.nan]) for i, m in enumerate(self.metrics)})
+                #     self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
         if self.mode in ["TIME-CV", "CV+HOLD-OUT"]:
             for m in self.metrics:
                 self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
