@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-02-19T12:13:30.886Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36" etag="5G4dQMVE8ZwezZgyCvkQ" version="23.1.5" type="github" pages="2">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15" version="24.7.7" pages="2">
   <diagram name="Страница — 1" id="RvTdW2NOFerm8P2jjD4S">
     <mxGraphModel dx="1434" dy="746" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -86,7 +86,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="rm1Hosz9KTD8sqNO9nui" name="Страница — 2">
-    <mxGraphModel dx="1195" dy="622" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
+    <mxGraphModel dx="1028" dy="566" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#FFFFFF" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -111,7 +111,7 @@
         <mxCell id="Ub8jLEXTXA9QBO1bhIwy-6" value="Ensemble Layer" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;whiteSpace=wrap;labelBackgroundColor=none;fillColor=#3399FF;strokeColor=#000000;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;fontSize=20;container=0;fontColor=#FFFFFF;html=1;labelBorderColor=none;" parent="1" vertex="1">
           <mxGeometry x="110" y="150" width="250" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="Ub8jLEXTXA9QBO1bhIwy-7" value="Bagging Model" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;whiteSpace=wrap;labelBackgroundColor=none;fillColor=#3399FF;strokeColor=#000000;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;fontSize=20;container=0;fontColor=#FFFFFF;html=1;labelBorderColor=none;" parent="1" vertex="1">
+        <mxCell id="Ub8jLEXTXA9QBO1bhIwy-7" value="Bootstrap Model" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;whiteSpace=wrap;labelBackgroundColor=none;fillColor=#3399FF;strokeColor=#000000;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;fontSize=20;container=0;fontColor=#FFFFFF;html=1;labelBorderColor=none;" parent="1" vertex="1">
           <mxGeometry x="120" y="200" width="110" height="65" as="geometry" />
         </mxCell>
         <mxCell id="Ub8jLEXTXA9QBO1bhIwy-46" value="Boosting Model" style="shape=folder;fontStyle=1;spacingTop=10;tabWidth=40;tabHeight=14;tabPosition=left;whiteSpace=wrap;labelBackgroundColor=none;fillColor=#3399FF;strokeColor=#000000;labelPosition=center;verticalLabelPosition=middle;align=center;verticalAlign=top;fontSize=20;container=0;fontColor=#FFFFFF;html=1;labelBorderColor=none;" parent="1" vertex="1">
