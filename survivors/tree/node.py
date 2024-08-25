@@ -381,7 +381,7 @@ class Node(object):
             External path to save image
         """
         plt.ioff()
-        fig, ax = plt.subplots(figsize=(7, 5))
+        fig, ax = plt.subplots(figsize=(8, 6))
         if mode == "hist":
             lst = self.leaf_model.predict_list_feature(target)
             plt.hist(lst, bins=25)
