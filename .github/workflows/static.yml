@@ -35,6 +35,9 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Install dependencies
         run: |
+          python3 -m venv survive
+          source survive/bin/activate
+          python3 -m pip install requests
           pip install -r ./requirements/docs-requirements.txt
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
