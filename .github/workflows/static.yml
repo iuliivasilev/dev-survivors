@@ -34,6 +34,9 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Install dependencies
+        # For fixing error "error: externally-managed-environment"
+        # https://github.com/cpp-linter/cpp-linter-action/issues/171
+        # https://github.com/Amrutha-J822/CMPE_272_Lab02/blob/8045cf0ea22ea95388a72972d8c5e2e6c5b3acde/undeploy_VM2.yml#L53
         run: |
           python3 -m venv survive
           source survive/bin/activate
