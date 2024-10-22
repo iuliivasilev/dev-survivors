@@ -9,6 +9,15 @@ CENS_NAME = 'cens'
 TIME_NAME = 'time'
 """ str: Fixed names for internal representation """
 
+TRANSLATOR = {
+    "time": {"en": "Time", "ru": "Время"},
+    "sf": {"en": "Survival probability", "ru": "Вероятность выживания"},
+    "hf": {"en": "Hazard rate", "ru": "Риск события"},
+    "events": {"en": "events", "ru": "события"},
+    "mean time": {"en": "mean time", "ru": "среднее время"},
+    "size": {"en": "size", "ru": "размер"},
+    "density": {"en": "density", "ru": "Плотность"},
+}
 
 def set_seed(seed_value):
     os.environ['PYTHONHASHSEED'] = str(seed_value)
