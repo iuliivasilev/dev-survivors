@@ -10,9 +10,9 @@ from .. import constants as cnt
 from ..external import LEAF_MODEL_DICT, LeafModel
 from ..scheme import Scheme
 
-custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
-# custom_params = {"font.size": 20, "axes.labelsize": 20, "xtick.labelsize": 20, "ytick.labelsize": 20,
-#                  "axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
+# custom_params = {"axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
+custom_params = {"font.size": 20, "axes.labelsize": 20, "xtick.labelsize": 20, "ytick.labelsize": 20,
+                 "axes.spines.right": False, 'grid.color': 'lightgray', 'axes.grid': True, "axes.spines.top": False}
 sns.set_theme(style="ticks", rc=custom_params)
 
 """ Auxiliary functions """
@@ -363,7 +363,7 @@ class Node(object):
 
     """ GROUP FUNCTIONS: VISUALIZATION """
 
-    def get_figure(self, mode="hist", bins=None, target=cnt.CENS_NAME, save_path=""):
+    def get_figure(self, mode="hist", bins=None, target=cnt.CENS_NAME, save_path="", lang="en"):
         """
         Save background image for graphviz node
 
@@ -381,6 +381,7 @@ class Node(object):
             External path to save image
         """
         plt.ioff()
+        # fig, ax = plt.subplots(figsize=(8, 5))
         fig, ax = plt.subplots(figsize=(8, 6))
         if mode == "hist":
             lst = self.leaf_model.predict_list_feature(target)
@@ -390,19 +391,20 @@ class Node(object):
         elif mode == "kde":
             lst = self.leaf_model.predict_list_feature(target)
             # lst = self.leaf_model.old_durs
-            sns.kdeplot(lst, ax=ax, linewidth=3, fill=True, alpha=0.3)
-            ax.set_xlabel(f'{target}', fontsize=20)
+            sns.kdeplot(lst, ax=ax, linewidth=3, fill=False)
+            ax.set_xlabel(f'{cnt.TRANSLATOR.get(target, {lang: target})[lang]}', fontsize=20)
+            # ax.set_ylabel(f'{cnt.TRANSLATOR["density"][lang]}', fontsize=20)
         elif mode == "surv":
             sf = self.leaf_model.predict_survival_at_times(X=None, bins=bins)
             if len(sf.shape) > 1:
                 sf = sf.flat
             plt.step(bins, sf, linewidth=3)
-            ax.set_xlabel('Time', fontsize=25)
-            ax.set_ylabel('Survival probability', fontsize=25)
+            ax.set_xlabel(cnt.TRANSLATOR["time"][lang], fontsize=25)
+            ax.set_ylabel(cnt.TRANSLATOR["sf"][lang], fontsize=25)
         plt.savefig(save_path)
         plt.close(fig)
 
-    def get_description(self):
+    def get_description(self, lang="en"):
         """
         Build description for graphviz node
 
@@ -417,19 +419,18 @@ class Node(object):
             m_cens = m_cens[0]
         if isinstance(m_time, np.ndarray):
             m_time = m_time[0]
-        label = "\n".join([f"size = {self.leaf_model.get_shape()[0]}",
-                           f"events (%) = {round(m_cens, 2)}",
-                           # f"depth = {self.depth}",
-                           f"mean time = {round(m_time, 2)}"])
+        label = "\n".join([f"{cnt.TRANSLATOR['size'][lang]} = {self.leaf_model.get_shape()[0]}",
+                           f"{cnt.TRANSLATOR['events'][lang]} (%) = {round(m_cens, 2)}",
+                           f"{cnt.TRANSLATOR['mean time'][lang]} = {round(m_time, 2)}"])
         return label
 
-    def set_dot_node(self, dot, path_dir="", depth=None, **args):
+    def set_dot_node(self, dot, path_dir="", depth=None, lang="en", **args):
         """ Set node for graphviz dot with image and label """
         if not (depth is None) and depth < self.depth:
             return dot
         img_path = path_dir + str(self.numb) + '.png'
-        self.get_figure(save_path=img_path, **args)
-        dot.node(str(self.numb), label=self.get_description(),
+        self.get_figure(save_path=img_path, lang=lang, **args)
+        dot.node(str(self.numb), label=self.get_description(lang=lang),
                  image=img_path, fontsize='30')  # fontsize='16'
         return dot
 
