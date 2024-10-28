@@ -36,14 +36,17 @@ class KaplanMeier:
         self.alpha = 0.05
 
     def fit(self, durations, right_censor, weights=None):
-        durations = np.array(durations)
-        right_censor = np.array(right_censor)
+        durations = np.array(durations, dtype=float)
+        right_censor = np.array(right_censor, dtype=int)
         if weights is None:
             weights = np.ones(right_censor.shape)
         self.timeline = np.unique(durations)
 
         dur_ = np.searchsorted(self.timeline, durations)
         hist_dur = np.bincount(dur_, weights=weights)
+        print(dur_, dur_.dtype)
+        print(right_censor, right_censor.dtype)
+        print(weights, weights.dtype)
         self.hist_cens = np.bincount(dur_, weights=right_censor * weights)
         self.cumul_hist_dur = np.cumsum(hist_dur[::-1])[::-1]
         self.survival_function = np.hstack([1.0, np.cumprod((1.0 - self.hist_cens / (self.cumul_hist_dur)))])
@@ -75,8 +78,8 @@ class FullProbKM(KaplanMeier):
     A KM model predicting the survival function using the full probability formula
     """
     def fit(self, durations, right_censor, weights=None):
-        durations = np.array(durations)
-        right_censor = np.array(right_censor)
+        durations = np.array(durations, dtype=float)
+        right_censor = np.array(right_censor, dtype=int)
         if weights is None:
             weights = np.ones(right_censor.shape)
 
@@ -120,8 +123,8 @@ class NelsonAalen:
         self.smoothing = smoothing
 
     def fit(self, durations, right_censor, weights=None):
-        durations = np.array(durations)
-        right_censor = np.array(right_censor)
+        durations = np.array(durations, dtype=float)
+        right_censor = np.array(right_censor, dtype=int)
         if weights is None:
             weights = np.ones(right_censor.shape)
         # The formula Stata: https://stats.stackexchange.com/questions/6670/
