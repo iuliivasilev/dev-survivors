@@ -1,6 +1,7 @@
 import os
 import random
 import numpy as np
+from collections import Counter
 
 RANDOM_STATE = 123
 """ int: Fixed seed for model reproducibility """
@@ -113,8 +114,9 @@ def get_bins(time, cens=None, mode='a', num_bins=100):
 
 
 def mode(a):
-    vals, cnts = np.unique(a, return_counts=True, equal_nan=False)
-    if vals.shape[0] == 0:
-        return np.nan
-    modes, counts = vals[cnts.argmax()], cnts.max()
-    return modes
+    # vals, cnts = np.unique(a, return_counts=True, equal_nan=False)
+    # if vals.shape[0] == 0:
+    #     return np.nan
+    # modes, counts = vals[cnts.argmax()], cnts.max()
+    # return modes
+    return max(Counter(a).most_common(), key=lambda x: x[1] if x[0] == x[0] else 0)[0]
