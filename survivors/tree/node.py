@@ -169,6 +169,7 @@ class Node(object):
             self.info["weights"] = self.df[self.info["weights_feature"]].to_numpy()
 
         leaf_kwargs = {k[5:]: v for k, v in self.info.items() if (k.find("leaf_") != -1) and (k != "leaf_model")}
+        leaf_kwargs.setdefault("categ", self.categ)
         self.info.setdefault("leaf_model", "base_zero_after")  # base
         if isinstance(self.info["leaf_model"], str):
             self.leaf_model = LEAF_MODEL_DICT.get(self.info["leaf_model"], "base_zero_after")(**leaf_kwargs)  # base
