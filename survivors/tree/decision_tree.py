@@ -247,8 +247,7 @@ class CRAID(object):
         if mode == "rules":
             res = np.full(shape, np.nan, dtype=object)
         else:
-            # res = np.full(shape, np.nan, dtype=float)
-            res = np.empty(shape, dtype=float)
+            res = np.empty(shape, dtype=object if target in self.categ else float)
             res[:] = np.nan
         for i in sorted(self.nodes.keys()):
             ind = node_bin[:, num_node_to_key[i]]
