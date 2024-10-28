@@ -234,7 +234,7 @@ def get_sa_hists(time, cens, minlength=1, weights=None):
     return time_hist, cens_hist
 
 
-def select_best_split_info(attr_dicts, type_attr, bonf=True, descr_woe=None):
+def select_best_split_info(attr_dicts, type_attr, bonf=True, descr_woe=None, vals_categories=None):
     # attr_dicts = sorted(attr_dicts, key=lambda x: abs(x["stat_diff"]), reverse=True)[:max(1, len(attr_dicts)//2)]
     best_attr = max(attr_dicts, key=lambda x: x["stat_val"])
 
@@ -247,7 +247,8 @@ def select_best_split_info(attr_dicts, type_attr, bonf=True, descr_woe=None):
         #     best_attr["values"] = [f" in {e}" for e in best_attr["values"]]
         elif type_attr == "woe" or type_attr == "categ":
             ind = descr_woe[1] <= best_attr["values"]
-            l, r = list(descr_woe[0, ind]), list(descr_woe[0, ~ind])
+            l, r = list(vals_categories[descr_woe[0, ind].astype(int)]), list(vals_categories[descr_woe[0, ~ind].astype(int)])
+            # l, r = list(descr_woe[0, ind]), list(descr_woe[0, ~ind])
             best_attr["values"] = [f" in {e}" for e in [l, r]]
         if bonf:
             best_attr["p_value"] *= best_attr["sign_split"]
@@ -360,7 +361,17 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
                  "sign_split": 0, "values": [], "pos_nan": [1, 0]}
     if arr.shape[1] < 2 * min_samples_leaf:
         return best_attr
-    vals = arr[0].astype("float")
+    # vals = arr[0].astype("float")
+    # vals_categories = []
+    if type_attr == "cont":
+        vals = arr[0].astype("float")
+        vals_categories = []
+    else:
+        arr_ = arr[0].astype(object)
+        ind = arr_ == arr_
+        vals = np.zeros_like(arr_, dtype=float)
+        vals_categories, vals[ind] = np.unique(arr_[ind], return_inverse=True)
+        vals[~ind] = np.nan
     cens = arr[1].astype("uint")
     dur = arr[2].astype("float")
     if np.sum(cens) == 0:
@@ -561,7 +572,8 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
     # if len(attr_dicts) == 0:
     #     return best_attr
 
-    best_attr = select_best_split_info(attr_dicts, type_attr, bonf, descr_woe=descr_woe)
+    best_attr = select_best_split_info(attr_dicts, type_attr, bonf,
+                                       descr_woe=descr_woe, vals_categories=vals_categories)
     if verbose > 0:
         print(best_attr["p_value"], len(uniq_set))
     return best_attr
