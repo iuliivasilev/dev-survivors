@@ -30,9 +30,10 @@ class LeafModel(object):
     predict_hazard_at_times : return hazard function by bins
 
     """
-    def __init__(self, features=[], weights_name=None, **kwargs):
+    def __init__(self, features=[], categ=[], weights_name=None, **kwargs):
         self.kwargs = kwargs
         self.features = features
+        self.categ = categ
         self.shape = None
         self.features_predict = dict()
         self.lists = dict()
@@ -40,7 +41,7 @@ class LeafModel(object):
         self.weights = None
 
     def fit(self, X_node, *args, **kwargs):
-        if self.features == []:
+        if not self.features:
             self.features = X_node.columns
         # self.features = sorted(list(set(self.features + [cnt.TIME_NAME, cnt.CENS_NAME])))
         # X_sub = X_node[self.features]
@@ -50,8 +51,8 @@ class LeafModel(object):
 
         self.shape = (X_node.shape[0], len(self.features))
         l = dict(zip(X_node.columns, X_node.values.T))
-        self.lists = {k: v for k, v in l.items() if k in ["time", "cens"]}
-        self.features_predict = {k: np.mean(v) for k, v in l.items() if k in self.features}
+        self.lists = {k: v for k, v in l.items() if k in [cnt.TIME_NAME, cnt.CENS_NAME]}
+        self.features_predict = {k: cnt.mode(v) if k in self.categ else np.mean(v) for k, v in l.items() if k in self.features}
 
         if self.weights_name is None:
             self.weights = None
