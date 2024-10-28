@@ -110,3 +110,11 @@ def get_bins(time, cens=None, mode='a', num_bins=100):
         # t_max = np.quantile(time, 0.95)  # NEW
         # bins = np.arange(time.min(), t_max)  # NEW
     return bins
+
+
+def mode(a):
+    vals, cnts = np.unique(a, return_counts=True, equal_nan=False)
+    if vals.shape[0] == 0:
+        return np.nan
+    modes, counts = vals[cnts.argmax()], cnts.max()
+    return modes
