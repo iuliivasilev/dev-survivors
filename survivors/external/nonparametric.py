@@ -44,9 +44,6 @@ class KaplanMeier:
 
         dur_ = np.searchsorted(self.timeline, durations)
         hist_dur = np.bincount(dur_, weights=weights)
-        print(dur_, dur_.dtype)
-        print(right_censor, right_censor.dtype)
-        print(weights, weights.dtype)
         self.hist_cens = np.bincount(dur_, weights=right_censor * weights)
         self.cumul_hist_dur = np.cumsum(hist_dur[::-1])[::-1]
         self.survival_function = np.hstack([1.0, np.cumprod((1.0 - self.hist_cens / (self.cumul_hist_dur)))])
