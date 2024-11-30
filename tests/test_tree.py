@@ -45,7 +45,9 @@ def pbs_samples():
 @pytest.mark.parametrize(
     ("params", "ibs_thres"),
     [({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}, 0.18),
-     ({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05, "cut": True}, 0.23)]
+     ({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05, "cut": True}, 0.23),
+     ({"criterion": "peto", "depth": 2, "min_samples_leaf": 60, "leaf_model": "CoxPH"}, 0.161),
+     ({"criterion": "peto", "depth": 1, "leaf_model": "WeibullAFT"}, 0.18)]
 )
 def test_tree(pbs_samples, params, ibs_thres):
     X_train, y_train, X_test, y_test, bins = pbs_samples
@@ -55,13 +57,19 @@ def test_tree(pbs_samples, params, ibs_thres):
     pred_time = craid_tree.predict(X_test, target="time")
     pred_prob = craid_tree.predict(X_test, target="cens")
     pred_sf = craid_tree.predict_at_times(X_test, bins=bins, mode="surv")
+    assert (pred_prob >= 0).all()
+    assert (pred_time >= 0).all()
+    assert ((0 <= pred_sf) & (pred_sf <= 1.0)).all()
+    assert (np.diff(pred_sf) <= 0).all()
     assert ibs(y_train, y_test, pred_sf, bins, axis=-1) < ibs_thres
 
 
 @pytest.mark.parametrize(
     ("params", "ibs_thres"),
     [({"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3}, 0.19),
-     ({"criterion": "weights", "depth": 5, "min_samples_leaf": 10, "n_estimators": 6}, 0.175)]
+     ({"criterion": "weights", "depth": 5, "min_samples_leaf": 10, "n_estimators": 6}, 0.175),
+     ({"mode_wei": "exp", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3}, 0.186),
+     ({"mode_wei": "square", "depth": 5, "min_samples_leaf": 10, "n_estimators": 3}, 0.15)]
 )
 def test_boosting(pbs_samples, params, ibs_thres):
     X_train, y_train, X_test, y_test, bins = pbs_samples
@@ -70,6 +78,10 @@ def test_boosting(pbs_samples, params, ibs_thres):
     pred_time = boost.predict(X_test, target="time")
     pred_prob = boost.predict(X_test, target="cens")
     pred_sf = boost.predict_at_times(X_test, bins=bins, mode="surv")
+    assert (pred_prob >= 0).all()
+    assert (pred_time >= 0).all()
+    assert ((0 <= pred_sf) & (pred_sf <= 1.0)).all()
+    assert (np.diff(pred_sf) <= 0).all()
     assert ibs(y_train, y_test, pred_sf, bins, axis=-1) < ibs_thres
 
 
