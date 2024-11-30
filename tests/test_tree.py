@@ -10,6 +10,7 @@ from survivors.experiments.grid import generate_sample
 from survivors.criteria import chi2_sf, chi2_isf
 from survivors.tree import CRAID
 from survivors.ensemble import BoostingCRAID
+from survivors.metrics import ibs
 
 
 @pytest.mark.parametrize(
@@ -40,16 +41,13 @@ def pbs_samples():
 #     return wrapped
 
 
-@pytest.mark.skip(reason="no way of currently testing this")
+# @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    ("params", "n_obser", "l_expected"),
-    [({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05},
-     12, [0.17045, 1971.205, 1.0, 0.32086, 0.79905]),
-     ({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05, "cut": True},
-      12, [0.10588, 2069.918, 1.0, 0.83601, 0.90273])
-    ]
+    ("params", "ibs_thres"),
+    [({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}, 0.18),
+     ({"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05, "cut": True}, 0.23)]
 )
-def _test_tree(pbs_samples, params, n_obser, l_expected):
+def test_tree(pbs_samples, params, ibs_thres):
     X_train, y_train, X_test, y_test, bins = pbs_samples
     craid_tree = CRAID(**params)
     craid_tree.fit(X_train, y_train)
@@ -57,37 +55,22 @@ def _test_tree(pbs_samples, params, n_obser, l_expected):
     pred_time = craid_tree.predict(X_test, target="time")
     pred_prob = craid_tree.predict(X_test, target="cens")
     pred_sf = craid_tree.predict_at_times(X_test, bins=bins, mode="surv")
-
-    assert round(pred_prob[n_obser], 5) == l_expected[0]
-    assert round(pred_time[n_obser], 3) == l_expected[1]
-    assert round(pred_sf[n_obser][0], 5) == l_expected[2]
-    assert round(pred_sf[n_obser][-1], 5) == l_expected[3]
-    assert round(pred_sf[n_obser].mean(), 5) == l_expected[4]
+    assert ibs(y_train, y_test, pred_sf, bins, axis=-1) < ibs_thres
 
 
-@pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
-    ("params", "n_obser", "l_expected", "boost_bettas"),
-    [({"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3},
-     12, [0.13312, 1908.035, 1.0, 0.74072, 0.87483], [0.06726, 0.08173, 0.04871]),
-     ({"criterion": "weights", "depth": 5, "min_samples_leaf": 5, "n_estimators": 4},
-     12, [0.09159, 2044.468, 1.0, 0.58778, 0.87519], [0.06362, 0.03501, 0.05259, 0.08943])
-    ]
+    ("params", "ibs_thres"),
+    [({"criterion": "peto", "depth": 5, "min_samples_leaf": 30, "n_estimators": 3}, 0.19),
+     ({"criterion": "weights", "depth": 5, "min_samples_leaf": 10, "n_estimators": 6}, 0.175)]
 )
-def _test_boosting(pbs_samples, params, n_obser, l_expected, boost_bettas):
+def test_boosting(pbs_samples, params, ibs_thres):
     X_train, y_train, X_test, y_test, bins = pbs_samples
-    bstr = BoostingCRAID(**params)
-    bstr.fit(X_train, y_train)
-    pred_time = bstr.predict(X_test, target="time")
-    pred_prob = bstr.predict(X_test, target="cens")
-    pred_sf = bstr.predict_at_times(X_test, bins=bins, mode="surv")
-
-    assert list(np.round(bstr.bettas, 5)) == boost_bettas
-    assert round(pred_prob[n_obser], 5) == l_expected[0]
-    assert round(pred_time[n_obser], 3) == l_expected[1]
-    assert round(pred_sf[n_obser][0], 5) == l_expected[2]
-    assert round(pred_sf[n_obser][-1], 5) == l_expected[3]
-    assert round(pred_sf[n_obser].mean(), 5) == l_expected[4]
+    boost = BoostingCRAID(**params)
+    boost.fit(X_train, y_train)
+    pred_time = boost.predict(X_test, target="time")
+    pred_prob = boost.predict(X_test, target="cens")
+    pred_sf = boost.predict_at_times(X_test, bins=bins, mode="surv")
+    assert ibs(y_train, y_test, pred_sf, bins, axis=-1) < ibs_thres
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
@@ -110,6 +93,7 @@ def _test_tree_visualize(pbs_samples, params, mode, size_expected):
         stat_result = os.stat(os.path.join(tmp_dir, os.listdir(tmp_dir)[0]))
         assert stat_result.st_size == size_expected
 
+
 @pytest.mark.skip(reason="no way of currently testing this")
 @pytest.mark.parametrize(
     ("params", "depth_hist", "numb_hist"),
@@ -131,7 +115,7 @@ def _test_tree_predict_attr(pbs_samples, params, depth_hist, numb_hist):
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
-def _test_tree_rules(pbs_samples):
+def test_tree_rules(pbs_samples):
     params = {"criterion": "peto", "depth": 2, "min_samples_leaf": 30, "signif": 0.05}
     X_train, y_train, X_test, y_test, bins = pbs_samples
     craid_tree = CRAID(**params)
