@@ -6,8 +6,8 @@ from lifelines import KaplanMeierFitter
 from lifelines import NelsonAalenFitter
 import pytest
 
-@pytest.mark.skip(reason="no way of currently testing this")
-def _test_ibs():
+
+def test_ibs():
     bins = np.array([1, 10, 100, 1000])
 
     y_train = get_y(np.array([1, 0]), np.array([100, 100]))
@@ -27,8 +27,8 @@ def _test_ibs():
     assert list(np.round(ibs(y_train, y_test_3, sf_train, bins, axis=0), 5)) == [0.23649]
     assert list(np.round(ibs(y_train, y_test_3, sf_train, bins, axis=1), 5)) == [0.0, 0.0, 0.25, 0.25]
 
-@pytest.mark.skip(reason="no way of currently testing this")
-def _test_iauc():
+
+def test_iauc():
     bins = np.array([1, 10, 100, 1000])
     y_tr_gen = get_y(np.array([1, 1, 1]), np.array([10, 100, 1000]))
     y_test_gen_1 = get_y(np.array([1, 1]), np.array([10, 100]))
@@ -46,8 +46,8 @@ def _test_iauc():
     assert round(iauc(y_tr_gen, y_test_gen_2, y_test_est_2_1, bins), 5) == 0.33333
     assert round(iauc(y_tr_gen, y_test_gen_2, y_test_est_2_2, bins), 5) == 0.66667
 
-@pytest.mark.skip(reason="no way of currently testing this")
-def _test_ipa():
+
+def test_ipa():
     def kmf_estimate_generation(y_train, y_test):
         sf_train = get_survival_func(np.hstack([y_train['time'], y_test['time']]),
                                      np.hstack([y_train['cens'], y_test['cens']]), bins)[np.newaxis, :]
