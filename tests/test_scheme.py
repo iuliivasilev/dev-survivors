@@ -1,11 +1,9 @@
 import numpy as np
-
 from survivors.scheme import Scheme
 from survivors.scheme import FilledSchemeStrategy
-import pytest
 
-@pytest.mark.skip(reason="no way of currently testing this")
-def _test_scheme():
+
+def test_scheme():
     a = Scheme(rule="(a > 0.5) & (b <= 0.5)",
                times=np.array([1, 2, 3, 4, 5]),
                cens=np.array([1, 0, 1, 0, 1]),
