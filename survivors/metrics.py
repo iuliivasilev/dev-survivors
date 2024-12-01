@@ -367,6 +367,7 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
     is_case = (test_time <= times_2d) & test_event
     is_control = test_time > times_2d
     n_controls = is_control.sum(axis=0)
+    n_controls[n_controls == 0] = 1
 
     # prepend row of infinity values
     estimate_diff = np.concatenate((np.broadcast_to(np.infty, (1, n_times)), estimate))
