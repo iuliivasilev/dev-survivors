@@ -38,14 +38,14 @@ def stratify_by_time_cens(y):
 
 def prepare_sample(X, y, train_index, test_index):
     """ Constructing a set of bins on target variables and clipping """
-    X_train, X_test = X.iloc[train_index, :], X.iloc[test_index, :]
+    X_train, X_test = X.iloc[train_index, :].copy(), X.iloc[test_index, :].copy()
     y_train, y_test = y[train_index], y[test_index]
 
     # too_late = np.quantile(y_train[cnt.TIME_NAME], 0.975)
     # ind_tr = np.where(y_train[cnt.TIME_NAME] > too_late)
     # y_train[cnt.CENS_NAME][ind_tr] = False
     # y_train[cnt.TIME_NAME][ind_tr] = too_late
-    #
+
     # ind_tst = np.where(y_test[cnt.TIME_NAME] > too_late)
     # y_test[cnt.CENS_NAME][ind_tst] = False
     # y_test[cnt.TIME_NAME][ind_tst] = too_late
@@ -175,21 +175,18 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
             if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 if dir_path is None:
                     est.fit(X_train, y_train)
-                    est.aggreg_func = kwargs.get("aggreg_func", "mean")
-                    est.tolerance_find_best(kwargs["ens_metric_name"])
                 else:
                     name = os.path.join(dir_path, get_name_file(method, kwargs, mode, fold) + '.pkl')
                     if not os.path.exists(name):
                         print("Fitted from scratch")
                         est.fit(X_train, y_train)
-
                         with open_file(name, 'wb') as out:  # Custom
                             pickle.dump(est, out, pickle.HIGHEST_PROTOCOL)
-
                     with open_file(name, 'rb') as inp:
                         est = pickle.load(inp)
-                        est.aggreg_func = kwargs.get("aggreg_func", None)
-                        est.tolerance_find_best(kwargs["ens_metric_name"])
+
+                est.aggreg_func = kwargs.get("aggreg_func", "mean")
+                est.tolerance_find_best(kwargs.get("ens_metric_name", "IBS_REMAIN"))
                 s_mem.append(check_memory())
                 pred_sf = est.predict_at_times(X_test, bins=bins, mode="surv")
                 pred_sf[:, -1] = 0
@@ -197,8 +194,8 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 pred_time = est.predict(X_test, target=cnt.TIME_NAME)
                 pred_hf = est.predict_at_times(X_test, bins=bins, mode="hazard")
             elif isinstance(est, LeafModel):
-                X_train[cnt.TIME_NAME] = y_train[cnt.TIME_NAME]
-                X_train[cnt.CENS_NAME] = y_train[cnt.CENS_NAME]
+                X_train.loc[:, cnt.TIME_NAME] = y_train[cnt.TIME_NAME]
+                X_train.loc[:, cnt.CENS_NAME] = y_train[cnt.CENS_NAME]
                 est.fit(X_train)
                 pred_sf = est.predict_survival_at_times(X_test, bins=bins)
                 pred_time = est.predict_feature(X_test, feature_name=cnt.TIME_NAME)
@@ -338,7 +335,7 @@ class Experiments(object):
             grid_params = ParameterGrid(grid)
             p_size = len(grid_params)
             for i_p, p in enumerate(grid_params):
-                # try:
+                try:
                     eval_metr, exec_times, exec_mem = fit_eval_func(**p)
                     curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""), "PARAMS": str(p),
                                  "TIMES": exec_times, "TIME": np.sum(exec_times),
@@ -348,19 +345,19 @@ class Experiments(object):
                     self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
                     if verbose > 0:
                         print(f"Iteration: {i_p + 1}/{p_size}")
-                        print(f"EXECUTION TIME OF {method.__name__}: {exec_times}, MEM {exec_mem}",
-                              {k: [np.mean(v), np.mean(v[:-1]), v[-1]] for k, v in eval_metr.items()})  # np.mean(v)
-                # except KeyboardInterrupt:
-                #     print("Handled KeyboardInterrupt")
-                #     break
-                # except Exception as e:
-                #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                #     if self.except_stop:
-                #         break
-                #     curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                #                  "PARAMS": str(p), "TIME": -1}
-                #     curr_dict.update({m: np.array([np.nan, np.nan]) for i, m in enumerate(self.metrics)})
-                #     self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
+                        print(f"EXECUTION TIME OF {method.__name__}: {exec_times.round(3)}, MEM {exec_mem.round(3)}",
+                              {k: [round(np.mean(v), 3), round(v[-1], 3)] for k, v in eval_metr.items()})
+                except KeyboardInterrupt:
+                    print("Handled KeyboardInterrupt")
+                    break
+                except Exception as e:
+                    print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
+                    if self.except_stop:
+                        break
+                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
+                                 "PARAMS": str(p), "TIME": -1}
+                    curr_dict.update({m: np.array([np.nan, np.nan]) for i, m in enumerate(self.metrics)})
+                    self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
         if self.mode in ["TIME-CV", "CV+HOLD-OUT"]:
             for m in self.metrics:
                 self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
