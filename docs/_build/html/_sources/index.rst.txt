@@ -41,10 +41,18 @@ Documentation
   Installation
   Citing survivors <Citing>
 
+.. toctree::
+  :maxdepth: 1
+  :caption: Tutorials
+
+  auto_examples/plot_experiments_guide
+  auto_examples/plot_user_guide
+
 Indices and tables
 ------------------------------
 
 * :ref:`sphx_glr_auto_examples_plot_user_guide.py`
+* :ref:`sphx_glr_auto_examples_plot_experiments_guide.py`
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

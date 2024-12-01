@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>External &mdash; survivors 1.7.0 documentation</title>
+  <title>External &mdash; survivors 1.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
@@ -19,7 +19,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=030dc6f6"></script>
+        <script src="../_static/documentation_options.js?v=a77542ef"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -141,6 +141,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/plot_experiments_guide.html">Experiments guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/plot_user_guide.html">Base User guide</a></li>
+</ul>
 
         </div>
       </div>
@@ -171,7 +176,7 @@
 <span id="external"></span><h1>External<a class="headerlink" href="#module-survivors.external.leaf_model" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.leaf_model.LeafModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">LeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.LeafModel" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">LeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.LeafModel" title="Link to this definition"></a></dt>
 <dd><p>Unified wrapper for external models.
 Can be used as leaf model in tree-based methods.
 Supported in Experiments module.</p>
@@ -203,12 +208,14 @@ predict_hazard_at_times : return hazard function by bins</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.leaf_model.MeaningLeafModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">MeaningLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.MeaningLeafModel" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Nonparametric model with virtual events generated by bootstrap meaning</p>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.leaf_model.MixLeafModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">MixLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.MixLeafModel" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Nonparametric model with virtual events (normal distributions + bootstrap meaning)</p>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.leaf_model.NonparamLeafModel">
@@ -218,12 +225,14 @@ predict_hazard_at_times : return hazard function by bins</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.leaf_model.NormalizedLeafModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">NormalizedLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.NormalizedLeafModel" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Nonparametric model with virtual events (normal distribution) and non-informative censuring</p>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.leaf_model.StableLeafModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.leaf_model.</span></span><span class="sig-name descname"><span class="pre">StableLeafModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.leaf_model.StableLeafModel" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Nonparametric model with stable virtual events (with median mu and adaptive size) and non-informative censuring</p>
+</dd></dl>
 
 <dl class="py class" id="module-survivors.external.nonparametric">
 <dt class="sig sig-object py" id="survivors.external.nonparametric.BaseLeafModeLL">
@@ -334,13 +343,13 @@ predict_hazard_at_times : return hazard function by bins</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.nonparametric.FullProbKM">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">FullProbKM</span></span><a class="headerlink" href="#survivors.external.nonparametric.FullProbKM" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">FullProbKM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.FullProbKM" title="Link to this definition"></a></dt>
 <dd><p>A KM model predicting the survival function using the full probability formula</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.nonparametric.KaplanMeier">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">KaplanMeier</span></span><a class="headerlink" href="#survivors.external.nonparametric.KaplanMeier" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">KaplanMeier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.KaplanMeier" title="Link to this definition"></a></dt>
 <dd><p>Modification of classic Kaplan-Meier model</p>
 <section id="id1">
 <h2>Attributes<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
@@ -369,13 +378,13 @@ survival_function_at_times : predict survival probability by times</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.nonparametric.KaplanMeierZeroAfter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">KaplanMeierZeroAfter</span></span><a class="headerlink" href="#survivors.external.nonparametric.KaplanMeierZeroAfter" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">KaplanMeierZeroAfter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.KaplanMeierZeroAfter" title="Link to this definition"></a></dt>
 <dd><p>External pre-definition of the left and right KM estimation bounds with one and zero.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.external.nonparametric.NelsonAalen">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">NelsonAalen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.NelsonAalen" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.external.nonparametric.</span></span><span class="sig-name descname"><span class="pre">NelsonAalen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smoothing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.external.nonparametric.NelsonAalen" title="Link to this definition"></a></dt>
 <dd><p>Modification of classic Nelson-Aalen model</p>
 <section id="id3">
 <h2>Attributes<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>

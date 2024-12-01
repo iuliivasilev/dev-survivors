@@ -30,6 +30,23 @@ Examples
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Experiments guide">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_experiments_guide_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_experiments_guide.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Experiments guide</div>
+    </div>
+
+
+.. raw:: html
+
     </div>
 
 
@@ -37,6 +54,7 @@ Examples
    :hidden:
 
    /auto_examples/plot_user_guide
+   /auto_examples/plot_experiments_guide
 
 
 .. only:: html

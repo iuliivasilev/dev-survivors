@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Experiments &mdash; survivors 1.7.0 documentation</title>
+  <title>Experiments &mdash; survivors 1.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
@@ -19,7 +19,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=030dc6f6"></script>
+        <script src="../_static/documentation_options.js?v=a77542ef"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -78,6 +78,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/plot_experiments_guide.html">Experiments guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/plot_user_guide.html">Base User guide</a></li>
+</ul>
 
         </div>
       </div>
@@ -108,7 +113,7 @@
 <span id="experiments"></span><h1>Experiments<a class="headerlink" href="#module-survivors.experiments.grid" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="survivors.experiments.grid.Experiments">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">Experiments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE_NAME'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins_sch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.Experiments" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">Experiments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">except_stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NONE_NAME'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins_sch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.Experiments" title="Link to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Class receives methods, metrics and grids,</dt><dd><p>produces cross-validation experiments,
 stores table of results : name, params, time, metrics (by sample and mean)</p>
@@ -133,9 +138,9 @@ CI_CENS - occurred time</p>
 </dd>
 <dt>folds<span class="classifier">int</span></dt><dd><p>Quantity of cross-validate folds.</p>
 </dd>
-<dt>except_stop<span class="classifier">str</span></dt><dd><p>Mode of ending because of exception
-“all” - continue experiments
-else - stop experiments with current method</p>
+<dt>except_stop<span class="classifier">bool</span></dt><dd><p>Mode of ending because of exception.
+True - stop experiments with current method
+False - continue experiments</p>
 </dd>
 <dt>dataset_name<span class="classifier">str</span></dt><dd><p>Unique name of current dataset (used for saving)</p>
 </dd>
@@ -228,7 +233,7 @@ Allow to use in ParameterGrid.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="survivors.experiments.grid.prepare_sample">
 <span class="sig-prename descclassname"><span class="pre">survivors.experiments.grid.</span></span><span class="sig-name descname"><span class="pre">prepare_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.experiments.grid.prepare_sample" title="Link to this definition"></a></dt>
-<dd><p>Constructing a set of bins on target variables and clipping.</p>
+<dd><p>Constructing a set of bins on target variables and clipping</p>
 </dd></dl>
 
 </section>

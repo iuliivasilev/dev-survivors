@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tree &mdash; survivors 1.7.0 documentation</title>
+  <title>Tree &mdash; survivors 1.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
@@ -19,7 +19,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=030dc6f6"></script>
+        <script src="../_static/documentation_options.js?v=a77542ef"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -101,6 +101,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../Why.html">Why survivors?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/plot_experiments_guide.html">Experiments guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/plot_user_guide.html">Base User guide</a></li>
 </ul>
 
         </div>
@@ -198,7 +203,7 @@ Find a split with the highest statistical value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="survivors.tree.node.Node.get_description">
-<span class="sig-name descname"><span class="pre">get_description</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.get_description" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_description</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.get_description" title="Link to this definition"></a></dt>
 <dd><p>Build description for graphviz node</p>
 <section id="returns">
 <h3>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
@@ -211,7 +216,7 @@ Find a split with the highest statistical value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="survivors.tree.node.Node.get_figure">
-<span class="sig-name descname"><span class="pre">get_figure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hist'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cens'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.get_figure" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_figure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hist'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cens'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.get_figure" title="Link to this definition"></a></dt>
 <dd><p>Save background image for graphviz node</p>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
@@ -235,7 +240,7 @@ Find a split with the highest statistical value.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="survivors.tree.node.Node.ind_for_nodes">
 <span class="sig-name descname"><span class="pre">ind_for_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_categ</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.ind_for_nodes" title="Link to this definition"></a></dt>
-<dd><p>Map the number of the according child node by rule and sample features.</p>
+<dd><p>Map the number of the according child node by rule and sample features</p>
 </dd></dl>
 
 <dl class="py method">
@@ -299,7 +304,7 @@ Mode :
 
 <dl class="py method">
 <dt class="sig sig-object py" id="survivors.tree.node.Node.set_dot_node">
-<span class="sig-name descname"><span class="pre">set_dot_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.set_dot_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">set_dot_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#survivors.tree.node.Node.set_dot_node" title="Link to this definition"></a></dt>
 <dd><p>Set node for graphviz dot with image and label</p>
 </dd></dl>
 
