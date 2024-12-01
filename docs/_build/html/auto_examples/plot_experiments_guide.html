@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiments guide &mdash; survivors 1.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=a77542ef"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Base User guide" href="plot_user_guide.html" />
+    <link rel="prev" title="Citing survivors" href="../Citing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            survivors
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Component%20description.html">Component description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../API%20Reference.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About survivors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../AboutSA.html">About survival analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Why.html">Why survivors?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Citing.html">Citing survivors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Experiments guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create-experiments-instance">Create Experiments instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-models-from-external-libraries">Add models from external libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-embedded-aft-models-optional">Add embedded AFT models (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-models-from-survivors">Add models from “survivors”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-experiments">Run experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plot_user_guide.html">Base User guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">survivors</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Experiments guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_examples/plot_experiments_guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-plot-experiments-guide-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="experiments-guide">
+<span id="sphx-glr-auto-examples-plot-experiments-guide-py"></span><h1>Experiments guide<a class="headerlink" href="#experiments-guide" title="Link to this heading"></a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Iulii Vasilev &lt;iuliivasilev@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD 3 clause</span>
+</pre></div>
+</div>
+<p>First, we will import modules</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="create-experiments-instance">
+<h2>Create Experiments instance<a class="headerlink" href="#create-experiments-instance" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>The dataset is represented as a tuple:</dt><dd><ul class="simple">
+<li><p>X (pd.DataFrame): Feature space</p></li>
+<li><p>y (structured np.ndarray): Target variables</p></li>
+<li><p>features (list): Covariates</p></li>
+<li><p>categ (list): Categorical covariates</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Metrics are defined according to the metrics module (keys of <cite>METRIC_DICT</cite> dictionary)</p></li>
+<li><dl class="simple">
+<dt>Creating Experiments specify:</dt><dd><ul class="simple">
+<li><p>folds (int): Quantity of cross-validate folds</p></li>
+<li><p>mode (str): Validation strategy.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<p>Available modes: “CV”, “CV+HOLD-OUT”, <strong>“CV+SAMPLE”</strong>, “TIME-CV”.
+In <strong>this</strong> case, five-fold cross-validation is performed followed by training the best models on 20 different samples of the original data.
+The final quality is defined as the average quality over 20 samples.</p>
+<p>Methods for adding metrics (<cite>set_metrics</cite>), metrics for selecting the best models (<cite>add_metric_best</cite>) are used to control the experiment.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">survivors.experiments</span> <span class="kn">import</span> <span class="n">grid</span> <span class="k">as</span> <span class="n">exp</span>
+<span class="kn">import</span> <span class="nn">survivors.datasets</span> <span class="k">as</span> <span class="nn">ds</span>
+
+<span class="n">l_metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CI&quot;</span><span class="p">,</span> <span class="s2">&quot;CI_CENS&quot;</span><span class="p">,</span> <span class="s2">&quot;IBS&quot;</span><span class="p">,</span> <span class="s2">&quot;IBS_REMAIN&quot;</span><span class="p">,</span> <span class="s2">&quot;IAUC&quot;</span><span class="p">,</span> <span class="s2">&quot;IAUC_WW_TI&quot;</span><span class="p">,</span> <span class="s2">&quot;AUPRC&quot;</span><span class="p">]</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">categ</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">load_pbc_dataset</span><span class="p">()</span>
+<span class="n">experim</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">Experiments</span><span class="p">(</span><span class="n">folds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;CV+SAMPLE&quot;</span><span class="p">)</span>
+<span class="n">experim</span><span class="o">.</span><span class="n">set_metrics</span><span class="p">(</span><span class="n">l_metrics</span><span class="p">)</span>
+<span class="n">experim</span><span class="o">.</span><span class="n">add_metric_best</span><span class="p">(</span><span class="s2">&quot;IBS_REMAIN&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To add models, the <cite>add_method</cite> method is used with two parameters: model class and hyperparameter grid.</p>
+</section>
+<section id="add-models-from-external-libraries">
+<h2>Add models from external libraries<a class="headerlink" href="#add-models-from-external-libraries" title="Link to this heading"></a></h2>
+<p>Experiments support models from the external <strong>scikit-survival</strong> library. For each model a grid of hyperparameters is defined.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sksurv.linear_model</span> <span class="kn">import</span> <span class="n">CoxPHSurvivalAnalysis</span>
+<span class="kn">from</span> <span class="nn">sksurv.tree</span> <span class="kn">import</span> <span class="n">SurvivalTree</span>
+<span class="kn">from</span> <span class="nn">sksurv.ensemble</span> <span class="kn">import</span> <span class="n">RandomSurvivalForest</span>
+<span class="kn">from</span> <span class="nn">sksurv.ensemble</span> <span class="kn">import</span> <span class="n">GradientBoostingSurvivalAnalysis</span>
+<span class="kn">from</span> <span class="nn">sksurv.ensemble</span> <span class="kn">import</span> <span class="n">ComponentwiseGradientBoostingSurvivalAnalysis</span>
+
+<span class="n">COX_param_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">],</span>
+    <span class="s1">&#39;ties&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;breslow&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">RSF_param_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">],</span>
+    <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+    <span class="s1">&#39;min_samples_leaf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
+    <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">123</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">ST_param_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+    <span class="s1">&#39;min_samples_leaf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+    <span class="s1">&#39;max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;sqrt&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">123</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">GBSA_param_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;coxph&quot;</span><span class="p">],</span>
+    <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">],</span>
+    <span class="s1">&#39;min_samples_leaf&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+    <span class="s1">&#39;max_features&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sqrt&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">123</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">CWGBSA_param_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;coxph&quot;</span><span class="p">],</span>
+    <span class="s1">&#39;learning_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="s1">&#39;subsample&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+    <span class="s1">&#39;dropout_rate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">123</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">experim</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">CoxPHSurvivalAnalysis</span><span class="p">,</span> <span class="n">COX_param_grid</span><span class="p">)</span>
+<span class="n">experim</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">SurvivalTree</span><span class="p">,</span> <span class="n">ST_param_grid</span><span class="p">)</span>
+<span class="n">experim</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">RandomSurvivalForest</span><span class="p">,</span> <span class="n">RSF_param_grid</span><span class="p">)</span>
+<span class="n">experim</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">ComponentwiseGradientBoostingSurvivalAnalysis</span><span class="p">,</span> <span class="n">CWGBSA_param_grid</span><span class="p">)</span>
+<span class="n">experim</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">GradientBoostingSurvivalAnalysis</span><span class="p">,</span> <span class="n">GBSA_param_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="add-embedded-aft-models-optional">
+<h2>Add embedded AFT models (optional)<a class="headerlink" href="#add-embedded-aft-models-optional" title="Link to this heading"></a></h2>
+<p>Some models of the external <strong>lifelines</strong> library (CoxPH, AFT, KaplanMeier, NelsonAalen) are also embedded in the library.</p>
+<p>Note that these models can be used in tree sheets to build stratified models.</p>
+<p>To add your own model, you can use <cite>LeafModel</cite> wrapper from the external.leaf_model module.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">survivors.external</span> <span class="kn">import</span> <span class="n">LogNormalAFT</span><span class="p">,</span> <span class="n">AFT_param_grid</span>
+
+<span class="c1"># experim.add_method(LogNormalAFT, AFT_param_grid)</span>
+</pre></div>
+</div>
+</section>
+<section id="add-models-from-survivors">
+<h2>Add models from “survivors”<a class="headerlink" href="#add-models-from-survivors" title="Link to this heading"></a></h2>
+<p>Of course, the experiments support models from <strong>survivors</strong>:</p>
+<ol class="arabic simple">
+<li><p><cite>CRAID</cite>: a survival tree with weighted criteria, regularisation and complex non-parametric models.</p></li>
+<li><p><cite>BootstrapCRAID</cite>: ensemble of independent trees on bootstrap samples.</p></li>
+<li><p><cite>ParallelBootstrapCRAID</cite>: a parallel implementation of BootstrapCRAID.</p></li>
+<li><p><cite>BoostingCRAID</cite>: adaptive bootstrapping with weighting of observations by probability of hitting the next subsample and correction based on base model error.</p></li>
+</ol>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">survivors.tree</span> <span class="kn">import</span> <span class="n">CRAID</span>
+<span class="kn">from</span> <span class="nn">survivors.ensemble</span> <span class="kn">import</span> <span class="n">ParallelBootstrapCRAID</span><span class="p">,</span> <span class="n">BoostingCRAID</span>
+
+<span class="n">CRAID_param_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+    <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;wilcoxon&quot;</span><span class="p">,</span> <span class="s2">&quot;logrank&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;l_reg&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="s2">&quot;min_samples_leaf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">],</span>
+    <span class="s2">&quot;signif&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+    <span class="s2">&quot;categ&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">categ</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">BSTR_param_grid</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">],</span>
+    <span class="s2">&quot;depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+    <span class="s2">&quot;size_sample&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span>
+    <span class="s2">&quot;l_reg&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;tarone-ware&quot;</span><span class="p">,</span> <span class="s2">&quot;wilcoxon&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;min_samples_leaf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span>
+    <span class="s2">&quot;ens_metric_name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;IBS_REMAIN&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;max_features&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sqrt&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;categ&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">categ</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">experim</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">CRAID</span><span class="p">,</span> <span class="n">CRAID_param_grid</span><span class="p">)</span>
+<span class="n">experim</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">ParallelBootstrapCRAID</span><span class="p">,</span> <span class="n">BSTR_param_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="run-experiments">
+<h2>Run experiments<a class="headerlink" href="#run-experiments" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>To run experiments, use the run_effective method with the source data and:</dt><dd><ul class="simple">
+<li><p>verbose (int): log printing parameter.</p></li>
+<li><p>stratify_best (str/list): one or more hyperparameters on which to build independent best models (for each hyperparameter value).</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Execution may take some time.</strong></p>
+<dl class="simple">
+<dt>Experimental results can be obtained by calling methods:</dt><dd><ul class="simple">
+<li><p>get_result: dataframe of results at the cross-validation stage.</p></li>
+<li><p>get_best_by_mode method: dataframe of model validation at 20 samples.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">experim</span><span class="o">.</span><span class="n">run_effective</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stratify_best</span><span class="o">=</span><span class="p">[])</span>
+<span class="n">df_results</span> <span class="o">=</span> <span class="n">experim</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;sksurv.linear_model.coxph.CoxPHSurvivalAnalysis&#39;&gt; {&#39;alpha&#39;: [100, 10, 1, 0.1, 0.01, 0.001], &#39;ties&#39;: [&#39;breslow&#39;]}
+&lt;class &#39;sksurv.tree.tree.SurvivalTree&#39;&gt; {&#39;max_depth&#39;: [None, 20, 30], &#39;min_samples_leaf&#39;: [1, 10, 20], &#39;max_features&#39;: [None, &#39;sqrt&#39;], &#39;random_state&#39;: [123]}
+&lt;class &#39;sksurv.ensemble.forest.RandomSurvivalForest&#39;&gt; {&#39;n_estimators&#39;: [50], &#39;max_depth&#39;: [None, 20], &#39;min_samples_leaf&#39;: [0.001, 0.01, 0.1, 0.25], &#39;random_state&#39;: [123]}
+&lt;class &#39;sksurv.ensemble.boosting.ComponentwiseGradientBoostingSurvivalAnalysis&#39;&gt; {&#39;loss&#39;: [&#39;coxph&#39;], &#39;learning_rate&#39;: [0.01, 0.05, 0.1, 0.5], &#39;n_estimators&#39;: [30, 50], &#39;subsample&#39;: [0.7, 1.0], &#39;dropout_rate&#39;: [0.0, 0.1, 0.5], &#39;random_state&#39;: [123]}
+&lt;class &#39;sksurv.ensemble.boosting.GradientBoostingSurvivalAnalysis&#39;&gt; {&#39;loss&#39;: [&#39;coxph&#39;], &#39;learning_rate&#39;: [0.01, 0.05, 0.1, 0.5], &#39;n_estimators&#39;: [50], &#39;min_samples_leaf&#39;: [1, 10, 50, 100], &#39;max_features&#39;: [&#39;sqrt&#39;], &#39;random_state&#39;: [123]}
+&lt;class &#39;survivors.tree.decision_tree.CRAID&#39;&gt; {&#39;depth&#39;: [10], &#39;criterion&#39;: [&#39;wilcoxon&#39;, &#39;logrank&#39;], &#39;l_reg&#39;: [0, 0.01, 0.1, 0.5], &#39;min_samples_leaf&#39;: [0.05, 0.01, 0.001], &#39;signif&#39;: [0.1, 1.0], &#39;categ&#39;: [[&#39;trt&#39;, &#39;sex&#39;, &#39;ascites&#39;, &#39;hepato&#39;, &#39;spiders&#39;]]}
+&lt;class &#39;survivors.ensemble.bootstrap.ParallelBootstrapCRAID&#39;&gt; {&#39;n_estimators&#39;: [50], &#39;depth&#39;: [7], &#39;size_sample&#39;: [0.3, 0.7], &#39;l_reg&#39;: [0, 0.01, 0.1, 0.5], &#39;criterion&#39;: [&#39;tarone-ware&#39;, &#39;wilcoxon&#39;], &#39;min_samples_leaf&#39;: [0.05, 0.01], &#39;ens_metric_name&#39;: [&#39;IBS_REMAIN&#39;], &#39;max_features&#39;: [&#39;sqrt&#39;], &#39;categ&#39;: [[&#39;trt&#39;, &#39;sex&#39;, &#39;ascites&#39;, &#39;hepato&#39;, &#39;spiders&#39;]]}
+&lt;class &#39;sksurv.linear_model.coxph.CoxPHSurvivalAnalysis&#39;&gt; {&#39;alpha&#39;: [10], &#39;ties&#39;: [&#39;breslow&#39;]}
+Iteration: 1/1
+EXECUTION TIME OF CoxPHSurvivalAnalysis: [0.285 0.285 0.285 0.285 0.283 0.286 0.283 0.286 0.281 0.283 0.285 0.288
+ 0.282 0.284 0.28  0.284 0.283 0.278 0.283 0.285], MEM [0.098 0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+ 0.    0.    0.    0.    0.    0.    0.    0.   ] {&#39;CI&#39;: [0.678, 0.667], &#39;CI_CENS&#39;: [0.813, 0.796], &#39;IBS&#39;: [0.127, 0.133], &#39;IBS_REMAIN&#39;: [0.12, 0.132], &#39;IAUC&#39;: [0.82, 0.794], &#39;IAUC_WW_TI&#39;: [0.862, 0.818], &#39;AUPRC&#39;: [0.698, 0.702]}
+&lt;class &#39;sksurv.tree.tree.SurvivalTree&#39;&gt; {&#39;max_depth&#39;: [None], &#39;max_features&#39;: [None], &#39;min_samples_leaf&#39;: [20], &#39;random_state&#39;: [123]}
+Iteration: 1/1
+EXECUTION TIME OF SurvivalTree: [0.252 0.253 0.253 0.258 0.253 0.253 0.252 0.253 0.253 0.253 0.254 0.254
+ 0.25  0.252 0.254 0.254 0.254 0.253 0.252 0.252], MEM [0.    0.004 0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+ 0.    0.    0.    0.    0.    0.    0.    0.   ] {&#39;CI&#39;: [0.655, 0.668], &#39;CI_CENS&#39;: [0.78, 0.816], &#39;IBS&#39;: [0.145, 0.124], &#39;IBS_REMAIN&#39;: [0.136, 0.12], &#39;IAUC&#39;: [0.781, 0.848], &#39;IAUC_WW_TI&#39;: [0.825, 0.877], &#39;AUPRC&#39;: [0.699, 0.709]}
+&lt;class &#39;sksurv.ensemble.forest.RandomSurvivalForest&#39;&gt; {&#39;max_depth&#39;: [None], &#39;min_samples_leaf&#39;: [0.01], &#39;n_estimators&#39;: [50], &#39;random_state&#39;: [123]}
+Iteration: 1/1
+EXECUTION TIME OF RandomSurvivalForest: [0.4   0.401 0.405 0.408 0.398 0.405 0.41  0.402 0.409 0.399 0.406 0.398
+ 0.407 0.398 0.402 0.404 0.415 0.398 0.402 0.405], MEM [1.6125e+01 2.4380e+00 0.0000e+00 1.2000e-02 7.6600e-01 0.0000e+00
+ 5.5000e-02 0.0000e+00 0.0000e+00 0.0000e+00 4.0000e-03 0.0000e+00
+ 2.4738e+01 1.2150e+00 7.8900e-01 3.0500e-01 1.2000e-02 1.1300e-01
+ 0.0000e+00 9.4000e-02] {&#39;CI&#39;: [0.661, 0.663], &#39;CI_CENS&#39;: [0.811, 0.805], &#39;IBS&#39;: [0.131, 0.128], &#39;IBS_REMAIN&#39;: [0.128, 0.139], &#39;IAUC&#39;: [0.809, 0.84], &#39;IAUC_WW_TI&#39;: [0.852, 0.857], &#39;AUPRC&#39;: [0.68, 0.681]}
+&lt;class &#39;sksurv.ensemble.boosting.ComponentwiseGradientBoostingSurvivalAnalysis&#39;&gt; {&#39;dropout_rate&#39;: [0.0], &#39;learning_rate&#39;: [0.5], &#39;loss&#39;: [&#39;coxph&#39;], &#39;n_estimators&#39;: [50], &#39;random_state&#39;: [123], &#39;subsample&#39;: [1.0]}
+Iteration: 1/1
+EXECUTION TIME OF ComponentwiseGradientBoostingSurvivalAnalysis: [0.288 0.29  0.289 0.291 0.289 0.292 0.293 0.291 0.29  0.288 0.289 0.289
+ 0.287 0.289 0.29  0.289 0.29  0.289 0.289 0.293], MEM [0.004 0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+ 0.    0.    0.    0.    0.    0.    0.    0.   ] {&#39;CI&#39;: [0.665, 0.665], &#39;CI_CENS&#39;: [0.796, 0.761], &#39;IBS&#39;: [0.143, 0.149], &#39;IBS_REMAIN&#39;: [0.141, 0.164], &#39;IAUC&#39;: [0.803, 0.8], &#39;IAUC_WW_TI&#39;: [0.843, 0.826], &#39;AUPRC&#39;: [0.672, 0.671]}
+&lt;class &#39;sksurv.ensemble.boosting.GradientBoostingSurvivalAnalysis&#39;&gt; {&#39;learning_rate&#39;: [0.1], &#39;loss&#39;: [&#39;coxph&#39;], &#39;max_features&#39;: [&#39;sqrt&#39;], &#39;min_samples_leaf&#39;: [1], &#39;n_estimators&#39;: [50], &#39;random_state&#39;: [123]}
+Iteration: 1/1
+EXECUTION TIME OF GradientBoostingSurvivalAnalysis: [0.303 0.304 0.303 0.304 0.303 0.302 0.302 0.304 0.305 0.304 0.304 0.302
+ 0.304 0.303 0.304 0.305 0.306 0.302 0.302 0.303], MEM [0.    0.    0.012 0.    0.    0.    0.    0.    0.    0.    0.    0.
+ 0.    0.    0.    0.    0.    0.    0.    0.   ] {&#39;CI&#39;: [0.664, 0.675], &#39;CI_CENS&#39;: [0.82, 0.837], &#39;IBS&#39;: [0.132, 0.123], &#39;IBS_REMAIN&#39;: [0.118, 0.117], &#39;IAUC&#39;: [0.824, 0.861], &#39;IAUC_WW_TI&#39;: [0.862, 0.882], &#39;AUPRC&#39;: [0.691, 0.694]}
+&lt;class &#39;survivors.tree.decision_tree.CRAID&#39;&gt; {&#39;categ&#39;: [[&#39;trt&#39;, &#39;sex&#39;, &#39;ascites&#39;, &#39;hepato&#39;, &#39;spiders&#39;]], &#39;criterion&#39;: [&#39;wilcoxon&#39;], &#39;depth&#39;: [10], &#39;l_reg&#39;: [0.5], &#39;min_samples_leaf&#39;: [0.05], &#39;signif&#39;: [1.0]}
+Iteration: 1/1
+EXECUTION TIME OF CRAID: [1.263 1.258 1.292 1.301 1.273 1.301 1.215 1.179 1.172 1.246 1.26  1.266
+ 1.172 1.301 1.25  1.244 1.232 1.149 1.254 1.245], MEM [0.438 0.043 0.004 0.031 0.035 0.016 0.    0.016 0.18  0.    0.    0.
+ 0.    0.    0.    0.    0.    0.    0.    0.   ] {&#39;CI&#39;: [0.666, 0.701], &#39;CI_CENS&#39;: [0.787, 0.817], &#39;IBS&#39;: [0.149, 0.125], &#39;IBS_REMAIN&#39;: [0.126, 0.111], &#39;IAUC&#39;: [0.806, 0.86], &#39;IAUC_WW_TI&#39;: [0.847, 0.882], &#39;AUPRC&#39;: [0.766, 0.784]}
+&lt;class &#39;survivors.ensemble.bootstrap.ParallelBootstrapCRAID&#39;&gt; {&#39;categ&#39;: [[&#39;trt&#39;, &#39;sex&#39;, &#39;ascites&#39;, &#39;hepato&#39;, &#39;spiders&#39;]], &#39;criterion&#39;: [&#39;wilcoxon&#39;], &#39;depth&#39;: [7], &#39;ens_metric_name&#39;: [&#39;IBS_REMAIN&#39;], &#39;l_reg&#39;: [0], &#39;max_features&#39;: [&#39;sqrt&#39;], &#39;min_samples_leaf&#39;: [0.01], &#39;n_estimators&#39;: [50], &#39;size_sample&#39;: [0.7]}
+Iteration: 1/1
+EXECUTION TIME OF ParallelBootstrapCRAID: [9.561 9.435 9.52  9.281 9.22  9.538 8.486 9.526 9.52  9.237 8.786 9.567
+ 8.899 9.193 9.309 9.711 9.358 9.184 9.738 9.749], MEM [9.3867e+01 8.8625e+01 9.9227e+01 1.8527e+01 3.1000e-02 1.6109e+01
+ 2.7970e+00 3.5740e+00 4.7150e+00 1.0828e+01 1.4184e+01 1.1406e+01
+ 1.0629e+01 5.4730e+00 1.2289e+01 2.2070e+00 1.6852e+01 9.9340e+00
+ 6.8710e+00 7.7150e+00] {&#39;CI&#39;: [0.685, 0.696], &#39;CI_CENS&#39;: [0.818, 0.845], &#39;IBS&#39;: [0.133, 0.122], &#39;IBS_REMAIN&#39;: [0.114, 0.113], &#39;IAUC&#39;: [0.81, 0.844], &#39;IAUC_WW_TI&#39;: [0.85, 0.86], &#39;AUPRC&#39;: [0.733, 0.743]}
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">df_validation</span> <span class="o">=</span> <span class="n">experim</span><span class="o">.</span><span class="n">get_best_by_mode</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h2>
+<p>For example, here are the <strong>result table</strong> values and <strong>boxplot</strong>.</p>
+<dl class="simple">
+<dt>For each metric, four columns are defined:</dt><dd><ul class="simple">
+<li><p><strong>&lt;metric&gt;</strong>: list of metric indicators on each of the 20 samples.</p></li>
+<li><p><strong>&lt;metric&gt;_mean</strong>: the average value of the metric at the 20 samples.</p></li>
+<li><p><strong>&lt;metric&gt;_CV</strong>: list of metric indicators on cross-validation.</p></li>
+<li><p><strong>&lt;metric&gt;_CV_mean</strong>: the average value of the metric on cross-validation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">df_validation</span><span class="p">[[</span><span class="s2">&quot;METHOD&quot;</span><span class="p">,</span> <span class="s2">&quot;CI_CENS_mean&quot;</span><span class="p">,</span> <span class="s2">&quot;IBS_REMAIN_mean&quot;</span><span class="p">,</span> <span class="s2">&quot;IAUC_WW_TI_mean&quot;</span><span class="p">,</span> <span class="s2">&quot;AUPRC_mean&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>METHOD</th>
+      <th>CI_CENS_mean</th>
+      <th>IBS_REMAIN_mean</th>
+      <th>IAUC_WW_TI_mean</th>
+      <th>AUPRC_mean</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CoxPHSurvivalAnalysis</td>
+      <td>0.813429</td>
+      <td>0.119927</td>
+      <td>0.862084</td>
+      <td>0.698091</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>SurvivalTree</td>
+      <td>0.779649</td>
+      <td>0.136475</td>
+      <td>0.825107</td>
+      <td>0.699253</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>RandomSurvivalForest</td>
+      <td>0.811234</td>
+      <td>0.128245</td>
+      <td>0.851715</td>
+      <td>0.680237</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>ComponentwiseGradientBoostingSurvivalAnalysis</td>
+      <td>0.796434</td>
+      <td>0.141396</td>
+      <td>0.842715</td>
+      <td>0.672409</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>GradientBoostingSurvivalAnalysis</td>
+      <td>0.819753</td>
+      <td>0.117669</td>
+      <td>0.862094</td>
+      <td>0.691417</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>CRAID</td>
+      <td>0.786617</td>
+      <td>0.126388</td>
+      <td>0.846679</td>
+      <td>0.766152</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>ParallelBootstrapCRAID</td>
+      <td>0.817913</td>
+      <td>0.114381</td>
+      <td>0.849970</td>
+      <td>0.732755</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">l_metrics</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">df_validation</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="n">df_validation</span><span class="p">[</span><span class="s1">&#39;METHOD&#39;</span><span class="p">],</span> <span class="n">showmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vert</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../_images/sphx_glr_plot_experiments_guide_001.png" srcset="../_images/sphx_glr_plot_experiments_guide_001.png" alt="CI" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_experiments_guide_002.png" srcset="../_images/sphx_glr_plot_experiments_guide_002.png" alt="CI_CENS" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_experiments_guide_003.png" srcset="../_images/sphx_glr_plot_experiments_guide_003.png" alt="IBS" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_experiments_guide_004.png" srcset="../_images/sphx_glr_plot_experiments_guide_004.png" alt="IBS_REMAIN" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_experiments_guide_005.png" srcset="../_images/sphx_glr_plot_experiments_guide_005.png" alt="IAUC" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_experiments_guide_006.png" srcset="../_images/sphx_glr_plot_experiments_guide_006.png" alt="IAUC_WW_TI" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_experiments_guide_007.png" srcset="../_images/sphx_glr_plot_experiments_guide_007.png" alt="AUPRC" class = "sphx-glr-multi-img"/></li>
+</ul>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (37 minutes 24.268 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-experiments-guide-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/7561288ed11cbede0988bc350685c505/plot_experiments_guide.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_experiments_guide.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/ffd405b39637552c62f2fd94d5036fd0/plot_experiments_guide.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_experiments_guide.py</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../Citing.html" class="btn btn-neutral float-left" title="Citing survivors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plot_user_guide.html" class="btn btn-neutral float-right" title="Base User guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Iulii Vasilev.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
