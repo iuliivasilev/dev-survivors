@@ -35,6 +35,10 @@ def parse_requirements(filename):
 # 1. python setup.py sdist bdist_wheel
 # 2. twine upload --repository survivors dist/* (see in .pypirc file)
 
+# (NOTE): Delete .egg !!!
+# ERROR    HTTPError: 400 Bad Request from https://upload.pypi.org/legacy/
+#          Invalid value for filetype. Error: Use a known file type.
+
 install_requires = parse_requirements("requirements/requirements.txt")
 
 setup(
