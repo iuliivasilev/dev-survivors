@@ -177,12 +177,6 @@ def split_time_to_bins(time, event=None, apr_times=None, apr_events=None):
     # n = np.clip(np.sum(apr_events) // 5, 2, 20)
     # return np.searchsorted(np.quantile(apr_times[np.where(apr_events)], np.arange(n + 1)/n), time)
 
-#     if apr_times is None:
-#         n = np.clip(time.shape[0] // 2, 2, 100)
-#         return np.searchsorted(np.quantile(time, np.arange(n + 1)/n), time)
-#     n = np.clip(apr_times.shape[0] // 2, 2, 100)
-#     return np.searchsorted(np.quantile(apr_times, np.arange(n + 1)/n), time)
-
 
 def get_attrs(max_stat_val, values, none_to, l_sh, r_sh, nan_sh, stat_diff):
     attrs = dict()
@@ -302,7 +296,7 @@ def count_sf_diff(time, cens):
     c_time = np.cumsum(time[::-1])[::-1]
     sf = np.cumprod((1.0 - cens / (c_time + 1)))
     sf[c_time == 0] = 0.0
-    return np.sum((sf - 0.5)**2) / sf.shape[0]  # max(1, bins[-1] - bins[0])
+    return np.sum((sf - 0.5)**2) / sf.shape[0]
 
 
 def cnttest_hist(time_1, cens_1, time_2, cens_2):
@@ -454,7 +448,7 @@ def hist_best_attr_split(arr, criterion="logrank", type_attr="cont", weights=Non
         else:
             kmf.fit(dur, cens)
         ci = kmf.get_confidence_interval_()
-        weights_hist = 1 / (ci[1:, 1] - ci[1:, 0] + 1e-5)  # (ci[1:, 1] + ci[1:, 0] + 1e-5)
+        weights_hist = 1 / (ci[1:, 1] - ci[1:, 0] + 1e-5)
         criterion = "weights"
     elif criterion == "fullprob":
         kmf = FullProbKM()
