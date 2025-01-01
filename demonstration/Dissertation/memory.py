@@ -1,10 +1,10 @@
 # import pandas as pd
-# import numpy as np
-# # import os
-# # import time
-# # import copy
-# # import pathlib, tempfile
-#
+import numpy as np
+# import os
+# import time
+# import copy
+# import pathlib, tempfile
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
@@ -27,9 +27,12 @@ import survivors.datasets as ds
 import cProfile
 import pstats
 
-
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from survivors.experiments.grid import generate_sample, prepare_sample, count_metric
+
+from memory_profiler import memory_usage
+from survivors.tree import CRAID
+import sys
 
 # X, y, features, categ, sch_nan = ds.load_actg_dataset()
 X, y, features, categ, sch_nan = ds.load_smarto_dataset()
@@ -41,10 +44,6 @@ time_discr = np.searchsorted(qs, y["time"])
 discr = np.char.add(time_discr.astype(str), y["cens"].astype(str))
 X_TR, X_HO = train_test_split(X, stratify=discr, test_size=0.33, random_state=42)
 X_tr, y_tr, X_HO, y_HO, bins_HO = prepare_sample(X, y, X_TR.index, X_HO.index)
-
-from memory_profiler import memory_usage
-from survivors.tree import CRAID
-import sys
 
 p = {'balance': None, 'categ': categ, 'criterion': 'wilcoxon', 'cut': False, 'depth': 10, 
      'ens_metric_name': 'IBS_REMAIN', 'l_reg': 0.0, 'leaf_model': 'base_zero_after', 
