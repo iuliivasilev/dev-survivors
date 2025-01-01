@@ -50,9 +50,11 @@ p = {'balance': None, 'categ': categ, 'criterion': 'wilcoxon', 'cut': False, 'de
      'ens_metric_name': 'IBS_REMAIN', 'l_reg': 0.0, 'leaf_model': 'base_zero_after', 
      'max_features': 0.9, 'min_samples_leaf': 0.01, 'n_jobs': 1, 'n_jobs_loop': 1, 'signif': 1, 'woe': True}
 
+
 def train_model():
     tree = CRAID(**p)
     tree.fit(X_tr, y_tr)
+
 
 if __name__ == "__main__":
     train_model()
