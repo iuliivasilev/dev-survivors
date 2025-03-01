@@ -168,6 +168,7 @@ def load_metabric_dataset():
         y[TIME_NAME] += 1
     return X, y, sign_c, categ_c, []
 
+
 def load_wuhan_dataset(invert_death=False):
     """
     Full description: https://www.nature.com/articles/s42256-020-0180-7
