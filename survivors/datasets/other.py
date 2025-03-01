@@ -141,7 +141,6 @@ def load_pbc_dataset():
 def load_metabric_dataset():
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, f'metabric.tsv'), sep="\t", header=4)
-    map_cell = {"Low": 0, "Moderate": 1, "High": 2}
     obsolete_feat = ["PATIENT_ID", "VITAL_STATUS", "RFS_MONTHS", "RFS_STATUS",
                      "BREAST_SURGERY", "SEX", "LATERALITY", "ER_IHC"]
     target_feat = ["OS_STATUS", "OS_MONTHS"]
@@ -162,7 +161,7 @@ def load_metabric_dataset():
     sign_c = sorted(list(set(df.columns) - set(obsolete_feat) - set(target_feat)))
     categ_c = sorted(list(set(sign_c) - set(cont_feat)))
 
-    y = get_y(cens=df["OS_STATUS"] == "1:DECEASED", time=df["OS_MONTHS"].astype("int"))
+    y = get_y(cens=df["OS_STATUS"] == "1:DECEASED", time=(round(df["OS_MONTHS"])).astype(int))
     X = df.loc[:, sign_c]
 
     if y[TIME_NAME].min() == 0:
