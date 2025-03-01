@@ -138,6 +138,37 @@ def load_pbc_dataset():
     return X, y, sign_pbc, categ_pbc, []
 
 
+def load_metabric_dataset():
+    dir_env = join(dirname(__file__), "data")
+    df = pd.read_csv(join(dir_env, f'metabric.tsv'), sep="\t", header=4)
+    map_cell = {"Low": 0, "Moderate": 1, "High": 2}
+    obsolete_feat = ["PATIENT_ID", "VITAL_STATUS", "RFS_MONTHS", "RFS_STATUS",
+                     "BREAST_SURGERY", "SEX", "LATERALITY", "ER_IHC"]
+    target_feat = ["OS_STATUS", "OS_MONTHS"]
+    cont_feat = ["LYMPH_NODES_EXAMINED_POSITIVE", "NPI", "CELLULARITY", "AGE_AT_DIAGNOSIS"]
+
+    df = df[df[target_feat].notna().all(axis=1)].reset_index(drop=True)
+
+    df["CELLULARITY"] = df["CELLULARITY"].map({"Low": 0, "Moderate": 1, "High": 2})
+    df["CHEMOTHERAPY"] = df["CHEMOTHERAPY"].map({"YES": True, "NO": False})
+    df["ER_IHC_POS"] = df["ER_IHC"].map({"Positve": True, "Negative": False})
+    df["HORMONE_THERAPY"] = df["HORMONE_THERAPY"].map({"YES": True, "NO": False})
+    df["RADIO_THERAPY"] = df["RADIO_THERAPY"].map({"YES": True, "NO": False})
+    df["BREAST_SURGERY_MASTECTOMY"] = df["BREAST_SURGERY"].map({"MASTECTOMY": True, "BREAST CONSERVING": False})
+    df["LATERALITY_LEFT"] = df["LATERALITY"].map({"Left": True, "Right": False})
+    df["RFS_RECURRED"] = df["RFS_STATUS"].map({"1:Recurred": True, "0:Not Recurred": False})
+    df["INFERRED_MENOPAUSAL_POST"] = df["INFERRED_MENOPAUSAL_STATE"].map({"Post": True, "Pre": False})
+
+    sign_c = sorted(list(set(df.columns) - set(obsolete_feat) - set(target_feat)))
+    categ_c = sorted(list(set(sign_c) - set(cont_feat)))
+
+    y = get_y(cens=df["OS_STATUS"] == "1:DECEASED", time=df["OS_MONTHS"].astype("int"))
+    X = df.loc[:, sign_c]
+
+    if y[TIME_NAME].min() == 0:
+        y[TIME_NAME] += 1
+    return X, y, sign_c, categ_c, []
+
 def load_wuhan_dataset(invert_death=False):
     """
     Full description: https://www.nature.com/articles/s42256-020-0180-7
