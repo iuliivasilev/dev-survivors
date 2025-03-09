@@ -9,6 +9,7 @@ from .other import load_rott2_dataset
 from .other import load_support2_dataset
 from .other import load_Framingham_dataset
 from .other import load_metabric_dataset
+from .other import load_seer_dataset
 
 from .covid import load_covid_dataset
 from .onk import load_onk_dataset
@@ -32,6 +33,7 @@ DATASETS_LOAD = {
     "backblaze18_21": load_backblaze_2018_2021,
     "backblaze21_23": load_backblaze_2021_2023,
     "metabric": load_metabric_dataset,
+    "seer": load_seer_dataset,
     # "backblaze": load_backblaze_dataset
     # "ONK": load_onk_dataset,
     # "COVID": load_covid_dataset,

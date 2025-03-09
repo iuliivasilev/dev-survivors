@@ -177,7 +177,7 @@ def load_seer_dataset():
     https://github.com/thecml/baysurv
     """
     dir_env = join(dirname(__file__), "data")
-    df = pd.read_csv(join(dir_env, f'seer.tsv'), sep="\t", header=4)
+    df = pd.read_csv(join(dir_env, f'seer.csv'))
     obsolete_feat = ["A_Stage"]
     target_feat = ["Status", "Survival_Months"]
     cont_feat = ["Age", "Race", "Marital_Status", "T_Stage", "N_Stage", "6th_Stage",
