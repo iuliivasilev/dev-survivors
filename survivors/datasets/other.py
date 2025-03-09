@@ -202,6 +202,21 @@ def load_seer_dataset():
     return X, y, sign_c, categ_c, []
 
 
+def load_mimic_dataset():
+    """
+    https://github.com/thecml/baysurv
+    """
+    dir_env = join(dirname(__file__), "data")
+    df = pd.read_csv(join(dir_env, f'mimic.csv.gz'), compression='gzip')
+    sign_c = sorted(list(set(df.columns) - set(["time", "event"])))
+
+    y = get_y(cens=df["event"], time=df["time"])
+    X = df.loc[:, sign_c]
+    if y[TIME_NAME].min() == 0:
+        y[TIME_NAME] += 1
+    return X, y, sign_c, [], []
+
+
 def load_wuhan_dataset(invert_death=False):
     """
     Full description: https://www.nature.com/articles/s42256-020-0180-7
