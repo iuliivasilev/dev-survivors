@@ -139,6 +139,9 @@ def load_pbc_dataset():
 
 
 def load_metabric_dataset():
+    """
+    https://github.com/baskayj/Censoring-sensitivity-analysis-for-survival-models/tree/main
+    """
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, f'metabric.tsv'), sep="\t", header=4)
     obsolete_feat = ["PATIENT_ID", "VITAL_STATUS", "RFS_MONTHS", "RFS_STATUS",
@@ -162,6 +165,36 @@ def load_metabric_dataset():
     categ_c = sorted(list(set(sign_c) - set(cont_feat)))
 
     y = get_y(cens=df["OS_STATUS"] == "1:DECEASED", time=(round(df["OS_MONTHS"])).astype(int))
+    X = df.loc[:, sign_c]
+
+    if y[TIME_NAME].min() == 0:
+        y[TIME_NAME] += 1
+    return X, y, sign_c, categ_c, []
+
+
+def load_seer_dataset():
+    """
+    https://github.com/thecml/baysurv
+    """
+    dir_env = join(dirname(__file__), "data")
+    df = pd.read_csv(join(dir_env, f'seer.tsv'), sep="\t", header=4)
+    obsolete_feat = ["A_Stage"]
+    target_feat = ["Status", "Survival_Months"]
+    cont_feat = ["Age", "Race", "Marital_Status", "T_Stage", "N_Stage", "6th_Stage",
+                 "differentiate", "Grade", "A_Stage_Distant", "Tumor_Size", "Estrogen_Status",
+                 "Progesterone_Status", "Regional_Node_Examined", "Reginol_Node_Positive"]
+    df["Status"] = df["Status"].map({"Alive": 0, "Dead": 1})
+    df["T_Stage"] = df["T_Stage"].str[1:].astype(int)
+    df["N_Stage"] = df["N_Stage"].str[1:].astype(int)
+    df["A_Stage_Distant"] = df["A_Stage"].map({"Distant": True, "Regional": False})
+    df["Estrogen_Status"] = df["Estrogen_Status"].map({"Positive": True, "Negative": False})
+    df["Progesterone_Status"] = df["Progesterone_Status"].map({"Positive": True, "Negative": False})
+
+    df = df[df[target_feat].notna().all(axis=1)].reset_index(drop=True)
+    sign_c = sorted(list(set(df.columns) - set(obsolete_feat) - set(target_feat)))
+    categ_c = sorted(list(set(sign_c) - set(cont_feat)))
+
+    y = get_y(cens=df["Status"], time=df["Survival_Months"])
     X = df.loc[:, sign_c]
 
     if y[TIME_NAME].min() == 0:
