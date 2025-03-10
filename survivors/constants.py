@@ -36,7 +36,7 @@ def load_pickle(path):
     return pickle.load(open(path, 'rb'))
 
 
-def get_y(cens, time):
+def get_y(cens, time, competing=False):
     """
     Internal representation of target variable
 
@@ -55,7 +55,7 @@ def get_y(cens, time):
 
     """
     cens, time = np.array(cens), np.array(time) 
-    y = np.empty(dtype=[(CENS_NAME, bool), 
+    y = np.empty(dtype=[(CENS_NAME, np.int32 if competing else bool),
                         (TIME_NAME, np.float64)], 
                  shape=cens.shape[0])
     y[CENS_NAME] = cens
