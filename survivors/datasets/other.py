@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import re
-import pickle 
 import random
 from os.path import dirname, join
 from ..constants import TIME_NAME, CENS_NAME, get_y
@@ -15,15 +14,6 @@ categ_gbsg = ['htreat', 'menostat', 'tumgrad']
 sign_pbc = ['trt', 'age', 'sex', 'ascites', 'hepato', 'spiders', 'edema', 'bili', 'chol',
             'albumin', 'copper', 'alk', 'ast', 'trig', 'platelet', 'protime', 'stage']
 categ_pbc = ['trt', 'sex', 'ascites', 'hepato', 'spiders']
-
-
-def save_pickle(obj, path):
-    file_pi = open(path, 'wb') 
-    pickle.dump(obj, file_pi, pickle.HIGHEST_PROTOCOL)
-
-
-def load_pickle(path):
-    return pickle.load(open(path, 'rb'))
 
 
 def load_scheme_dataset(name):
@@ -205,12 +195,14 @@ def load_seer_dataset():
 def load_mimic_dataset():
     """
     https://github.com/thecml/baysurv
+    https://physionet.org/content/mimiciv/2.0/
+    https://arxiv.org/pdf/2204.13841
     """
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, f'mimic.csv.gz'), compression='gzip')
     sign_c = sorted(list(set(df.columns) - set(["time", "event"])))
 
-    y = get_y(cens=df["event"], time=df["time"])
+    y = get_y(cens=df["event"], time=np.log1p(df["time"]) * 10)
     X = df.loc[:, sign_c]
     if y[TIME_NAME].min() == 0:
         y[TIME_NAME] += 1

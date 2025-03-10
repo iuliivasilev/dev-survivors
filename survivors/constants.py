@@ -2,6 +2,7 @@ import os
 import random
 import numpy as np
 from collections import Counter
+import pickle
 
 RANDOM_STATE = 123
 """ int: Fixed seed for model reproducibility """
@@ -24,6 +25,15 @@ def set_seed(seed_value):
     os.environ['PYTHONHASHSEED'] = str(seed_value)
     random.seed(seed_value)
     np.random.seed(seed_value)
+
+
+def save_pickle(obj, path):
+    file_pi = open(path, 'wb')
+    pickle.dump(obj, file_pi, pickle.HIGHEST_PROTOCOL)
+
+
+def load_pickle(path):
+    return pickle.load(open(path, 'rb'))
 
 
 def get_y(cens, time):
