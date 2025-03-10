@@ -49,3 +49,14 @@ def load_bank_dataset():
     """
     pass
     return None
+
+
+def load_cell2cell_dataset():
+    """
+    https://www.kaggle.com/datasets/jpacse/telecom-churn-new-cell2cell-dataset
+    https://github.com/jmoy409/The_Churn_Game/tree/master
+    https://github.com/lmutesi/Cell2Cell-Churn-Analysis/tree/main
+    https://www.interviewquery.com/p/customer-churn-datasets#advanced-customer-churn-datasets-projects
+    """
+    pass
+    return None
