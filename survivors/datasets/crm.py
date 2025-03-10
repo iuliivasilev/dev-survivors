@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import re
 import random
 from os.path import dirname, join
 from ..constants import TIME_NAME, CENS_NAME, get_y
@@ -12,8 +11,25 @@ def load_ecomm_dataset():
     """
     https://www.kaggle.com/datasets/ankitverma2010/ecommerce-customer-churn-analysis-and-prediction
     """
-    pass
-    return None
+    dir_env = join(dirname(__file__), "data", "CRM")
+    df = pd.read_excel(join(dir_env, 'ECommerce.xlsx'), sheet_name="E Comm")
+
+    obsolete_feat = ["CustomerID"]
+    target_feat = ["Churn", "DaySinceLastOrder"]
+    cont_feat = ["Tenure", "CityTier", "WarehouseToHome", "HourSpendOnApp", "NumberOfDeviceRegistered",
+                 "SatisfactionScore", "NumberOfAddress", "Complain", "OrderAmountHikeFromlastYear",
+                 "CouponUsed", "OrderCount", "CashbackAmount"]
+
+    df = df[df[target_feat].notna().all(axis=1)].reset_index(drop=True)
+    sign_c = sorted(list(set(df.columns) - set(obsolete_feat) - set(target_feat)))
+    categ_c = sorted(list(set(sign_c) - set(cont_feat)))
+
+    y = get_y(cens=df[target_feat[0]], time=df[target_feat[1]])
+    X = df.loc[:, sign_c]
+
+    if y[TIME_NAME].min() == 0:
+        y[TIME_NAME] += 1
+    return X, y, sign_c, categ_c, []
 
 
 def load_telco_dataset():
