@@ -12,6 +12,9 @@ from .other import load_metabric_dataset
 from .other import load_seer_dataset
 from .other import load_mimic_dataset
 
+from .crm import load_ecomm_dataset
+from .crm import load_cell2cell_dataset
+
 from .covid import load_covid_dataset
 from .onk import load_onk_dataset
 from .backblaze import load_backblaze_dataset
@@ -36,6 +39,8 @@ DATASETS_LOAD = {
     "metabric": load_metabric_dataset,
     "seer": load_seer_dataset,
     "mimic": load_mimic_dataset,
+    "ecomm": load_ecomm_dataset,
+    "cell2cell": load_cell2cell_dataset,
     # "backblaze": load_backblaze_dataset
     # "ONK": load_onk_dataset,
     # "COVID": load_covid_dataset,
