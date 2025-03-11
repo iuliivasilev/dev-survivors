@@ -39,7 +39,8 @@ def load_telco_dataset():
     https://github.com/Pradnya1208/Telecom-Customer-Churn-prediction
     https://github.com/archd3sai/Customer-Survival-Analysis-and-Churn-Prediction/blob/master/Customers%20Survival%20Analysis.ipynb
     """
-    pass
+    dir_env = join(dirname(__file__), "data", "CRM")
+    df = pd.read_csv(join(dir_env, 'telco.csv.gz'), compression='gzip')
     return None
 
 
@@ -71,8 +72,9 @@ def load_cell2cell_dataset(competing=False):
     dir_env = join(dirname(__file__), "data", "CRM")
     df = pd.read_csv(join(dir_env, 'cell2cell-duke univeristy.csv.gz'), compression='gzip')
 
-    obsolete_feat = ["customer", "traintest", "churndep", "eqpdays", "changem", "changer", "retcalls",
-                     "retaccpt", "refer", "incmiss", "income", "mcycle", "setprcm", "setprc", "retcall"]
+    # obsolete_feat = ["churndep", "eqpdays", "changem", "changer", "retcalls",
+    #                  "retaccpt", "refer", "incmiss", "income", "mcycle", "setprcm", "setprc", "retcall"]
+    obsolete_feat = ["retcall"]
     target_feat = ["churn", "months"]
     cont_feat = sorted(list(set(df.select_dtypes(include=np.number).columns) - set(obsolete_feat) - set(target_feat)))
     if competing:
