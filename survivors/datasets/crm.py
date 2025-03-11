@@ -1,10 +1,7 @@
 import numpy as np
 import pandas as pd
-import random
 from os.path import dirname, join
 from ..constants import TIME_NAME, CENS_NAME, get_y
-
-random.seed(10)
 
 
 def prepare_dataset_by_template(df, obsolete_feat, target_feat, cont_feat, competing=False):
@@ -49,9 +46,19 @@ def load_telco_dataset():
 def load_bank_dataset():
     """
     https://www.kaggle.com/datasets/shrutimechlearn/churn-modelling
+    The difficulty is that we know the final picture of the customers.
+    It is necessary to represent the data at the time of the client's first request to the bank.
+    It needs to delete all information about the customer's behavior in the bank and use only the initial information.
     """
-    pass
-    return None
+    dir_env = join(dirname(__file__), "data", "CRM")
+    df = pd.read_csv(join(dir_env, 'Churn_Modelling.csv'))
+    obsolete_feat = ["Balance", "IsActiveMember"]
+    target_feat = ["Exited", "Tenure"]
+    cont_feat = ["CreditScore", "Gender", "Age", "NumOfProducts", "HasCrCard", "EstimatedSalary"]
+
+    df["Age"] = df["Age"] - df["Tenure"]
+    df["Gender"] = df["Gender"].map({"Female": 1, "Male": 0})
+    return prepare_dataset_by_template(df, obsolete_feat, target_feat, cont_feat)
 
 
 def load_cell2cell_dataset(competing=False):
