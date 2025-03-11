@@ -16,13 +16,14 @@ sign_pbc = ['trt', 'age', 'sex', 'ascites', 'hepato', 'spiders', 'edema', 'bili'
 categ_pbc = ['trt', 'sex', 'ascites', 'hepato', 'spiders']
 
 
-def load_scheme_dataset(name):
+def load_scheme_dataset(name, zipped=False):
     """
     Base loader function for internal datasets
 
     Parameters
     ----------
     name: str
+    zipped: bool
 
     Returns
     -------
@@ -39,7 +40,10 @@ def load_scheme_dataset(name):
 
     """
     dir_env = join(dirname(__file__), "data")
-    df = pd.read_csv(join(dir_env, f'{name}.csv'))
+    if zipped:
+        df = pd.read_csv(join(dir_env, f'{name}.csv.gz'), compression='gzip')
+    else:
+        df = pd.read_csv(join(dir_env, f'{name}.csv'))
     df = df.rename({"time": TIME_NAME, "event": CENS_NAME}, axis=1)
 
     sign_c = [c for c in df.columns if c.startswith("num_") or c.startswith("fac_")]
@@ -61,7 +65,7 @@ def load_support2_dataset():
     """
     Full description: https://archive.ics.uci.edu/dataset/880/support2
     """
-    return load_scheme_dataset('support2')
+    return load_scheme_dataset('support2', zipped=True)
 
 def load_rott2_dataset():
     """
