@@ -84,5 +84,12 @@ def load_gym_dataset():
     https://www.kaggle.com/datasets/adrianvinueza/gym-customers-features-and-churn/data
     https://www.interviewquery.com/p/customer-churn-datasets#advanced-customer-churn-datasets-projects
     """
-    pass
-    return None
+    dir_env = join(dirname(__file__), "data", "CRM")
+    df = pd.read_csv(join(dir_env, 'gym_churn_us.csv'))
+    df = df[df["Contract_period"] != 1]   # Need to analyse of long-term investments
+    df["time"] = df["Contract_period"] - df["Month_to_end_contract"]
+
+    obsolete_feat = ["Month_to_end_contract", "Avg_class_frequency_total", "Avg_additional_charges_total"]
+    target_feat = ["Churn", "time"]
+    cont_feat = sorted(list(set(df.select_dtypes(include=np.number).columns) - set(obsolete_feat) - set(target_feat)))
+    return prepare_dataset_by_template(df, obsolete_feat, target_feat, cont_feat)
