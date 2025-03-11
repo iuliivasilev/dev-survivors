@@ -196,7 +196,7 @@ def load_seer_dataset():
     return X, y, sign_c, categ_c, []
 
 
-def load_mimic_dataset():
+def load_mimic_dataset(range=False):
     """
     https://github.com/thecml/baysurv
     https://physionet.org/content/mimiciv/2.0/
@@ -204,6 +204,9 @@ def load_mimic_dataset():
     """
     dir_env = join(dirname(__file__), "data")
     df = pd.read_csv(join(dir_env, f'mimic.csv.gz'), compression='gzip')
+    if range:
+        for c in df.columns[df.columns.str.endswith("min")].str[:-4]:
+            df[f"{c}_range"] = df[f"{c}_max"] - df[f"{c}_min"]
     sign_c = sorted(list(set(df.columns) - set(["time", "event"])))
 
     y = get_y(cens=df["event"], time=np.log1p(df["time"]) * 10)
