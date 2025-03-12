@@ -41,7 +41,16 @@ def load_telco_dataset():
     """
     dir_env = join(dirname(__file__), "data", "CRM")
     df = pd.read_csv(join(dir_env, 'telco.csv.gz'), compression='gzip')
-    return None
+
+    for c in ["Churn", "Partner", "Dependents", "PhoneService", "OnlineSecurity", "OnlineBackup", "DeviceProtection",
+              "TechSupport", "StreamingTV", "StreamingMovies", "PaperlessBilling", "MultipleLines"]:
+        df[c] = df[c].map({"Yes": True, "No": False})
+    df["gender"] = df["gender"].map({"Female": 1, "Male": 0})
+
+    obsolete_feat = ["TotalCharges"]
+    target_feat = ["Churn", "tenure"]
+    cont_feat = sorted(list(set(df.select_dtypes(include=np.number).columns) - set(obsolete_feat) - set(target_feat)))
+    return prepare_dataset_by_template(df, obsolete_feat, target_feat, cont_feat)
 
 
 def load_bank_dataset():

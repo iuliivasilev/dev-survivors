@@ -16,6 +16,7 @@ from .crm import load_ecomm_dataset
 from .crm import load_cell2cell_dataset
 from .crm import load_gym_dataset
 from .crm import load_bank_dataset
+from .crm import load_telco_dataset
 
 from .covid import load_covid_dataset
 from .onk import load_onk_dataset
@@ -45,6 +46,7 @@ DATASETS_LOAD = {
     "cell2cell": load_cell2cell_dataset,
     "gym": load_gym_dataset,
     "bank": load_bank_dataset,
+    "telco": load_telco_dataset,
     # "backblaze": load_backblaze_dataset
     # "ONK": load_onk_dataset,
     # "COVID": load_covid_dataset,
