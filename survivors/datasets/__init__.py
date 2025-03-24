@@ -26,6 +26,8 @@ from .new_backblaze import load_backblaze_2016_2018
 from .new_backblaze import load_backblaze_2018_2021
 from .new_backblaze import load_backblaze_2021_2023
 
+from .reliability import load_alibaba_dataset
+
 DATASETS_LOAD = {
     "GBSG": load_gbsg_dataset,
     "PBC": load_pbc_dataset,
@@ -47,6 +49,7 @@ DATASETS_LOAD = {
     "gym": load_gym_dataset,
     "bank": load_bank_dataset,
     "telco": load_telco_dataset,
+    "alibaba": load_alibaba_dataset,
     # "backblaze": load_backblaze_dataset
     # "ONK": load_onk_dataset,
     # "COVID": load_covid_dataset,

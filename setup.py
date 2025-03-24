@@ -4,7 +4,9 @@ from pkg_resources import parse_requirements as _parse_requirements
 
 SELF_DATASETS = []  # ["datasets/data/ONK/*", "datasets/data/COVID/*"]
 
-PACKAGE_DATA = {"survivors": ["datasets/data/*", "datasets/data/CRM/*"] + SELF_DATASETS}
+PACKAGE_DATA = {"survivors": ["datasets/data/*",
+                              "datasets/data/CRM/*",
+                              "datasets/data/RELIABILITY/*"] + SELF_DATASETS}
 
 
 def parse_requirements(filename):
