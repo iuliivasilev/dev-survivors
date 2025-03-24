@@ -15,13 +15,28 @@ from graphviz import Digraph, set_jupyter_format
 set_jupyter_format('png')
 
 
+# def format_to_pandas(X, columns, create_nan=False):
+#     type_df = type(X)
+#     if type_df.__name__ == "DataFrame":
+#         if create_nan:
+#             miss_col = sorted(list(set(columns) - set(X.columns)))
+#             if miss_col:
+#                 X[miss_col] = np.nan
+#         return X[columns].reset_index(drop=True)
+#     elif type_df.__name__ == "ndarray":
+#         return pd.DataFrame(X, columns=columns)
+#     return None
+
+
 def format_to_pandas(X, columns):
     type_df = type(X)
+    res = pd.DataFrame([], columns=columns)
     if type_df.__name__ == "DataFrame":
-        return X[columns].reset_index(drop=True)
+        exist_col = sorted(list(set(X.columns) & set(columns)))
+        res[exist_col] = X[exist_col].reset_index(drop=True)
     elif type_df.__name__ == "ndarray":
-        return pd.DataFrame(X, columns=columns)
-    return None
+        res[columns[:X.shape[1]]] = pd.DataFrame(X, columns=columns[:X.shape[1]])
+    return res
 
 
 def get_oversample(df, target=cnt.CENS_NAME):
