@@ -1,3 +1,5 @@
+![Survivors Logo](https://github.com/iuliivasilev/dev-survivors/tree/master/docs/static/logo.png)
+
 .. -*- mode: rst -*-
 
 |Price| |License| |PyPi| |DOI|
