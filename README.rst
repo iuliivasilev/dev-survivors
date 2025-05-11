@@ -1,5 +1,3 @@
-![Logo](https://github.com/iuliivasilev/dev-survivors/tree/master/docs/static/logo.png)
-
 .. -*- mode: rst -*-
 
 |Price| |License| |PyPi| |DOI|
@@ -16,9 +14,8 @@
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10649986.svg
     :target: https://zenodo.org/doi/10.5281/zenodo.10649777
 
-=========
-survivors
-=========
+.. image:: https://github.com/iuliivasilev/dev-survivors/tree/master/docs/static/collage.png
+  :target: https://iuliivasilev.github.io/dev-survivors/
 
 Event analysis has many applications: healthcare, hardware, social science, bioinformatics, and more. Survival analysis allows you to predict not only the time and probability of an event but also how the probability of that event changes over time.
 In particular, there are three functions: the survival function *S(t)*, the density function *f(t)*, and the hazard function *h(t)*:
