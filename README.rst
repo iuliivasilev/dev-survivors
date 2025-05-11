@@ -1,4 +1,4 @@
-![Survivors Logo](https://github.com/iuliivasilev/dev-survivors/tree/master/docs/static/logo.png)
+![Logo](https://github.com/iuliivasilev/dev-survivors/tree/master/docs/static/logo.png)
 
 .. -*- mode: rst -*-
 
