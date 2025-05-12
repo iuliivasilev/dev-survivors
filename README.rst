@@ -1,6 +1,3 @@
-![Logo](https://github.com/iuliivasilev/dev-survivors/blob/master/docs/static/logo.png)
---------------------------------------------------------------------------------
-
 .. -*- mode: rst -*-
 
 |Price| |License| |PyPi| |DOI|
