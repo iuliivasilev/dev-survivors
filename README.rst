@@ -17,18 +17,15 @@
 .. image:: https://github.com/iuliivasilev/dev-survivors/blob/master/docs/static/collage.png
   :target: https://iuliivasilev.github.io/dev-survivors/
 
-Event analysis has many applications: healthcare, hardware, social science, bioinformatics, and more. Survival analysis allows you to predict not only the time and probability of an event but also how the probability of that event changes over time.
-In particular, there are three functions: the survival function *S(t)*, the density function *f(t)*, and the hazard function *h(t)*:
+**Survivors** is a Python library for survival analysis designed to handle real-world, messy, and heterogeneous data with high accuracy and interpretability.
 
-.. math::
-    S(t)=P(T>t), f(t)=(1 - S(t))', h(t)=f(t)/S(t)
+Unlike many existing libraries that rely on strong theoretical assumptions (e.g., proportional hazards, exponential distributions), **Survivors** is:
 
-The open-source **survivors** library aims to fit accurate data-sensitive tree-based models. 
-These models handle categorical features and deal with missing values,overcoming the limitations of existing `lifelines <https://github.com/lifelines/lifelines?ysclid=lta0m13i2b832399887>`_, `scikit-survival <https://github.com/sebp/scikit-survival>`_, and `pycox <https://github.com/havakv/pycox>`_ models.
-Survivors is a platform for conducting experimental research. The experiment module is compatible with scikit-survival and lifelines models (non-parametric and parametric models have already been embedded into the library).
+* **Flexible**: works with incomplete, noisy, and heterogeneous tabular data.
+* **Interpretable**: powered by survival trees and ensembles (forests) that offer transparent decision paths.
+* **Highly sensitive to data structure**: tree splits are adapted to handle informative censoring and arbitrary time-to-event distributions.
+* **Accurate**: avoids restrictive model assumptions, resulting in higher predictive performance in complex settings.
 
-Developed models published in scientific articles [1]_, [2]_, [3]_ and outperformed existing models in terms of accuracy based on open medical data. We invite survival analysis researchers to join the development of survivors, using the library for their projects, reporting any problems, and creating new solutions.
-Documentation is available on https://iuliivasilev.github.io/dev-survivors/
 
 Principles
 -----------
@@ -51,61 +48,68 @@ Installation
 User Installation
 ~~~~~~~~~~~~~~~~~
 
-The most convenient and fastest way to install a package is to directly download the library from the Python package catalog (Python Package Index, PyPI).
-The version of the source files in the directory is up-to-date and consistent with the GitHub repository::
-
+Install the latest release via pip (`PyPI <https://pypi.org/project/survivors/>`_):
+```bash
   pip install survivors
+```
 
-An alternative installation method is based on the use of source files. 
-The first step is to download the source files using Github::
+Or install the development version:
+```bash
+git clone https://github.com/iuliivasilev/dev-survivors.git
+cd dev-survivors
+pip install -e .
+```
 
-  git clone command https://github.com/iuliivasilev/dev-survivors.git
-
-Or getting and unpacking the archive of `the latest published version <https://github.com/iuliivasilev/dev-survivors/releases/>`_. Next, use the command line to go to the **dev-survivors** directory. Finally, the manual installation of the library is completed after executing the following command::
-
-  python command setup.py install
-
-Requirements
+Dependencies
 ~~~~~~~~~~~~
 
-- Python (>= 3.9)
-- NumPy (>= 1.22)
-- Pandas (>=0.25)
-- Numba (>= 0.58.0)
-- matplotlib (>= 3.5.0)
-- seaborn
-- graphviz (>= 2.50.0)
-- joblib
-- scikit-learn (>= 1.0.2)
-- openpyxl
+* Python >= 3.8
+* NumPy, Pandas, Numba, Scikit-learn, Matplotlib
 
 Optional for comprehensive experiments:
 
-- lifelines (>= 0.27.8)
-- scikit-survival (>= 0.17.2)
+* lifelines (>= 0.27.8)
+* scikit-survival (>= 0.17.2)
 
-Examples
+Quickstart
 ------------
 
-The user guides in the *doc* and *demonstration* directories provide detailed information on the key concepts for **survivors**. 
-They also include hands-on examples in the form of `Jupyter notebooks <https://jupyter.org/>`_.
-In particular, the library allows users to carry out a range of scenarios.
+```python
+import survivors.datasets as ds
+import survivors.constants as cnt
+from survivors.tree import CRAID
 
-1. Loading and preparing 9 open medical datasets: GBSG, PBC, SMARTO, SUPPORT2, WUHAN, ACTG, FLCHAIN, ROTT2, FRAMINGHAM.
-2. Fitting Survival Analysis Models: There are the following models available: a Decision Tree (CRAID), a Bootstrap Ensemble (BootstrapCRAID), and an Adaptive Boosting Ensemble (BoostingCRAID). Each model has a wide range of hyperparameters, providing flexibility for the model.
-3. Predict the probability and timing of the event. Forecasts can help users solve the problem of classifying or ranking new patients based on the expected severity of their disease. 
-4. Predict the individual survival functions and cumulative hazards of patients. Forecasts can be used to support medical decisions and adjust treatments.
-5. Visualizing and interpreting dependencies in data.
+X, y, features, categ, sch_nan = ds.load_gbsg_dataset()
+
+cr = CRAID(criterion='wilcoxon', depth=2, min_samples_leaf=0.1, 
+           signif=0.05, categ=categ, leaf_model="base")
+cr.fit(X, y)
+tree_view = cr.visualize(mode="surv")
+
+tree_view
+```
+
+.. image:: https://github.com/iuliivasilev/dev-survivors/blob/master/dev-survivors/demonstration/CRAID_GBSG_depth2.png
+  :target: https://iuliivasilev.github.io/dev-survivors/
+
+
+The user guides in the *doc* and *demonstration* directories provide detailed information on the key concepts for **survivors**. 
+
+Supported Models
+----------------
+
+* **CRAID** – interpretable decision tree model for survival analysis [1]_
+* **ParallelBootstrapCRAID** – ensemble of independent trees with improved stability and accuracy [2]_
+* **BoostingCRAID** (optional) – boosting ensemble with adaptive sampling [3]_
+* **Modified existing models** (Kaplan-Meier, CoxPH, AFT ...)
 
 Help and Support
 ----------------
 
-Communication
-~~~~~~~~~~~~~
+We welcome contributions!
+Open issues, propose features, and submit pull requests via GitHub.
 
-- Email: iuliivasilev@gmail.com
-- LinkedIn: https://www.linkedin.com/in/iulii-vasilev
-
+For questions, discussions, or collaboration ideas, feel free to open an issue or contact the maintainer directly.
 
 Citation
 ~~~~~~~~~~
