@@ -48,17 +48,15 @@ Installation
 User Installation
 ~~~~~~~~~~~~~~~~~
 
-Install the latest release via pip (`PyPI <https://pypi.org/project/survivors/>`_):
-```bash
-  pip install survivors
-```
+Install the latest release via pip (`PyPI <https://pypi.org/project/survivors/>`_)::
 
-Or install the development version:
-```bash
-git clone https://github.com/iuliivasilev/dev-survivors.git
-cd dev-survivors
-pip install -e .
-```
+    pip install survivors
+
+Or install the development version::
+
+    git clone https://github.com/iuliivasilev/dev-survivors.git
+    cd dev-survivors
+    pip install -e .
 
 Dependencies
 ~~~~~~~~~~~~
@@ -74,26 +72,22 @@ Optional for comprehensive experiments:
 Quickstart
 ------------
 
-```python
-import survivors.datasets as ds
-import survivors.constants as cnt
-from survivors.tree import CRAID
+The user guides in the *doc* and *demonstration* directories provide detailed information on the key concepts for **survivors**::
 
-X, y, features, categ, sch_nan = ds.load_gbsg_dataset()
+    import survivors.datasets as ds
+    import survivors.constants as cnt
+    from survivors.tree import CRAID
 
-cr = CRAID(criterion='wilcoxon', depth=2, min_samples_leaf=0.1, 
-           signif=0.05, categ=categ, leaf_model="base")
-cr.fit(X, y)
-tree_view = cr.visualize(mode="surv")
+    X, y, features, categ, sch_nan = ds.load_gbsg_dataset()
 
-tree_view
-```
+    cr = CRAID(criterion='wilcoxon', depth=2, min_samples_leaf=0.1, 
+            signif=0.05, categ=categ, leaf_model="base")
+    cr.fit(X, y)
+    tree_view = cr.visualize(mode="surv")
 
-.. image:: https://github.com/iuliivasilev/dev-survivors/blob/master/dev-survivors/demonstration/CRAID_GBSG_depth2.png
-  :target: https://iuliivasilev.github.io/dev-survivors/
+    tree_view
 
-
-The user guides in the *doc* and *demonstration* directories provide detailed information on the key concepts for **survivors**. 
+.. image:: https://github.com/iuliivasilev/dev-survivors/blob/master/demonstration/CRAID_GBSG_depth2.png
 
 Supported Models
 ----------------
@@ -109,7 +103,7 @@ Help and Support
 We welcome contributions!
 Open issues, propose features, and submit pull requests via GitHub.
 
-For questions, discussions, or collaboration ideas, feel free to open an issue or contact the maintainer directly.
+For questions, discussions, or collaboration ideas, feel free to open an issue or `contact the maintainer directly <https://www.linkedin.com/in/iulii-vasilev>`_ (`email <iuliivasilev@gmail.com>`_).
 
 Citation
 ~~~~~~~~~~
