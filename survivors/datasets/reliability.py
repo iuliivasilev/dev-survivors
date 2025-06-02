@@ -1,7 +1,6 @@
-import numpy as np
 import pandas as pd
 from os.path import dirname, join
-from ..constants import TIME_NAME, CENS_NAME, get_y
+from ..constants import TIME_NAME, get_y
 
 
 def prepare_dataset_by_template(df, obsolete_feat, target_feat, cont_feat, competing=False):

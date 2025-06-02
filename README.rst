@@ -32,7 +32,7 @@ Key Features
 Survivors was developed during a PhD project at Lomonosov Moscow State University to overcome the limitations of traditional survival analysis.
 It is designed to handle data with informative censoring and arbitrary time-to-event distributions. Here's what makes it stand out:
 
-* **Data Included** – Comes with 18+ real-world `datasets <https://iuliivasilev.github.io/dev-survivors/modules/Datasets.html>`_ from healthcare, CRM, and more.
+* **Data Included** – Comes with 20+ real-world `datasets <https://iuliivasilev.github.io/dev-survivors/modules/Datasets.html>`_ from healthcare, CRM, and more.
 * **True Continuous-Time Modeling** – No discretization needed; time is continuous where it matters: at prediction.
 * **Custom Metrics That Matter** – Over 10 evaluation metrics crafted to handle censoring, imbalance, and rare events.
 * **Speed Meets Scale** – Optimized from scratch with JIT compilation, vectorized math, and histogram-based splits for efficient performance.
