@@ -45,7 +45,7 @@ install_requires = parse_requirements("requirements/requirements.txt")
 
 setup(
     name='survivors',
-    version='1.7.1',
+    version='1.7.2',
     license='BSD 3-Clause License',
     author='Iulii Vasilev',
     author_email='iuliivasilev@gmail.com',
