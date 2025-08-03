@@ -370,7 +370,7 @@ def iauc(survival_train, survival_test, estimate, times, tied_tol=1e-8, no_wei=F
     n_controls[n_controls == 0] = 1
 
     # prepend row of infinity values
-    estimate_diff = np.concatenate((np.broadcast_to(np.infty, (1, n_times)), estimate))
+    estimate_diff = np.concatenate((np.broadcast_to(np.inf, (1, n_times)), estimate))
     is_tied = np.absolute(np.diff(estimate_diff, axis=0)) <= tied_tol
 
     cumsum_tp = np.cumsum(is_case * ipcw, axis=0)
