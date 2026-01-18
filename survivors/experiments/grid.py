@@ -9,7 +9,7 @@ from sklearn.model_selection import StratifiedKFold, ParameterGrid, train_test_s
 
 from .. import constants as cnt
 from .. import metrics as metr
-from ..external import LeafModel
+from ..external import LeafModel, BaseSAAdapter
 
 try:
     import mgzip  # Custom
@@ -172,7 +172,25 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
             s_time = time.time()
             s_mem = [check_memory()]
             est = method(**kwargs)
-            if method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
+            if isinstance(est, LeafModel):
+                X_train.loc[:, cnt.TIME_NAME] = y_train[cnt.TIME_NAME]
+                X_train.loc[:, cnt.CENS_NAME] = y_train[cnt.CENS_NAME]
+                est.fit(X_train)
+                pred_sf = est.predict_survival_at_times(X_test, bins=bins)
+                pred_time = est.predict_feature(X_test, feature_name=cnt.TIME_NAME)
+                pred_hf = est.predict_hazard_at_times(X_test, bins=bins)
+            elif isinstance(est, BaseSAAdapter):
+                s = pd.isna(X_train).sum(axis=0) != X_train.shape[0]
+                valid_feat = s[s].index
+                med_val = X_train[valid_feat].median()
+                X_train = X_train[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
+                X_test = X_test[valid_feat].fillna(med_val).replace(np.nan, med_val).replace(np.inf, med_val)
+                est = est.fit(X_train, y_train, time_col=cnt.TIME_NAME, event_col=cnt.CENS_NAME)
+                s_mem.append(check_memory())
+                pred_sf = est.predict_survival_function(X_test, times=bins)[0]
+                pred_hf = est.predict_hazard_function(X_test, times=bins)[0]
+                pred_time = est.predict_expected_time(X_test, times=bins)
+            elif method.__name__.find('CRAID') != -1:  # TODO replace to isinstance
                 if dir_path is None:
                     est.fit(X_train, y_train)
                 else:
@@ -193,13 +211,6 @@ def get_fit_eval_func(method, X, y, folds, metrics_names=['CI'], mode="CV", dir_
                 pred_sf[:, 0] = 1
                 pred_time = est.predict(X_test, target=cnt.TIME_NAME)
                 pred_hf = est.predict_at_times(X_test, bins=bins, mode="hazard")
-            elif isinstance(est, LeafModel):
-                X_train.loc[:, cnt.TIME_NAME] = y_train[cnt.TIME_NAME]
-                X_train.loc[:, cnt.CENS_NAME] = y_train[cnt.CENS_NAME]
-                est.fit(X_train)
-                pred_sf = est.predict_survival_at_times(X_test, bins=bins)
-                pred_time = est.predict_feature(X_test, feature_name=cnt.TIME_NAME)
-                pred_hf = est.predict_hazard_at_times(X_test, bins=bins)
             else:  # Methods from scikit-survival
                 s = pd.isna(X_train).sum(axis=0) != X_train.shape[0]
                 valid_feat = s[s].index
@@ -314,7 +325,10 @@ class Experiments(object):
     def add_method(self, method, grid):
         self.methods.append(method)
         self.methods_grid.append(grid)
-        
+
+    def add_new_metric(self, name, metric):
+        metr.METRIC_DICT[name] = metric
+
     def set_metrics(self, lst_metric):
         self.metrics = []
         for metr_name in lst_metric:
@@ -335,29 +349,29 @@ class Experiments(object):
             grid_params = ParameterGrid(grid)
             p_size = len(grid_params)
             for i_p, p in enumerate(grid_params):
-                try:
-                    eval_metr, exec_times, exec_mem = fit_eval_func(**p)
-                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""), "PARAMS": str(p),
-                                 "TIMES": exec_times, "TIME": np.sum(exec_times),
-                                 "MEMS": exec_mem, "MEM": np.sum(exec_mem)}
-                    eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
-                    curr_dict.update(eval_metr)
-                    self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
-                    if verbose > 0:
-                        print(f"Iteration: {i_p + 1}/{p_size}")
-                        print(f"EXECUTION TIME OF {method.__name__}: {exec_times.round(3)}, MEM {exec_mem.round(3)}",
-                              {k: [round(np.mean(v), 3), round(v[-1], 3)] for k, v in eval_metr.items()})
-                except KeyboardInterrupt:
-                    print("Handled KeyboardInterrupt")
-                    break
-                except Exception as e:
-                    print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
-                    if self.except_stop:
-                        break
-                    curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
-                                 "PARAMS": str(p), "TIME": -1}
-                    curr_dict.update({m: np.array([np.nan, np.nan]) for i, m in enumerate(self.metrics)})
-                    self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
+                # try:
+                eval_metr, exec_times, exec_mem = fit_eval_func(**p)
+                curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""), "PARAMS": str(p),
+                             "TIMES": exec_times, "TIME": np.sum(exec_times),
+                             "MEMS": exec_mem, "MEM": np.sum(exec_mem)}
+                eval_metr = {m: eval_metr[:, i] for i, m in enumerate(self.metrics)}
+                curr_dict.update(eval_metr)
+                self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
+                if verbose > 0:
+                    print(f"Iteration: {i_p + 1}/{p_size}")
+                    print(f"EXECUTION TIME OF {method.__name__}: {exec_times.round(3)}, MEM {exec_mem.round(3)}",
+                          {k: [round(np.mean(v), 3), round(v[-1], 3)] for k, v in eval_metr.items()})
+                # except KeyboardInterrupt:
+                #     print("Handled KeyboardInterrupt")
+                #     break
+                # except Exception as e:
+                #     print("Method: %s, Param: %s finished with except '%s'" % (method.__name__, str(p), e))
+                #     if self.except_stop:
+                #         break
+                #     curr_dict = {"METHOD": method.__name__, "CRIT": p.get("criterion", ""),
+                #                  "PARAMS": str(p), "TIME": -1}
+                #     curr_dict.update({m: np.array([np.nan, np.nan]) for i, m in enumerate(self.metrics)})
+                #     self.result_table = pd.concat([self.result_table, pd.DataFrame([curr_dict])], ignore_index=True)
         if self.mode in ["TIME-CV", "CV+HOLD-OUT"]:
             for m in self.metrics:
                 self.result_table[f"{m}_pred_mean"] = self.result_table[m].apply(lambda x: np.mean(x[:-1]))
