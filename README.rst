@@ -98,6 +98,14 @@ Open issues, propose features, and submit pull requests via GitHub.
 
 For questions, discussions, or collaboration ideas, feel free to open an issue or `contact the maintainer directly <https://www.linkedin.com/in/iulii-vasilev>`_ (`email <iuliivasilev@gmail.com>`_).
 
+Related Projects
+----------------
+
+* `SurvGAN: Generative Survival Analysis for Predictive Maintenance in Cloud Data Centers <https://github.com/iuliivasilev/dev-survivors/tree/master/demonstration/Articles/SurvGAN>`_
+* `KnowledgeBaseSA: A Knowledge Base for Survival Analysis Algorithms <https://github.com/iuliivasilev/KnowledgeBaseSA>`_
+* `predict-failure: cross-platform toolkit for monitoring, risk prediction, and preventive maintenance <https://github.com/iuliivasilev/predict-failure>`_
+* `Backblaze MLOps <https://github.com/dvarfe/Backblaze_ML_Ops/tree/experiments>`_
+
 Citation
 ~~~~~~~~~~
 
