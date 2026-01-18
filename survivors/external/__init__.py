@@ -8,5 +8,7 @@ from .nonparametric import KaplanMeier, KaplanMeierZeroAfter, FullProbKM
 from .nonparametric import NelsonAalen
 from .nonparametric import LEAF_NONPARAM_DICT
 
+from .mlwrap import BaseSAAdapter, ClassifWrapSA, RegrWrapSA, SAWrapSA
+
 LEAF_MODEL_DICT = LEAF_NONPARAM_DICT.copy()
 LEAF_MODEL_DICT.update(LEAF_AFT_DICT)
